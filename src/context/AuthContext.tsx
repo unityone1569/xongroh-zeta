@@ -1,9 +1,15 @@
 import { getAccount, getCurrentUser } from '@/lib/appwrite/api';
 import { IContextType, IUser } from '@/types';
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export const INITIAL_USER = {
+export const INITIAL_USER: IUser = {
   id: '',
   name: '',
   profession: '',
@@ -15,13 +21,13 @@ export const INITIAL_USER = {
   bio: '',
 };
 
-const INITIAL_STATE = {
+const INITIAL_STATE: IContextType = {
   user: INITIAL_USER,
   isLoading: false,
   isAuthenticated: false,
   setUser: () => {},
   setIsAuthenticated: () => {},
-  checkAuthUser: async () => false as boolean,
+  checkAuthUser: async () => false,
 };
 
 const AuthContext = createContext<IContextType>(INITIAL_STATE);
@@ -30,58 +36,58 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<IUser>(INITIAL_USER);
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
   const navigate = useNavigate();
 
-  const checkAuthUser = async () => {
+  const checkAuthUser = useCallback(async () => {
+    setIsLoading(true);
     try {
       const currentAccount = await getCurrentUser();
-
       if (currentAccount) {
-        setUser({
+        const updatedUser = {
           id: currentAccount.$id,
-          name: currentAccount.name,
-          profession: currentAccount.profession,
-          hometown: currentAccount.hometown,
-          username: currentAccount.username,
-          email: currentAccount.email,
-          dpUrl: currentAccount.dpUrl,
-          coverUrl: currentAccount.coverUrl,
-          bio: currentAccount.bio,
-        });
+          name: currentAccount.name || '',
+          profession: currentAccount.profession || '',
+          hometown: currentAccount.hometown || '',
+          username: currentAccount.username || '',
+          email: currentAccount.email || '',
+          dpUrl: currentAccount.dpUrl || '',
+          coverUrl: currentAccount.coverUrl || '',
+          bio: currentAccount.bio || '',
+        };
+
+        setUser(updatedUser);
         setIsAuthenticated(true);
+
+        console.log(isAuthenticated);
+        (isAuthenticated);
+        console.log(updatedUser);
 
         return true;
       }
-
-      return false;
     } catch (error) {
-      console.log(error);
-      return false;
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
-  };
+    return false;
+  }, []);
 
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
         const account = await getAccount();
-        
         if (!account) {
           navigate('/sign-in');
           return;
         }
-        
         await checkAuthUser();
       } catch (error) {
         console.error('Error checking auth status:', error);
         navigate('/sign-in');
       }
     };
-
     checkAuthStatus();
-  }, []);
+  }, [checkAuthUser]);
 
   const value = {
     user,

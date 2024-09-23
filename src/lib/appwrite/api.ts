@@ -1,14 +1,8 @@
-import { ID, ImageGravity, OAuthProvider, Query } from 'appwrite';
+import { ID, ImageGravity, Models, OAuthProvider, Query } from 'appwrite';
 import { INewPost, INewUser, IUpdatePost } from '@/types';
 import { account, appwriteConfig, avatars, databases, storage } from './config';
 
-export async function loginWithGoogle() {
-  try {
-    account.createOAuth2Session(OAuthProvider.Google, 'http://localhost:5173/');
-  } catch (error) {
-    console.error(error);
-  }
-}
+// AUTH
 
 export async function createUserAccount(user: INewUser) {
   try {
@@ -37,10 +31,84 @@ export async function createUserAccount(user: INewUser) {
   }
 }
 
-export async function saveUserToDB(user: {
+// loginWithGoogle function: starts OAuth session
+export async function loginWithGoogle() {
+  try {
+    const redirectUrl = import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT;
+    account.createOAuth2Session(OAuthProvider.Google, redirectUrl);
+  } catch (error) {
+    console.error('Error during Google OAuth session creation:', error);
+    throw error;
+  }
+}
+
+// Create or log in a user with Google OAuth
+export async function createUserAccountWithGoogle() {
+  try {
+    // await loginWithGoogle(); // Initiate Google OAuth
+
+    const session = await getAccount(); // Get the authenticated session
+    console.log('session exist', session);
+
+    if (!session) {
+      throw new Error('No active session found');
+    }
+
+    // Check if the user already exists
+    const existingUser = await checkUserExists(session.email);
+    console.log('check the existing user', existingUser);
+
+    if (existingUser) {
+      console.log('User already exists in the database');
+      return existingUser;
+    }
+
+    console.log('cantrol reached here checkUserExists ');
+
+    // Create a new user in the database if not found
+    const newUser = await saveUserToDB({
+      accountId: session.$id,
+      name: session.name,
+      email: session.email,
+      dpUrl: avatars.getInitials(session.name),
+    });
+
+    console.log('new user is created!', newUser);
+
+    if (!newUser) {
+      throw new Error('Failed to create user in the database');
+    }
+
+    console.log('User created successfully');
+
+    return newUser;
+  } catch (error) {
+    console.error('Error in createUserAccountWithGoogle:', error);
+    throw error;
+  }
+}
+
+// Helper function to check if a user exists
+async function checkUserExists(email: string): Promise<Models.Document | null> {
+  try {
+    const users = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.equal('email', email)] // Query to filter by email
+    );
+
+    // Check if there are any documents and return the first one or null
+    return users.documents?.[0] || null;
+  } catch (error) {
+    console.error('Error checking user existence:', error);
+    return null;
+  }
+}
+// Helper function to save a new user to the database
+async function saveUserToDB(user: {
   accountId: string;
-  email: string;
   name: string;
+  email: string;
   dpUrl: URL;
 }) {
   try {
@@ -52,7 +120,8 @@ export async function saveUserToDB(user: {
     );
     return newUser;
   } catch (error) {
-    console.log(error);
+    console.error('Error saving user to the database:', error);
+    return null;
   }
 }
 
@@ -79,7 +148,7 @@ export async function getAccount() {
 
 export async function getCurrentUser() {
   try {
-    const currentAccount = await account.get();
+    const currentAccount = await getAccount();
 
     if (!currentAccount) throw Error;
 

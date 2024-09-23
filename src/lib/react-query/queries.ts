@@ -8,6 +8,7 @@ import {
 import {
   createPost,
   createUserAccount,
+  createUserAccountWithGoogle,
   deletePost,
   deleteSavedPost,
   getCurrentUser,
@@ -29,6 +30,11 @@ import { QUERY_KEYS } from './queryKeys';
 export const useCreateUserAccount = () => {
   return useMutation({
     mutationFn: (user: INewUser) => createUserAccount(user),
+  });
+};
+export const useCreateUserAccountWithGoogle = () => {
+  return useMutation({
+    mutationFn: () => createUserAccountWithGoogle(),
   });
 };
 

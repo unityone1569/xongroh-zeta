@@ -2,7 +2,6 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
-
 import {
   Form,
   FormControl,
@@ -15,7 +14,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Loader from '@/components/shared/Loader';
 import { useToast } from '@/components/ui/use-toast';
-
 import { SignInValidation } from '@/lib/validation';
 import {
   useLoginWithGoogle,
@@ -32,7 +30,7 @@ const SignInForm = () => {
   // Query
   const { mutateAsync: signInAccount, isPending: signInPending } =
     useSignInAccount();
-  const { mutateAsync: signInGoogleAccount, isPending: googleSignInPending } =
+  const { mutateAsync: loginWithGoogle, isPending: googleSignInPending } =
     useLoginWithGoogle();
 
   const form = useForm<z.infer<typeof SignInValidation>>({
@@ -50,7 +48,7 @@ const SignInForm = () => {
   ) => {
     event.preventDefault();
     setIsGoogleSignIn(true);
-    await signInGoogleAccount();
+    await loginWithGoogle();
 
     const isLoggedIn = await checkAuthUser();
 
@@ -62,11 +60,12 @@ const SignInForm = () => {
       return;
     }
     // Reset form after successful Google sign-in
-    // form.reset();
+    form.reset();
     setIsGoogleSignIn(false);
   };
 
   const handleSignin = async (event: React.FormEvent<HTMLFormElement>) => {
+
     event.preventDefault();
     const result = await form.trigger();
     if (!result) return;
