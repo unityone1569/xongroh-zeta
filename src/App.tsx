@@ -6,6 +6,7 @@ import { Home } from './_root/pages';
 
 import './globals.css';
 import { Route, Routes } from 'react-router-dom';
+import OAuthCallback from './_auth/OAuthCallback';
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
         <Route element={<AuthLayout />}>
           <Route path="sign-in" element={<SignInForm />} />
           <Route path="sign-up" element={<SignUpForm />} />
+          <Route path="/oauth/callback" element={<OAuthCallback />} />
         </Route>
 
         {/* Private */}

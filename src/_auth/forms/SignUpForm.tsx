@@ -18,7 +18,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   useCreateUserAccount,
   useLoginWithGoogle,
-  useCreateUserAccountWithGoogle,
   useSignInAccount,
 } from '@/lib/react-query/queries';
 import { useUserContext } from '@/context/AuthContext';
@@ -35,8 +34,6 @@ const SignUpForm = () => {
   const { mutateAsync: loginWithGoogle, isPending: googleSignInPending } =
     useLoginWithGoogle();
 
-  const { mutateAsync: createUserAccountWithGoogle } =
-    useCreateUserAccountWithGoogle();
   const { mutateAsync: SignInAccount, isPending: isSigningInUser } =
     useSignInAccount();
 
@@ -58,19 +55,13 @@ const SignUpForm = () => {
   ) => {
     event.preventDefault();
     setIsGoogleSignUp(true);
+
     try {
+      // Step 1: Start the Google OAuth flow and redirect to OAuthCallback after success
       await loginWithGoogle();
-      // await createUserAccountWithGoogle();
-      const newUser = await createUserAccountWithGoogle();
-      console.log(newUser);
-
-      if (!newUser) throw new Error('Google signup failed');
-
-      const isLoggedIn = await checkAuthUser();
-      if (isLoggedIn) navigate('/');
-      else throw new Error('User not authenticated after Google sign-in');
     } catch (error) {
-      toast({ title: 'Google signup failed. Please try again.' });
+      console.error('Google OAuth failed:', error);
+      toast({ title: 'Google sign-up failed. Please try again.' });
     } finally {
       setIsGoogleSignUp(false);
     }

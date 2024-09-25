@@ -43,7 +43,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const currentAccount = await getCurrentUser();
       if (currentAccount) {
-        const updatedUser = {
+        setUser({
           id: currentAccount.$id,
           name: currentAccount.name || '',
           profession: currentAccount.profession || '',
@@ -53,19 +53,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           dpUrl: currentAccount.dpUrl || '',
           coverUrl: currentAccount.coverUrl || '',
           bio: currentAccount.bio || '',
-        };
-
-        setUser(updatedUser);
+        });
         setIsAuthenticated(true);
-
-        console.log(isAuthenticated);
-        (isAuthenticated);
-        console.log(updatedUser);
-
         return true;
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching current user:', error);
     } finally {
       setIsLoading(false);
     }

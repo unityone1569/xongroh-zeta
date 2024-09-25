@@ -32,9 +32,9 @@ export const useCreateUserAccount = () => {
     mutationFn: (user: INewUser) => createUserAccount(user),
   });
 };
-export const useCreateUserAccountWithGoogle = () => {
+export const useCreateUserAccountWithGoogle = (session: any) => {
   return useMutation({
-    mutationFn: () => createUserAccountWithGoogle(),
+    mutationFn: () => createUserAccountWithGoogle(session),
   });
 };
 

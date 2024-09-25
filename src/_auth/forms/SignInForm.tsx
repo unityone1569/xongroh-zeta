@@ -65,7 +65,6 @@ const SignInForm = () => {
   };
 
   const handleSignin = async (event: React.FormEvent<HTMLFormElement>) => {
-
     event.preventDefault();
     const result = await form.trigger();
     if (!result) return;

@@ -34,8 +34,11 @@ export async function createUserAccount(user: INewUser) {
 // loginWithGoogle function: starts OAuth session
 export async function loginWithGoogle() {
   try {
-    const redirectUrl = import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT;
-    account.createOAuth2Session(OAuthProvider.Google, redirectUrl);
+    account.createOAuth2Session(
+      OAuthProvider.Google,
+      'http://localhost:5173/oauth/callback',
+      'http://localhost:5173/sign-up'
+    );
   } catch (error) {
     console.error('Error during Google OAuth session creation:', error);
     throw error;
@@ -43,29 +46,66 @@ export async function loginWithGoogle() {
 }
 
 // Create or log in a user with Google OAuth
-export async function createUserAccountWithGoogle() {
+// export async function createUserAccountWithGoogle() {
+//   try {
+//     // await loginWithGoogle(); // Initiate Google OAuth
+
+//     const session = await getAccount(); // Get the authenticated session
+//     console.log('session exist', session);
+
+//     if (!session) {
+//       throw new Error('No active session found');
+//     }
+
+//     // Check if the user already exists
+//     const existingUser = await checkUserExists(session.email);
+//     console.log('check the existing user', existingUser);
+
+//     if (existingUser) {
+//       console.log('User already exists in the database');
+//       return existingUser;
+//     }
+
+//     console.log('cantrol reached here checkUserExists ');
+
+//     // Create a new user in the database if not found
+//     const newUser = await saveUserToDB({
+//       accountId: session.$id,
+//       name: session.name,
+//       email: session.email,
+//       dpUrl: avatars.getInitials(session.name),
+//     });
+
+//     console.log('new user is created!', newUser);
+
+//     if (!newUser) {
+//       throw new Error('Failed to create user in the database');
+//     }
+
+//     console.log('User created successfully');
+
+//     return newUser;
+//   } catch (error) {
+//     console.error('Error in createUserAccountWithGoogle:', error);
+//     throw error;
+//   }
+// }
+
+export async function createUserAccountWithGoogle(session: any) {
   try {
-    // await loginWithGoogle(); // Initiate Google OAuth
-
-    const session = await getAccount(); // Get the authenticated session
-    console.log('session exist', session);
-
-    if (!session) {
-      throw new Error('No active session found');
+    // Ensure that session exists and contains the necessary data
+    if (!session || !session.email) {
+      throw new Error('Invalid session data');
     }
 
-    // Check if the user already exists
+    // Check if the user already exists in the database
     const existingUser = await checkUserExists(session.email);
-    console.log('check the existing user', existingUser);
-
     if (existingUser) {
       console.log('User already exists in the database');
       return existingUser;
     }
 
-    console.log('cantrol reached here checkUserExists ');
-
-    // Create a new user in the database if not found
+    // Create new user in your Appwrite database
     const newUser = await saveUserToDB({
       accountId: session.$id,
       name: session.name,
@@ -73,14 +113,11 @@ export async function createUserAccountWithGoogle() {
       dpUrl: avatars.getInitials(session.name),
     });
 
-    console.log('new user is created!', newUser);
-
     if (!newUser) {
       throw new Error('Failed to create user in the database');
     }
 
     console.log('User created successfully');
-
     return newUser;
   } catch (error) {
     console.error('Error in createUserAccountWithGoogle:', error);

@@ -6,14 +6,13 @@ export default function AuthLayout() {
   const location = useLocation();
   const { isAuthenticated, isLoading } = useUserContext();
   console.log(isAuthenticated);
-  
 
   if (isLoading) {
     return (
       <>
         <Loader />
       </>
-    ); 
+    );
   }
 
   return isAuthenticated ? (
