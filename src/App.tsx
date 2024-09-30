@@ -10,7 +10,7 @@ import OAuthCallback from './_auth/OAuthCallback';
 
 const App = () => {
   return (
-    <main className="flex h-screen my-5">
+    <main className="flex h-screen">
       <Routes>
         {/* Public */}
         <Route element={<AuthLayout />}>

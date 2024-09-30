@@ -28,27 +28,21 @@ const SignUpForm = () => {
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
   const navigate = useNavigate();
 
+  // Queries
   const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateUserAccount();
-
-  const { mutateAsync: loginWithGoogle, isPending: googleSignInPending } =
-    useLoginWithGoogle();
-
+  const { mutateAsync: loginWithGoogle } = useLoginWithGoogle();
   const { mutateAsync: SignInAccount, isPending: isSigningInUser } =
     useSignInAccount();
 
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     resolver: zodResolver(SignUpFormSchema),
-    defaultValues: { name: '', email: '', password: '' },
+    defaultValues: { name: '', hometown: '', email: '', password: '' },
   });
 
   const [isGoogleSignUp, setIsGoogleSignUp] = useState(false);
   const formDisabled =
-    isGoogleSignUp ||
-    isCreatingAccount ||
-    isUserLoading ||
-    googleSignInPending ||
-    isSigningInUser;
+    isGoogleSignUp || isCreatingAccount || isUserLoading || isSigningInUser;
 
   const handleSignupWithGoogle = async (
     event: React.MouseEvent<HTMLButtonElement>
@@ -57,27 +51,31 @@ const SignUpForm = () => {
     setIsGoogleSignUp(true);
 
     try {
-      // Step 1: Start the Google OAuth flow and redirect to OAuthCallback after success
       await loginWithGoogle();
     } catch (error) {
       console.error('Google OAuth failed:', error);
       toast({ title: 'Google sign-up failed. Please try again.' });
     } finally {
-      setIsGoogleSignUp(false);
+      form.reset();
+      // setIsGoogleSignUp(false);
     }
   };
 
-  const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  // Add console logging for form state
+  // console.log('Form State:', form.formState);
+  // console.log('Form Errors:', form.formState.errors);
 
-    const values = form.getValues();
+  const handleSignup = async (user: z.infer<typeof SignUpFormSchema>) => {
+    // console.log('Form Submission Triggered with data:', user);
     try {
-      const newUser = await createUserAccount(values);
+      // Create user account
+      const newUser = await createUserAccount(user);
       if (!newUser) throw new Error('Signup failed');
 
+      // Sign in after signup
       const session = await SignInAccount({
-        email: values.email,
-        password: values.password,
+        email: user.email,
+        password: user.password,
       });
       if (!session) throw new Error('Sign-in failed');
 
@@ -104,10 +102,10 @@ const SignUpForm = () => {
         <img className="h-16" src="/assets/icons/logo.svg" alt="logo" />
         <h2 className="h3-bold md:h2-bold pt-6 sm:pt-8">Create account</h2>
         <p className="text-light-3 small-medium md:base-regular mt-2 mb-5">
-          This marks a new beginning!
+          A fresh journey is just getting underway!
         </p>
         <form
-          onSubmit={handleSignup}
+          onSubmit={form.handleSubmit(handleSignup)}
           className="flex flex-col gap-5 w-full mt-4"
         >
           <FormField
@@ -116,6 +114,24 @@ const SignUpForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="shad-form_label">Name</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    className="shad-input"
+                    {...field}
+                    disabled={formDisabled}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="hometown"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="shad-form_label">Hometown</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
@@ -198,7 +214,7 @@ const SignUpForm = () => {
             )}
           </Button>
           <p className="small-regular text-light-2 text-center mt-4">
-            Already have an account?{' '}
+            Already have an account?
             <Link
               to="/sign-in"
               className="text-primary-500 small-semibold ml-1"

@@ -9,10 +9,6 @@ export const SignUpFormSchema = z.object({
     .string()
     .min(2, { message: 'Hometown must be at least 2 characters.' })
     .max(30, { message: 'Hometown must be at most 30 characters.' }),
-  username: z
-    .string()
-    .min(2, { message: 'Username must be at least 2 characters.' })
-    .max(25, { message: 'Username must be at most 25 characters.' }),
   email: z.string().email(),
   password: z
     .string()

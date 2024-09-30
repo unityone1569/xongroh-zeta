@@ -27,11 +27,10 @@ const SignInForm = () => {
   const navigate = useNavigate();
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
 
-  // Query
-  const { mutateAsync: signInAccount, isPending: signInPending } =
+  // Queries
+  const { mutateAsync: signInAccount, isPending: isSigningInUser } =
     useSignInAccount();
-  const { mutateAsync: loginWithGoogle, isPending: googleSignInPending } =
-    useLoginWithGoogle();
+  const { mutateAsync: loginWithGoogle } = useLoginWithGoogle();
 
   const form = useForm<z.infer<typeof SignInValidation>>({
     resolver: zodResolver(SignInValidation),
@@ -42,53 +41,51 @@ const SignInForm = () => {
   });
 
   const [isGoogleSignIn, setIsGoogleSignIn] = useState(false);
+  const formDisabled = isGoogleSignIn || isUserLoading || isSigningInUser;
 
   const handleGoogleSignin = async (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     event.preventDefault();
     setIsGoogleSignIn(true);
-    await loginWithGoogle();
 
-    const isLoggedIn = await checkAuthUser();
-
-    if (isLoggedIn) {
+    try {
+      await loginWithGoogle();
+    } catch (error) {
+      console.error('Google OAuth failed:', error);
+      toast({ title: 'Google sign-up failed. Please try again.' });
+    } finally {
       form.reset();
-      navigate('/');
-    } else {
-      toast({ title: 'Login failed. Please try again.' });
-      return;
-    }
-    // Reset form after successful Google sign-in
-    form.reset();
-    setIsGoogleSignIn(false);
-  };
-
-  const handleSignin = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const result = await form.trigger();
-    if (!result) return;
-
-    const { email, password } = form.getValues();
-    const session = await signInAccount({ email, password });
-
-    if (!session) {
-      toast({ title: 'Login failed. Please try again.' });
-      return;
-    }
-
-    const isLoggedIn = await checkAuthUser();
-
-    if (isLoggedIn) {
-      form.reset();
-      navigate('/');
-    } else {
-      toast({ title: 'Login failed. Please try again.' });
-      return;
+      // setIsGoogleSignUp(false);
     }
   };
 
-  const formDisabled = isGoogleSignIn || googleSignInPending;
+  const handleSignin = async (user: z.infer<typeof SignInValidation>) => {
+    try {
+      const session = await signInAccount(user);
+
+      if (!session) {
+        toast({ title: 'Login failed. Please try again.' });
+        return;
+      }
+
+      const isLoggedIn = await checkAuthUser();
+
+      if (isLoggedIn) {
+        form.reset();
+        toast({ title: 'Signin successful!', variant: 'success' });
+        navigate('/');
+      } else {
+        throw new Error('Authentication failed after sign-in');
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error && 'message' in error) {
+        toast({ title: error.message || 'Sign-in failed, please try again!' });
+      } else {
+        toast({ title: 'An unexpected error occurred', variant: 'danger' });
+      }
+    }
+  };
 
   return (
     <Form {...form}>
@@ -99,7 +96,7 @@ const SignInForm = () => {
           Welcome back! Please enter your details.
         </p>
         <form
-          onSubmit={handleSignin}
+          onSubmit={form.handleSubmit(handleSignin)}
           className="flex flex-col gap-5 w-full mt-4"
         >
           <FormField
@@ -139,6 +136,7 @@ const SignInForm = () => {
               </FormItem>
             )}
           />
+          {/* forgot password (implementation pending) */}
           <Link
             to="/forgot-password"
             className="text-light-3 subtle-semibold ml-1"
@@ -146,8 +144,12 @@ const SignInForm = () => {
             Forgot password?
           </Link>
 
-          <Button type="submit" className="shad-button_primary mt-3">
-            {signInPending || isUserLoading ? (
+          <Button
+            type="submit"
+            className="shad-button_primary mt-3"
+            disabled={formDisabled}
+          >
+            {isSigningInUser || isUserLoading ? (
               <div className="flex-center gap-2">
                 <Loader /> Loading...
               </div>
@@ -156,9 +158,25 @@ const SignInForm = () => {
             )}
           </Button>
 
-          <Button onClick={handleGoogleSignin} className="shad-button_dark_4 ">
-            <img className="h-4" src="./assets/icons/google.svg" alt="google" />
-            Sign in with Google
+          <Button
+            onClick={handleGoogleSignin}
+            className="shad-button_dark_4"
+            disabled={formDisabled}
+          >
+            {isGoogleSignIn ? (
+              <div className="flex-center gap-2">
+                <Loader /> Signing in with Google...
+              </div>
+            ) : (
+              <>
+                <img
+                  className="h-4"
+                  src="./assets/icons/google.svg"
+                  alt="google"
+                />
+                Sign in with Google
+              </>
+            )}
           </Button>
           <p className="small-regular text-light-2 text-center mt-4">
             Don&apos;t have an account?

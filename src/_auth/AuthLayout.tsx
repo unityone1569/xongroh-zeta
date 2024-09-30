@@ -5,21 +5,20 @@ import Loader from '@/components/shared/Loader';
 export default function AuthLayout() {
   const location = useLocation();
   const { isAuthenticated, isLoading } = useUserContext();
-  console.log(isAuthenticated);
+  // console.log(isAuthenticated);
 
   if (isLoading) {
-    return (
-      <>
-        <Loader />
-      </>
-    );
+    return <Loader />;
   }
 
-  return isAuthenticated ? (
-    <Navigate to="/" state={{ from: location }} />
-  ) : (
+  // Prevent navigating to the current route
+  if (isAuthenticated && location.pathname !== '/') {
+    return <Navigate to="/" state={{ from: location }} />;
+  }
+
+  return (
     <>
-      <section className="flex flex-1 justify-center items-center flex-col py-10">
+      <section className="flex flex-1 justify-center  items-center flex-col">
         <Outlet />
       </section>
 
