@@ -151,7 +151,7 @@ const SignInForm = () => {
           >
             {isSigningInUser || isUserLoading ? (
               <div className="flex-center gap-2">
-                <Loader /> Loading...
+                <Loader />
               </div>
             ) : (
               'Sign in'
@@ -165,7 +165,7 @@ const SignInForm = () => {
           >
             {isGoogleSignIn ? (
               <div className="flex-center gap-2">
-                <Loader /> Signing in with Google...
+                <Loader />
               </div>
             ) : (
               <>
@@ -174,7 +174,7 @@ const SignInForm = () => {
                   src="./assets/icons/google.svg"
                   alt="google"
                 />
-                Sign in with Google
+                Continue with Google
               </>
             )}
           </Button>

@@ -4,7 +4,9 @@ import { account, appwriteConfig, avatars, databases } from './config';
 
 // AUTH
 
-export async function createUserAccount(user: INewUser) {
+export async function createUserAccount(
+  user: INewUser
+): Promise<Models.Document | Error> {
   try {
     const newAccount = await account.create(
       ID.unique(),
@@ -13,7 +15,7 @@ export async function createUserAccount(user: INewUser) {
       user.name
     );
 
-    if (!newAccount) throw Error;
+    if (!newAccount) throw new Error('Failed to create account');
 
     const avatarUrl = avatars.getInitials(user.name);
 
@@ -27,15 +29,14 @@ export async function createUserAccount(user: INewUser) {
 
     return newUser;
   } catch (error) {
-    console.log(error);
-    return error;
+    console.error('Error during account creation:', error);
+    throw error;
   }
 }
 
-// loginWithGoogle function
-export async function loginWithGoogle() {
+export async function loginWithGoogle(): Promise<void> {
   try {
-    account.createOAuth2Session(
+    await account.createOAuth2Session(
       OAuthProvider.Google,
       'http://localhost:5173/oauth/callback',
       'http://localhost:5173/sign-up'
@@ -46,22 +47,15 @@ export async function loginWithGoogle() {
   }
 }
 
-
-// Helper function to check if a user exists
-
-export const createUserAccountWithGoogle = async (session: any) => {
-  console.log('Session passed to createUserAccountWithGoogle:', session);
-
-  // Check if user already exists in the database
-  const existingUser = await checkUserExists(session.$id);
-  console.log('Existing user check result:', existingUser);
+export async function createUserAccountWithGoogle(
+  session: any
+): Promise<Models.Document> {
+  const existingUser = await checkUserExists(session.email);
 
   if (existingUser) {
-    console.log('User already exists in the database.');
-    return existingUser; // Return the existing user if found
+    return existingUser;
   }
 
-  // Create the user if they don't exist
   try {
     const newUser = await saveUserToDB({
       accountId: session.$id,
@@ -70,13 +64,12 @@ export const createUserAccountWithGoogle = async (session: any) => {
       dpUrl: avatars.getInitials(session.name),
     });
 
-    console.log('User created successfully:', newUser);
     return newUser;
   } catch (error) {
     console.error('Error creating user:', error);
     throw new Error('Error creating user');
   }
-};
+}
 
 export async function checkUserExists(
   email: string
@@ -85,12 +78,9 @@ export async function checkUserExists(
     const users = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId,
-      [Query.equal('email', email)] // Query to filter by email
+      [Query.equal('email', email)]
     );
 
-    console.log('Users found in checkUserExists:', users);
-
-    // Check if there are any documents and return the first one or null
     return users.documents?.[0] || null;
   } catch (error) {
     console.error('Error checking user existence:', error);
@@ -98,58 +88,53 @@ export async function checkUserExists(
   }
 }
 
-// Helper function to save a new user to the database
 async function saveUserToDB(user: {
   accountId: string;
   name: string;
   hometown?: string;
   email: string;
   dpUrl: URL;
-}) {
+}): Promise<Models.Document> {
   try {
-    const newUser = await databases.createDocument(
+    return await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId,
       ID.unique(),
       user
     );
-    return newUser;
   } catch (error) {
     console.error('Error saving user to the database:', error);
     throw new Error('Failed to save user to the database');
   }
 }
 
-export async function signInAccount(user: { email: string; password: string }) {
+export async function signInAccount(user: {
+  email: string;
+  password: string;
+}): Promise<any> {
   try {
-    const session = await account.createEmailPasswordSession(
-      user.email,
-      user.password
-    );
-    return session;
+    return await account.createEmailPasswordSession(user.email, user.password);
   } catch (error) {
-    console.log(error);
+    console.error('Error signing in:', error);
+    throw error;
   }
 }
 
-export async function getAccount() {
+export async function getAccount(): Promise<any | null> {
   try {
     const checkAccount = await account.get();
-    console.log('Account retrieved successfully:', checkAccount);
-    return checkAccount;
+    return checkAccount || null;
   } catch (error) {
     console.log('Error in getAccount (no session found):', error);
-    return null; // Explicitly return null if session is not found
+    return null;
   }
 }
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<Models.Document | null> {
   try {
     const currentAccount = await getAccount();
-    console.log('Current account in getCurrentUser:', currentAccount);
 
     if (!currentAccount) {
-      console.log('No account found in getCurrentUser');
       return null;
     }
 
@@ -159,24 +144,18 @@ export async function getCurrentUser() {
       [Query.equal('accountId', currentAccount.$id)]
     );
 
-    if (!currentUser || currentUser.documents.length === 0) {
-      console.log('No user found in the database for this account ID.');
-      return null;
-    }
-
-    console.log('User found in database:', currentUser.documents[0]);
-    return currentUser.documents[0];
+    return currentUser.documents?.[0] || null;
   } catch (error) {
     console.error('Error getting current user:', error);
-    return null; // Return null if there's an error
+    return null;
   }
 }
 
-export async function signOutAccount() {
+export async function signOutAccount(): Promise<any> {
   try {
-    const session = await account.deleteSession('current');
-    return session;
+    return await account.deleteSession('current');
   } catch (error) {
-    console.log(error);
+    console.error('Error signing out:', error);
+    throw error;
   }
 }
