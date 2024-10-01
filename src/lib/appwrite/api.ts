@@ -34,6 +34,18 @@ export async function createUserAccount(
   }
 }
 
+export async function signInAccount(user: {
+  email: string;
+  password: string;
+}): Promise<any> {
+  try {
+    return await account.createEmailPasswordSession(user.email, user.password);
+  } catch (error) {
+    console.error('Error signing in:', error);
+    throw error;
+  }
+}
+
 export async function loginWithGoogle(): Promise<void> {
   try {
     await account.createOAuth2Session(
@@ -105,18 +117,6 @@ async function saveUserToDB(user: {
   } catch (error) {
     console.error('Error saving user to the database:', error);
     throw new Error('Failed to save user to the database');
-  }
-}
-
-export async function signInAccount(user: {
-  email: string;
-  password: string;
-}): Promise<any> {
-  try {
-    return await account.createEmailPasswordSession(user.email, user.password);
-  } catch (error) {
-    console.error('Error signing in:', error);
-    throw error;
   }
 }
 

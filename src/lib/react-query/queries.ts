@@ -10,7 +10,6 @@ import {
 
 // ***** AUTHENTICATION *****
 
-
 export const useCreateUserAccount = () => {
   const queryClient = useQueryClient();
   return useMutation({

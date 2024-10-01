@@ -7,7 +7,7 @@ import Loader from '@/components/shared/Loader';
 
 const OAuthCallback = () => {
   const navigate = useNavigate();
-  const createUserMutation = useCreateUserAccountWithGoogle();
+  const  { mutateAsync: createUserAccountWithGoogle } = useCreateUserAccountWithGoogle();
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
@@ -15,7 +15,7 @@ const OAuthCallback = () => {
         const session = await getAccount();
 
         if (session) {
-          await createUserMutation.mutateAsync(session);
+          await createUserAccountWithGoogle(session);
           navigate('/');
         } else {
           console.error('No valid session found after OAuth callback');
@@ -28,7 +28,7 @@ const OAuthCallback = () => {
     };
 
     handleOAuthCallback();
-  }, [navigate, createUserMutation]);
+  }, [navigate, createUserAccountWithGoogle]);
 
   return (
     <div>

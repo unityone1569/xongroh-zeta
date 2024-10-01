@@ -99,14 +99,14 @@ const SignUpForm = () => {
   return (
     <Form {...form}>
       <div className="sm:w-420 flex-center flex-col">
-        <img className="h-16" src="/assets/icons/logo.svg" alt="logo" />
+        <img className="h-14" src="/assets/icons/logo.svg" alt="logo" />
         <h2 className="h3-bold md:h2-bold pt-6 sm:pt-8">Create account</h2>
         <p className="text-light-3 small-medium md:base-regular mt-2 mb-5">
           A fresh journey is just getting underway!
         </p>
         <form
           onSubmit={form.handleSubmit(handleSignup)}
-          className="flex flex-col gap-5 w-full mt-4"
+          className="flex flex-col gap-5 w-full  mt-4"
         >
           <FormField
             control={form.control}
@@ -193,6 +193,13 @@ const SignUpForm = () => {
               'Sign up'
             )}
           </Button>
+
+          <div className="flex items-center my-4">
+            <hr className="w-full border-t-2 border-dark-4" />
+            <span className="px-2 text-light-3 subtle-semibold ml-1">Or</span>
+            <hr className="w-full border-t-2 border-dark-4" />
+          </div>
+
           <Button
             onClick={handleSignupWithGoogle}
             className="shad-button_dark_4"
@@ -200,7 +207,7 @@ const SignUpForm = () => {
           >
             {isGoogleSignUp ? (
               <div className="flex-center gap-2">
-                <Loader /> 
+                <Loader />
               </div>
             ) : (
               <>
