@@ -8,6 +8,9 @@ export async function createUserAccount(
   user: INewUser
 ): Promise<Models.Document | Error> {
   try {
+    // Extract username from email (everything before "@")
+    const username = user.email.split('@')[0];
+
     const newAccount = await account.create(
       ID.unique(),
       user.email,
@@ -25,6 +28,7 @@ export async function createUserAccount(
       hometown: user.hometown,
       email: newAccount.email,
       dpUrl: avatarUrl,
+      username: username, // Add the generated username
     });
 
     return newUser;
@@ -48,7 +52,7 @@ export async function signInAccount(user: {
 
 export async function loginWithGoogle(): Promise<void> {
   try {
-    await account.createOAuth2Session(
+    account.createOAuth2Session(
       OAuthProvider.Google,
       'http://localhost:5173/oauth/callback',
       'http://localhost:5173/sign-up'
@@ -69,11 +73,13 @@ export async function createUserAccountWithGoogle(
   }
 
   try {
+    const username = session.email.split('@')[0];
     const newUser = await saveUserToDB({
       accountId: session.$id,
       name: session.name,
       email: session.email,
       dpUrl: avatars.getInitials(session.name),
+      username: username,
     });
 
     return newUser;
@@ -103,6 +109,7 @@ export async function checkUserExists(
 async function saveUserToDB(user: {
   accountId: string;
   name: string;
+  username: string;
   hometown?: string;
   email: string;
   dpUrl: URL;

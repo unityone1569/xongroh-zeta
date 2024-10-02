@@ -73,7 +73,7 @@ const SignInForm = () => {
 
       if (isLoggedIn) {
         form.reset();
-        toast({ title: 'Signin successful!', variant: 'success' });
+        toast({ title: 'Signin successful!' });
         navigate('/');
       } else {
         throw new Error('Authentication failed after sign-in');
@@ -82,7 +82,10 @@ const SignInForm = () => {
       if (error instanceof Error && 'message' in error) {
         toast({ title: error.message || 'Sign-in failed, please try again!' });
       } else {
-        toast({ title: 'An unexpected error occurred', variant: 'danger' });
+        toast({
+          title: 'An unexpected error occurred',
+          variant: 'destructive',
+        });
       }
     }
   };

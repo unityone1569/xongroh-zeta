@@ -82,7 +82,7 @@ const SignUpForm = () => {
       const isLoggedIn = await checkAuthUser();
       if (isLoggedIn) {
         form.reset();
-        toast({ title: 'Signup successful!', variant: 'success' });
+        toast({ title: 'Signup successful!' });
         navigate('/');
       } else {
         throw new Error('Authentication failed after sign-up');
@@ -91,7 +91,10 @@ const SignUpForm = () => {
       if (error instanceof Error && 'message' in error) {
         toast({ title: error.message || 'Sign-up failed, please try again!' });
       } else {
-        toast({ title: 'An unexpected error occurred', variant: 'danger' });
+        toast({
+          title: 'An unexpected error occurred',
+          variant: 'destructive',
+        });
       }
     }
   };
