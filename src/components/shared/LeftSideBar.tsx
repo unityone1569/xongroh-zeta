@@ -28,8 +28,8 @@ const LeftSidebar = () => {
     <nav className="leftsidebar">
       <div className="flex flex-col gap-11">
         <Link to="/" className="flex gap-3 items-center">
-          <img src="/assets/icons/logo.svg" alt="logo" width={52} />
-          <h2 className="h3-bold md:h2-bold">Xongroh</h2>
+          <img src="/assets/icons/logo.svg" alt="logo" width={48} />
+          <h3 className="h3-bold md:h3-bold">xongroh</h3>
         </Link>
         {isLoading || !user.email ? (
           <div className="h-14">
