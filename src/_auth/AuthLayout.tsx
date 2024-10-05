@@ -18,7 +18,7 @@ export default function AuthLayout() {
 
   return (
     <>
-      <section className="flex flex-1 justify-center  items-center flex-col">
+      <section className="flex flex-1 justify-center items-center flex-col overflow-hidden">
         <Outlet />
       </section>
 
