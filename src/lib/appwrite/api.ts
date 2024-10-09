@@ -1,6 +1,6 @@
 import { ID, ImageGravity, Models, OAuthProvider, Query } from 'appwrite';
 import { INewPost, INewUser, IUpdatePost } from '@/types';
-import { account, appwriteConfig, avatars, databases, storage} from './config';
+import { account, appwriteConfig, avatars, databases, storage } from './config';
 
 // AUTH
 
@@ -11,6 +11,7 @@ export async function createUserAccount(
     // Extract username from email (everything before "@")
     const username = user.email.split('@')[0];
 
+    // Create the account
     const newAccount = await account.create(
       ID.unique(),
       user.email,
@@ -18,10 +19,31 @@ export async function createUserAccount(
       user.name
     );
 
-    if (!newAccount) throw new Error('Failed to create account');
+    if (!newAccount) {
+      throw new Error('Account creation failed');
+    }
 
+    // Check if the user already exists in the database
+    const existingUser = await checkUserExists(newAccount.email);
+    if (existingUser) {
+      console.log('User data already exists in the database');
+      console.log(existingUser);
+
+      // If the accountId doesn't match, update the accountId
+      if (existingUser.accountId !== newAccount.$id) {
+        const updatedUser = await updateUserAccountId(
+          existingUser.$id,
+          newAccount.$id
+        );
+        console.log('User accountId updated:', updatedUser);
+        return updatedUser;
+      }
+
+      return existingUser;
+    }
+
+    // Generate avatar and save user data to the database
     const avatarUrl = avatars.getInitials(user.name);
-
     const newUser = await saveUserToDB({
       accountId: newAccount.$id,
       name: newAccount.name,
@@ -55,7 +77,7 @@ export async function loginWithGoogle(): Promise<void> {
     account.createOAuth2Session(
       OAuthProvider.Google,
       'http://localhost:5173/oauth/callback',
-      'http://localhost:5173/sign-up'
+      'http://localhost:5173/sign-in'
     );
   } catch (error) {
     console.error('Error during Google OAuth session creation:', error);
@@ -66,9 +88,22 @@ export async function loginWithGoogle(): Promise<void> {
 export async function createUserAccountWithGoogle(
   session: any
 ): Promise<Models.Document> {
+  // Check if the user already exists in the database
   const existingUser = await checkUserExists(session.email);
-
   if (existingUser) {
+    console.log('User data already exists in the database');
+    console.log(existingUser);
+
+    // If the accountId doesn't match, update the accountId
+    if (existingUser.accountId !== session.$id) {
+      const updatedUser = await updateUserAccountId(
+        existingUser.$id,
+        session.$id
+      );
+      console.log('User accountId updated:', updatedUser);
+      return updatedUser;
+    }
+
     return existingUser;
   }
 
@@ -105,7 +140,25 @@ export async function checkUserExists(
     return null;
   }
 }
+export async function updateUserAccountId(
+  userId: string,
+  newAccountId: string
+): Promise<Models.Document> {
+  try {
+    const updatedUser = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId,
+      { accountId: newAccountId }
+    );
+    return updatedUser;
+  } catch (error) {
+    console.error('Error updating user accountId:', error);
+    throw error;
+  }
+}
 
+// Function to save the user to the user collection
 async function saveUserToDB(user: {
   accountId: string;
   name: string;
@@ -115,6 +168,7 @@ async function saveUserToDB(user: {
   dpUrl: URL;
 }): Promise<Models.Document> {
   try {
+    // Save the user to the database
     return await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId,
@@ -123,7 +177,7 @@ async function saveUserToDB(user: {
     );
   } catch (error) {
     console.error('Error saving user to the database:', error);
-    throw new Error('Failed to save user to the database');
+    throw new Error('Failed to save user');
   }
 }
 
@@ -167,10 +221,7 @@ export async function signOutAccount(): Promise<any> {
   }
 }
 
-
-
 // POSTS
-
 
 export async function createPost(post: INewPost) {
   try {
@@ -192,13 +243,13 @@ export async function createPost(post: INewPost) {
     // Create the post
     const newPost = await databases.createDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.postCollectionId,
+      appwriteConfig.creationPostCollectionId,
       ID.unique(),
       {
         creator: post.userId,
         content: post.content,
-        mediaUrl: fileUrl,
-        mediaId: uploadedFile.$id,
+        mediaUrl: [fileUrl],
+        mediaId: [uploadedFile.$id],
         tags: tags,
       }
     );
@@ -287,7 +338,7 @@ export async function updatePost(post: IUpdatePost) {
     //  Update post
     const updatedPost = await databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.postCollectionId,
+      appwriteConfig.creationPostCollectionId,
       post.postId,
       {
         content: post.content,

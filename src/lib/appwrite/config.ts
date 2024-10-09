@@ -8,9 +8,10 @@ export const appwriteConfig = {
 
   // DB COLLECTIONS
   userCollectionId: import.meta.env.VITE_APPWRITE_USER_COLLECTION_ID,
-  postCollectionId: import.meta.env.VITE_APPWRITE_POST_COLLECTION_ID,
+  creationPostCollectionId: import.meta.env
+    .VITE_APPWRITE_CREATION_POST_COLLECTION_ID,
   savesCollectionId: import.meta.env.VITE_APPWRITE_SAVES_COLLECTION_ID,
-
+  
   // BUCKETS
   userBucketId: import.meta.env.VITE_APPWRITE_USER_BUCKET_ID,
   postBucketId: import.meta.env.VITE_APPWRITE_POST_BUCKET_ID,
