@@ -246,7 +246,7 @@ export async function createPost(post: INewPost) {
       appwriteConfig.creationPostCollectionId,
       ID.unique(),
       {
-        creator: post.userId,
+        creatorId: post.userId,
         content: post.content,
         mediaUrl: [fileUrl],
         mediaId: [uploadedFile.$id],
@@ -303,6 +303,315 @@ export async function deleteFile(fileId: string) {
     await storage.deleteFile(appwriteConfig.postBucketId, fileId);
 
     return { status: 'ok' };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getRecentPosts() {
+  try {
+    // Fetch recent posts
+    const { documents: posts } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      [Query.orderDesc('$createdAt'), Query.limit(20)]
+    );
+
+    if (!posts || posts.length === 0) {
+      return []; // Return an empty array if no posts are found
+    }
+
+    // Create an array of user fetch promises
+    const userFetchPromises = posts.map((post) =>
+      databases.getDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId, // Replace with actual user collection ID
+        post.creatorId
+      )
+    );
+
+    // Resolve all user fetch promises in parallel
+    const users = await Promise.all(userFetchPromises);
+
+    // Combine posts with their corresponding user details
+    const postsWithUserDetails = posts.map((post, index) => ({
+      ...post,
+      creator: {
+        name: users[index]?.name || '',
+        username: users[index]?.username || '',
+        dpUrl: users[index]?.dpUrl || null,
+      },
+    }));
+
+    return postsWithUserDetails;
+  } catch (error) {
+    console.error('Error fetching posts or user data:', error);
+    return []; // Return an empty array if an error occurs
+  }
+}
+
+function getPostCollectionId(postType: string): string {
+  switch (postType) {
+    case 'creationPost':
+      return appwriteConfig.creationPostCollectionId;
+    case 'communityPost':
+      return appwriteConfig.communityPostCollectionId;
+    case 'portfolioPost':
+      return appwriteConfig.portfolioPostCollectionId;
+    default:
+      throw new Error('Unknown post type');
+  }
+}
+
+export async function likePost(
+  postId: string,
+  userId: string,
+  postType: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    const collectionId = getPostCollectionId(postType);
+
+    // Fetch the current post document to get the current likesCount
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      collectionId,
+      postId
+    );
+    const currentLikesCount = post.likesCount || 0;
+
+    // Increment the likesCount manually
+    const updatedLikesCount = currentLikesCount + 1;
+
+    // Update the post with the new likesCount
+    await Promise.all([
+      databases.updateDocument(
+        appwriteConfig.databaseId,
+        collectionId,
+        postId,
+        {
+          likesCount: updatedLikesCount,
+        }
+      ),
+      databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.postLikesCollectionId,
+        ID.unique(),
+        {
+          accountId: userId,
+          postId,
+          postType,
+        }
+      ),
+    ]);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error liking post:', error);
+    return { success: false, error };
+  }
+}
+
+export async function unlikePost(
+  postId: string,
+  userId: string,
+  postType: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    const collectionId = getPostCollectionId(postType);
+
+    // Fetch current post document to get the current likesCount
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      collectionId,
+      postId
+    );
+    const currentLikesCount = post.likesCount || 0;
+
+    // Decrement the likesCount manually
+    const updatedLikesCount = currentLikesCount > 0 ? currentLikesCount - 1 : 0;
+
+    // Find the document to delete in the 'postLikes' collection
+    const likes = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postLikesCollectionId,
+      [Query.equal('accountId', userId), Query.equal('postId', postId)]
+    );
+
+    if (likes.documents.length === 0) {
+      throw new Error('Like document not found');
+    }
+
+    const likeDocumentId = likes.documents[0].$id; // Assuming there's only one match
+
+    await Promise.all([
+      databases.updateDocument(
+        appwriteConfig.databaseId,
+        collectionId,
+        postId,
+        {
+          likesCount: updatedLikesCount,
+        }
+      ),
+      databases.deleteDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.postLikesCollectionId,
+        likeDocumentId
+      ),
+    ]);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error unliking post:', error);
+    return { success: false, error };
+  }
+}
+
+export async function savePost(
+  postId: string,
+  userId: string,
+  postType: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    const collectionId = getPostCollectionId(postType);
+
+    // Fetch the current post document to get the current savesCount
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      collectionId,
+      postId
+    );
+    const currentSavesCount = post.savesCount || 0;
+
+    // Increment the savesCount manually
+    const updatedSavesCount = currentSavesCount + 1;
+
+    await Promise.all([
+      databases.updateDocument(
+        appwriteConfig.databaseId,
+        collectionId,
+        postId,
+        {
+          savesCount: updatedSavesCount,
+        }
+      ),
+      databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.savesCollectionId,
+        ID.unique(),
+        {
+          accountId: userId,
+          postId,
+          postType,
+        }
+      ),
+    ]);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving post:', error);
+    return { success: false, error };
+  }
+}
+
+export async function unsavePost(
+  postId: string,
+  userId: string,
+  postType: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    const collectionId = getPostCollectionId(postType);
+
+    // Fetch current post document to get the current savesCount
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      collectionId,
+      postId
+    );
+    const currentSavesCount = post.savesCount || 0;
+
+    // Decrement the savesCount manually
+    const updatedSavesCount = currentSavesCount > 0 ? currentSavesCount - 1 : 0;
+
+    // Find the document to delete in the 'postSaves' collection
+    const saves = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.savesCollectionId,
+      [Query.equal('accountId', userId), Query.equal('postId', postId)]
+    );
+
+    if (saves.documents.length === 0) {
+      throw new Error('Save document not found');
+    }
+
+    const saveDocumentId = saves.documents[0].$id; // Assuming there's only one match
+
+    await Promise.all([
+      databases.updateDocument(
+        appwriteConfig.databaseId,
+        collectionId,
+        postId,
+        {
+          savesCount: updatedSavesCount,
+        }
+      ),
+      databases.deleteDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.savesCollectionId,
+        saveDocumentId
+      ),
+    ]);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error un-saving post:', error);
+    return { success: false, error };
+  }
+}
+
+export async function checkPostLike(
+  postId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    const likes = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postLikesCollectionId,
+      [Query.equal('accountId', userId), Query.equal('postId', postId)]
+    );
+
+    return likes.documents.length > 0;
+  } catch (error) {
+    console.error('Error checking post like:', error);
+    return false;
+  }
+}
+
+export async function checkPostSave(
+  postId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    const saves = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.savesCollectionId,
+      [Query.equal('accountId', userId), Query.equal('postId', postId)]
+    );
+
+    return saves.documents.length > 0;
+  } catch (error) {
+    console.error('Error checking post save:', error);
+    return false;
+  }
+}
+
+export async function getPostById(postId: string) {
+  try {
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      postId
+    );
+    return post;
   } catch (error) {
     console.log(error);
   }
@@ -366,6 +675,64 @@ export async function updatePost(post: IUpdatePost) {
     }
 
     return updatedPost;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deletePost(postId?: string, mediaId?: string) {
+  if (!postId || !mediaId) return;
+
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      postId
+    );
+
+    if (!statusCode) throw Error;
+
+    await deleteFile(mediaId);
+
+    return { status: 'Ok' };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function searchPosts(searchTerm: string) {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      [Query.search('content', searchTerm)]
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
+  const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(9)];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      queries
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
   } catch (error) {
     console.log(error);
   }

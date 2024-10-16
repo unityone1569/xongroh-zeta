@@ -9,8 +9,13 @@ export const appwriteConfig = {
   // DB COLLECTIONS
   userCollectionId: import.meta.env.VITE_APPWRITE_USER_COLLECTION_ID,
   creationPostCollectionId: import.meta.env
-    .VITE_APPWRITE_CREATION_POST_COLLECTION_ID,
+    .VITE_APPWRITE_CREATION_POSTS_COLLECTION_ID,
+  communityPostCollectionId: import.meta.env
+    .VITE_APPWRITE_COMMUNITY_POSTS_COLLECTION_ID,
+  portfolioPostCollectionId: import.meta.env
+    .VITE_APPWRITE_PORTFOLIO_POSTS_COLLECTION_ID,
   savesCollectionId: import.meta.env.VITE_APPWRITE_SAVES_COLLECTION_ID,
+  postLikesCollectionId: import.meta.env.VITE_APPWRITE_POST_LIKES_COLLECTION_ID,
   
   // BUCKETS
   userBucketId: import.meta.env.VITE_APPWRITE_USER_BUCKET_ID,
