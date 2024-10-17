@@ -12,6 +12,7 @@ import {
   createUserAccount,
   createUserAccountWithGoogle,
   deletePost,
+  getAuthorById,
   getCurrentUser,
   getInfinitePosts,
   getPostById,
@@ -237,6 +238,14 @@ export const useGetPostById = (postId: string) => {
     queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
     queryFn: () => getPostById(postId),
     enabled: !!postId,
+  });
+};
+
+export const useGetAuthorById = (creatorId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_POST_BY_ID, creatorId],
+    queryFn: () => getAuthorById(creatorId),
+    enabled: !!creatorId,
   });
 };
 

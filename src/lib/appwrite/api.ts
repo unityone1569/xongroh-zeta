@@ -617,6 +617,19 @@ export async function getPostById(postId: string) {
   }
 }
 
+export async function getAuthorById(creatorId: string) {
+  try {
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      creatorId
+    );
+    return post;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function updatePost(post: IUpdatePost) {
   const hasFileToUpdate = post.file.length > 0;
 
