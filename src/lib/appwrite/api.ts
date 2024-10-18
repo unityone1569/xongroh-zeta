@@ -737,16 +737,32 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
   }
 
   try {
-    const posts = await databases.listDocuments(
+    const { documents: posts } = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.creationPostCollectionId,
       queries
     );
 
-    if (!posts) throw Error;
+    if (!posts || posts.length === 0) return { documents: [] };
 
-    return posts;
+    const creatorIds = [...new Set(posts.map((post) => post.creatorId))];
+
+    const { documents: authors } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.equal('$id', creatorIds)]
+    );
+
+    const authorMap = new Map(authors.map((author) => [author.$id, author]));
+
+    const postsWithAuthors = posts.map((post) => ({
+      ...post,
+      author: authorMap.get(post.creatorId) || null,
+    }));
+
+    return { documents: postsWithAuthors }; // Ensure returning documents
   } catch (error) {
-    console.log(error);
+    console.error('Error fetching posts:', error);
+    throw error;
   }
 }
