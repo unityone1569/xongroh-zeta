@@ -715,7 +715,7 @@ export async function deletePost(postId?: string, mediaId?: string) {
 
 export async function searchPosts(searchTerm: string) {
   try {
-    const posts = await databases.listDocuments(
+    const { documents: posts } = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.creationPostCollectionId,
       [Query.search('content', searchTerm)]
@@ -723,7 +723,22 @@ export async function searchPosts(searchTerm: string) {
 
     if (!posts) throw Error;
 
-    return posts;
+    const creatorIds = [...new Set(posts.map((post) => post.creatorId))];
+
+    const { documents: authors } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.equal('$id', creatorIds)]
+    );
+
+    const authorMap = new Map(authors.map((author) => [author.$id, author]));
+
+    const postsWithAuthors = posts.map((post) => ({
+      ...post,
+      author: authorMap.get(post.creatorId) || null,
+    }));
+
+    return { documents: postsWithAuthors };
   } catch (error) {
     console.log(error);
   }
