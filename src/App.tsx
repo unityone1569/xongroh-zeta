@@ -9,6 +9,8 @@ import { Route, Routes } from 'react-router-dom';
 import OAuthCallback from './_auth/OAuthCallback';
 import { Toaster } from './components/ui/toaster';
 import SavedPosts from './_root/pages/SavedPosts';
+import Community from './_root/pages/Community';
+import Marketplace from './_root/pages/Marketplace';
 
 const App = () => {
   return (
@@ -25,6 +27,8 @@ const App = () => {
         <Route element={<RootLayout />}>
         <Route index element={<Home />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/saved" element={<SavedPosts />} />
           <Route path="/all-users" element={<AllUsers />} />
           <Route path="/create-post" element={<CreatePost />} />

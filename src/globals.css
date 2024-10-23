@@ -198,7 +198,7 @@
 
   /* Bottom bar */
   .bottom-bar {
-    @apply z-50 flex-between w-full fixed bottom-0 rounded-t-[20px] bg-dark-2 px-10 py-4 md:hidden;
+    @apply z-50 flex-between w-full fixed bottom-0 rounded-t-[20px] bg-dark-2 px-6 py-4 md:hidden;
   }
 
   /* File uploader */
@@ -233,7 +233,7 @@
   }
 
   .leftsidebar-link {
-    @apply rounded-lg base-medium hover:bg-gradient-to-r from-violet-500 to-purple-400 transition;
+    @apply rounded-lg base-medium hover:bg-gradient-to-r from-purple-500 to-purple-400 transition;
   }
 
   /* Post Card */
