@@ -282,10 +282,10 @@ export function getFilePreview(fileId: string) {
     const fileUrl = storage.getFilePreview(
       appwriteConfig.postBucketId,
       fileId,
-      2000,
-      2000,
-      ImageGravity.Top,
-      100
+      0,
+      0,
+      ImageGravity.Center,
+      60
     );
 
     if (!fileUrl) throw Error;
