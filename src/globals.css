@@ -150,16 +150,17 @@
   }
 
   .home-posts {
-    @apply max-w-screen-sm flex flex-col items-center w-full gap-6 md:gap-9;
+    @apply max-w-screen-sm pb-20 flex flex-col items-center w-full gap-6 md:gap-9;
   }
 
+  
   .home-creators {
     @apply hidden xl:flex flex-col w-72 2xl:w-465 px-6 py-10 gap-10  overflow-scroll custom-scrollbar;
   }
 
   /* Post Details */
   .post_details-container {
-    @apply flex flex-col flex-1 gap-10 overflow-scroll py-10 px-5 md:p-14 custom-scrollbar items-center;
+    @apply flex flex-col flex-1 gap-10 overflow-scroll py-28  px-5 md:p-14 custom-scrollbar items-center;
   }
 
   .post_details-card {
@@ -220,7 +221,7 @@
   }
 
   .grid-post_link {
-    @apply flex rounded-[24px] border border-dark-4 overflow-hidden cursor-pointer w-full h-full;
+    @apply flex rounded-[24px] border border-dark-4 bg-dark-3 overflow-hidden cursor-pointer w-full h-full;
   }
 
   .grid-post_user {
@@ -238,11 +239,11 @@
 
   /* Post Card */
   .post-card {
-    @apply bg-dark-2 rounded-3xl border  border-dark-4 p-5 lg:p-7 w-full max-w-screen-sm;
+    @apply bg-dark-2 rounded-2xl border  border-dark-4 p-5 lg:p-7 w-full max-w-screen-sm;
   }
 
   .post-card_img {
-    @apply h-64 xs:h-[340px] overflow-hidden bg-dark-4 lg:h-[380px] w-full rounded-[24px] object-contain mb-7 ;
+    @apply h-64 xs:h-[300px] overflow-hidden bg-dark-4 lg:h-[340px] w-full rounded-xl object-contain mb-7 ;
   }
 
   /* Topbar */
@@ -253,6 +254,13 @@
   /* User card */
   .user-card {
     @apply flex-center flex-col gap-4 border border-dark-4 rounded-[20px] px-5 py-8;
+  }
+
+  .post-comments-container{
+    @apply w-full p-1 mt-4 lg:mt-8
+  }
+  .tabs{
+    @apply  flex justify-start mb-5 gap-5
   }
 }
 
@@ -273,6 +281,10 @@
 
   .shad-textarea {
     @apply h-72 bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+  }
+
+  .shad-comment {
+    @apply h-24 bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
   }
 
   /* Button */

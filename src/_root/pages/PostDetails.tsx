@@ -1,4 +1,5 @@
 import Loader from '@/components/shared/Loader';
+import PostComments from '@/components/shared/PostComments';
 import PostStats from '@/components/shared/PostStats';
 import { Button } from '@/components/ui/button';
 import { useUserContext } from '@/context/AuthContext';
@@ -73,7 +74,7 @@ const PostDetails = () => {
             </div>
             <hr className="border w-full my-2 border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-              <p>{post?.content}</p>
+              <p className='font-normal text-pretty'>{post?.content}</p>
               <ul className="flex gap-1 mt-2">
                 {post?.tags.map((tag: string, index: string) => (
                   <li
@@ -88,6 +89,7 @@ const PostDetails = () => {
 
             <div className="w-full">
             <PostStats post={post ?? {} as Models.Document} userId={user.id} />
+            <PostComments postId={post?.$id ?? ''} userId={user.id}/>
             </div>
           </div>
         </div>

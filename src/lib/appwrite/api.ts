@@ -2,7 +2,7 @@ import { ID, ImageGravity, Models, OAuthProvider, Query } from 'appwrite';
 import { INewPost, INewUser, IUpdatePost } from '@/types';
 import { account, appwriteConfig, avatars, databases, storage } from './config';
 
-// AUTH
+// ********************** AUTH **************************
 
 export async function createUserAccount(
   user: INewUser
@@ -158,6 +158,8 @@ export async function updateUserAccountId(
   }
 }
 
+
+
 // Function to save the user to the user collection
 async function saveUserToDB(user: {
   accountId: string;
@@ -221,7 +223,23 @@ export async function signOutAccount(): Promise<any> {
   }
 }
 
-// POSTS
+// Function to fetch user details based on accountId
+export async function getUserInfo(accountId: string) {
+  try {
+    const user = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      accountId
+    );
+    return { name: user.name, dpUrl: user.dpUrl };
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    return { name: "Unknown", dpUrl: "" };
+  }
+}
+
+
+//********************* POSTS **************************
 
 export async function createPost(post: INewPost) {
   try {
@@ -362,6 +380,186 @@ function getPostCollectionId(postType: string): string {
       throw new Error('Unknown post type');
   }
 }
+
+export async function getPostById(postId: string) {
+  try {
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      postId
+    );
+    return post;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getAuthorById(creatorId: string) {
+  try {
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      creatorId
+    );
+    return post;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function updatePost(post: IUpdatePost) {
+  const hasFileToUpdate = post.file.length > 0;
+
+  try {
+    let media = {
+      mediaUrl: post.mediaUrl,
+      mediaId: post.mediaId,
+    };
+
+    if (hasFileToUpdate) {
+      // Upload new file to appwrite storage
+      const uploadedFile = await uploadFile(post.file[0]);
+      if (!uploadedFile) throw Error;
+
+      // Get new file url
+      const fileUrl = getFilePreview(uploadedFile.$id);
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      }
+
+      media = { ...media, mediaUrl: fileUrl, mediaId: uploadedFile.$id };
+    }
+
+    // Convert tags into array
+    const tags = post.tags?.replace(/ /g, '').split(',') || [];
+
+    //  Update post
+    const updatedPost = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      post.postId,
+      {
+        content: post.content,
+        mediaUrl: media.mediaUrl,
+        mediaId: media.mediaId,
+        location: post.location,
+        tags: tags,
+      }
+    );
+
+    // Failed to update
+    if (!updatedPost) {
+      // Delete new file that has been recently uploaded
+      if (hasFileToUpdate) {
+        await deleteFile(media.mediaId);
+      }
+
+      // If no new file uploaded, just throw error
+      throw Error;
+    }
+
+    // Safely delete old file after successful update
+    if (hasFileToUpdate) {
+      await deleteFile(post.mediaId);
+    }
+
+    return updatedPost;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deletePost(postId?: string, mediaId?: string) {
+  if (!postId || !mediaId) return;
+
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      postId
+    );
+
+    if (!statusCode) throw Error;
+
+    await deleteFile(mediaId);
+
+    return { status: 'Ok' };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function searchPosts(searchTerm: string) {
+  try {
+    const { documents: posts } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      [Query.search('content', searchTerm)]
+    );
+
+    if (!posts) throw Error;
+
+    const creatorIds = [...new Set(posts.map((post) => post.creatorId))];
+
+    const { documents: authors } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.equal('$id', creatorIds)]
+    );
+
+    const authorMap = new Map(authors.map((author) => [author.$id, author]));
+
+    const postsWithAuthors = posts.map((post) => ({
+      ...post,
+      author: authorMap.get(post.creatorId) || null,
+    }));
+
+    return { documents: postsWithAuthors };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
+  const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(9)];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
+  try {
+    const { documents: posts } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      queries
+    );
+
+    if (!posts || posts.length === 0) return { documents: [] };
+
+    const creatorIds = [...new Set(posts.map((post) => post.creatorId))];
+
+    const { documents: authors } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.equal('$id', creatorIds)]
+    );
+
+    const authorMap = new Map(authors.map((author) => [author.$id, author]));
+
+    const postsWithAuthors = posts.map((post) => ({
+      ...post,
+      author: authorMap.get(post.creatorId) || null,
+    }));
+
+    return { documents: postsWithAuthors }; // Ensure returning documents
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    throw error;
+  }
+}
+
+// ********** LIKE & Save K **********
 
 export async function likePost(
   postId: string,
@@ -603,181 +801,152 @@ export async function checkPostSave(
     return false;
   }
 }
+// ********** COMMENT & FEEDBACK **********
 
-export async function getPostById(postId: string) {
+export async function getComments(postId: string) {
   try {
-    const post = await databases.getDocument(
+    const response = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
-      postId
+      appwriteConfig.commentsCollectionId,
+      [Query.equal('postId', postId)]
     );
-    return post;
+    return response.documents;
   } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function getAuthorById(creatorId: string) {
-  try {
-    const post = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      creatorId
-    );
-    return post;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function updatePost(post: IUpdatePost) {
-  const hasFileToUpdate = post.file.length > 0;
-
-  try {
-    let media = {
-      mediaUrl: post.mediaUrl,
-      mediaId: post.mediaId,
-    };
-
-    if (hasFileToUpdate) {
-      // Upload new file to appwrite storage
-      const uploadedFile = await uploadFile(post.file[0]);
-      if (!uploadedFile) throw Error;
-
-      // Get new file url
-      const fileUrl = getFilePreview(uploadedFile.$id);
-      if (!fileUrl) {
-        await deleteFile(uploadedFile.$id);
-        throw Error;
-      }
-
-      media = { ...media, mediaUrl: fileUrl, mediaId: uploadedFile.$id };
-    }
-
-    // Convert tags into array
-    const tags = post.tags?.replace(/ /g, '').split(',') || [];
-
-    //  Update post
-    const updatedPost = await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
-      post.postId,
-      {
-        content: post.content,
-        mediaUrl: media.mediaUrl,
-        mediaId: media.mediaId,
-        location: post.location,
-        tags: tags,
-      }
-    );
-
-    // Failed to update
-    if (!updatedPost) {
-      // Delete new file that has been recently uploaded
-      if (hasFileToUpdate) {
-        await deleteFile(media.mediaId);
-      }
-
-      // If no new file uploaded, just throw error
-      throw Error;
-    }
-
-    // Safely delete old file after successful update
-    if (hasFileToUpdate) {
-      await deleteFile(post.mediaId);
-    }
-
-    return updatedPost;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function deletePost(postId?: string, mediaId?: string) {
-  if (!postId || !mediaId) return;
-
-  try {
-    const statusCode = await databases.deleteDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
-      postId
-    );
-
-    if (!statusCode) throw Error;
-
-    await deleteFile(mediaId);
-
-    return { status: 'Ok' };
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function searchPosts(searchTerm: string) {
-  try {
-    const { documents: posts } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
-      [Query.search('content', searchTerm)]
-    );
-
-    if (!posts) throw Error;
-
-    const creatorIds = [...new Set(posts.map((post) => post.creatorId))];
-
-    const { documents: authors } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      [Query.equal('$id', creatorIds)]
-    );
-
-    const authorMap = new Map(authors.map((author) => [author.$id, author]));
-
-    const postsWithAuthors = posts.map((post) => ({
-      ...post,
-      author: authorMap.get(post.creatorId) || null,
-    }));
-
-    return { documents: postsWithAuthors };
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
-  const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(9)];
-
-  if (pageParam) {
-    queries.push(Query.cursorAfter(pageParam.toString()));
-  }
-
-  try {
-    const { documents: posts } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
-      queries
-    );
-
-    if (!posts || posts.length === 0) return { documents: [] };
-
-    const creatorIds = [...new Set(posts.map((post) => post.creatorId))];
-
-    const { documents: authors } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      [Query.equal('$id', creatorIds)]
-    );
-
-    const authorMap = new Map(authors.map((author) => [author.$id, author]));
-
-    const postsWithAuthors = posts.map((post) => ({
-      ...post,
-      author: authorMap.get(post.creatorId) || null,
-    }));
-
-    return { documents: postsWithAuthors }; // Ensure returning documents
-  } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error fetching comments:', error);
     throw error;
+  }
+}
+export async function addComment(
+  postId: string,
+  userId: string,
+  content: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentsCollectionId,
+      ID.unique(),
+      {
+        postId,
+        accountId: userId,
+        content,
+      }
+    );
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    return { success: false, error };
+  }
+}
+
+export async function getFeedbacks(postId: string) {
+  try {
+    const response = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.feedbacksCollectionId,
+      [Query.equal('postId', postId)] // Ensure only post creator or feedback giver can access
+    );
+    return response.documents;
+  } catch (error) {
+    console.error('Error fetching feedbacks:', error);
+    throw error;
+  }
+}
+export async function addFeedback(
+  postId: string,
+  userId: string,
+  content: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.feedbacksCollectionId,
+      ID.unique(),
+      {
+        postId,
+        accountId: userId,
+        content,
+      }
+    );
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error adding feedback:', error);
+    return { success: false, error };
+  }
+}
+
+export async function getCommentReplies(commentId: string) {
+  try {
+    const response = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentRepliesCollectionId,
+      [Query.equal('commentId', commentId)]
+    );
+    return response.documents;
+  } catch (error) {
+    console.error('Error fetching comment replies:', error);
+    throw error;
+  }
+}
+export async function addCommentReply(
+  commentId: string,
+  userId: string,
+  content: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentRepliesCollectionId,
+      ID.unique(),
+      {
+        commentId,
+        accountId: userId,
+        content,
+      }
+    );
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error adding comment reply:', error);
+    return { success: false, error };
+  }
+}
+
+export async function getFeedbackReplies(feedbackId: string) {
+  try {
+    const response = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.feedbackRepliesCollectionId,
+      [Query.equal('feedbackId', feedbackId)]
+    );
+    return response.documents;
+  } catch (error) {
+    console.error('Error fetching feedback replies:', error);
+    throw error;
+  }
+}
+export async function addFeedbackReply(
+  feedbackId: string,
+  userId: string,
+  content: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.feedbackRepliesCollectionId,
+      ID.unique(),
+      {
+        feedbackId,
+        accountId: userId,
+        content,
+      }
+    );
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error adding feedback reply:', error);
+    return { success: false, error };
   }
 }
