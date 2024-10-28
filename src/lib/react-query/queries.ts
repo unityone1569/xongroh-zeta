@@ -397,17 +397,17 @@ export const useAddCommentReply = () => {
 
   return useMutation({
     mutationFn: ({
-      commentId,
+      parentId,
       userId,
       content,
     }: {
-      commentId: string;
+      parentId: string;
       userId: string;
       content: string;
-    }) => addCommentReply(commentId, userId, content),
-    onSuccess: (_, { commentId }) => {
+    }) => addCommentReply(parentId, userId, content),
+    onSuccess: (_, { parentId }) => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES, commentId],
+        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES, parentId],
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_INFO], 
@@ -429,17 +429,17 @@ export const useAddFeedbackReply = () => {
 
   return useMutation({
     mutationFn: ({
-      feedbackId,
+      parentId,
       userId,
       content,
     }: {
-      feedbackId: string;
+      parentId: string;
       userId: string;
       content: string;
-    }) => addFeedbackReply(feedbackId, userId, content),
-    onSuccess: (_, { feedbackId }) => {
+    }) => addFeedbackReply(parentId, userId, content),
+    onSuccess: (_, { parentId }) => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, feedbackId],
+        queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, parentId],
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_INFO], 

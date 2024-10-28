@@ -23,6 +23,7 @@ import { getPostById } from '@/lib/appwrite/api';
 import Loader from './Loader';
 import { multiFormatDateString } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import Replies from './Replies';
 
 type PostCommentsProps = {
   postId: string;
@@ -128,6 +129,8 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
           content={comment.content}
           accountId={comment.accountId}
           createdAt={comment.$createdAt}
+          commentId={comment.$id}
+          postId={postId}
         />
       ));
     }
@@ -137,6 +140,8 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
         content={feedback.content}
         accountId={feedback.accountId}
         createdAt={feedback.$createdAt}
+        feedbackId={feedback.$id}
+        postId={postId}
       />
     ));
   }, [
@@ -145,6 +150,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
     visibleFeedbacks,
     isCommentsLoading,
     isFeedbacksLoading,
+    postId,
   ]);
 
   return (
@@ -186,7 +192,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
                 )}
               />
               <Button
-                className="shad-button_primary mt-4 mb-6 whitespace-nowrap"
+                className="shad-button_primary ml-1 mt-4 mb-6 whitespace-nowrap"
                 type="submit"
               >
                 Comment
@@ -213,7 +219,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
                 )}
               />
               <Button
-                className="shad-button_primary mt-4 mb-6 whitespace-nowrap"
+                className="shad-button_primary ml-1 mt-4 mb-6 whitespace-nowrap"
                 type="submit"
               >
                 Submit
@@ -232,78 +238,43 @@ type CommentProps = {
   content: string;
   createdAt: string;
   accountId: string;
+  commentId: string;
+  postId: string;
 };
 
 const CommentItem = React.memo(
-  ({ content, createdAt, accountId }: CommentProps) => {
-    const { data: userData } = useGetUserInfo(accountId);
-    const userInfo = userData
-      ? { name: userData.name, dpUrl: userData.dpUrl }
-      : { name: '', dpUrl: '' };
-
-      return (
-        <div className="max-w-lg mx-auto px-2 py-4 rounded-lg">
-          <div className="flex items-center mb-6">
-            <Link to={`/profile/${accountId}`}>
-              <img
-                src={userInfo.dpUrl || '/assets/icons/profile-placeholder.svg'}
-                alt={`${userInfo.name}'s profile picture`}
-                className="rounded-full w-9 lf:h-9 mr-4"
-              />
-            </Link>
-            <div>
-              <p className="base-medium lg:body-bold text-light-1">
-                {userInfo.name}
-              </p>
-              <p className="text-xs font-light lg:small-regular">
-                {multiFormatDateString(createdAt)}
-              </p>
-            </div>
-          </div>
-          <p className="text-lg leading-relaxed ml-1 mb-3">{content}</p>
-          <div className="flex justify-between items-center ml-1">
-            <div>
-              <a href="#" className="text-gray-500 hover:text-gray-700 mr-4">
-                Like
-              </a>
-              <a href="#" className="text-gray-500 hover:text-gray-700">
-                Reply
-              </a>
-            </div>
-            
-          </div>
-        </div>
-      );
-  }
-);
-
-const FeedbackItem = React.memo(
-  ({ content, createdAt, accountId }: CommentProps) => {
+  ({ content, createdAt, accountId, commentId }: CommentProps) => {
     const { data: userData } = useGetUserInfo(accountId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dpUrl }
       : { name: '', dpUrl: '' };
 
     return (
-      <div className="max-w-lg mx-auto px-2 py-4 rounded-lg">
-        <div className="flex items-center mb-6">
-          <Link to={`/profile/${accountId}`}>
+      <div className="w-full mx-auto px-2 py-4 rounded-lg">
+        <div className="flex-between mb-6">
+          <Link
+            to={`/profile/${accountId}`}
+            className="flex items-center gap-3"
+          >
             <img
               src={userInfo.dpUrl || '/assets/icons/profile-placeholder.svg'}
               alt={`${userInfo.name}'s profile picture`}
-              className="rounded-full w-9 lf:h-9 mr-4"
+              className="rounded-full w-8 h-8"
             />
+
+            <div>
+              <p className="text-base font-medium text-light-1">
+                {userInfo.name}
+              </p>
+              <p className="text-xs font-thin ">
+                {multiFormatDateString(createdAt)}
+              </p>
+            </div>
           </Link>
-          <div>
-            <p className="base-medium lg:body-bold text-light-1">
-              {userInfo.name}
-            </p>
-            <p className="text-xs font-light lg:small-regular">
-              {multiFormatDateString(createdAt)}
-            </p>
-          </div>
         </div>
-        <p className="text-lg leading-relaxed ml-1 mb-3">{content}</p>
+        <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base lg:ml-1 mb-3">
+          {content}
+        </p>
         <div className="flex justify-between items-center ml-1">
           <div>
             <a href="#" className="text-gray-500 hover:text-gray-700 mr-4">
@@ -313,11 +284,76 @@ const FeedbackItem = React.memo(
               Reply
             </a>
           </div>
-          
+        </div>
+        <div>
+          <Replies parentId={commentId} userId={accountId} isFeedback={true} />
         </div>
       </div>
     );
   }
 );
+
+CommentItem.displayName = 'CommentItem';
+
+type FeedbackProps = {
+  content: string;
+  createdAt: string;
+  accountId: string;
+  feedbackId: string;
+  postId: string;
+};
+
+const FeedbackItem = React.memo(
+  ({ content, createdAt, accountId, feedbackId }: FeedbackProps) => {
+    const { data: userData } = useGetUserInfo(accountId);
+    const userInfo = userData
+      ? { name: userData.name, dpUrl: userData.dpUrl }
+      : { name: '', dpUrl: '' };
+
+    return (
+      <div className="w-full mx-auto px-2 py-4 rounded-lg">
+        <div className="flex-between mb-6">
+          <Link
+            to={`/profile/${accountId}`}
+            className="flex items-center gap-3"
+          >
+            <img
+              src={userInfo.dpUrl || '/assets/icons/profile-placeholder.svg'}
+              alt={`${userInfo.name}'s profile picture`}
+              className="rounded-full w-8 h-8"
+            />
+
+            <div>
+              <p className="text-base font-medium text-light-1">
+                {userInfo.name}
+              </p>
+              <p className="text-xs font-thin ">
+                {multiFormatDateString(createdAt)}
+              </p>
+            </div>
+          </Link>
+        </div>
+        <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base lg:ml-1 mb-3">
+          {content}
+        </p>
+        <div className="flex justify-between items-center ml-1">
+          <div>
+            <a href="#" className="text-gray-500 hover:text-gray-700 mr-4">
+              Like
+            </a>
+            <a href="#" className="text-gray-500 hover:text-gray-700">
+              Reply
+            </a>
+          </div>
+        </div>
+        <div>
+          <Replies parentId={feedbackId} userId={accountId} isFeedback={true} />
+        </div>
+      </div>
+    );
+  }
+);
+
+FeedbackItem.displayName = 'FeedbackItem';
 
 export default PostComments;

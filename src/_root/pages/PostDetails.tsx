@@ -12,7 +12,7 @@ const PostDetails = () => {
   const { id } = useParams();
   const { data: post, isPending } = useGetPostById(id || '');
   const { user } = useUserContext();
-  const {data: author } = useGetAuthorById (post?.creatorId)
+  const { data: author } = useGetAuthorById(post?.creatorId);
 
   const handleDeletePost = () => {};
 
@@ -31,10 +31,7 @@ const PostDetails = () => {
                 className="flex items-center gap-3"
               >
                 <img
-                  src={
-                    author?.dpUrl ||
-                    '/assets/icons/profile-placeholder.svg'
-                  }
+                  src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
                   alt="creator"
                   className="rounded-full w-9 lf:w-12"
                 />
@@ -74,7 +71,7 @@ const PostDetails = () => {
             </div>
             <hr className="border w-full my-2 border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-              <p className='font-normal text-pretty'>{post?.content}</p>
+              <p className="font-normal text-pretty">{post?.content}</p>
               <ul className="flex gap-1 mt-2">
                 {post?.tags.map((tag: string, index: string) => (
                   <li
@@ -88,8 +85,11 @@ const PostDetails = () => {
             </div>
 
             <div className="w-full">
-            <PostStats post={post ?? {} as Models.Document} userId={user.id} />
-            <PostComments postId={post?.$id ?? ''} userId={user.id}/>
+              <PostStats
+                post={post ?? ({} as Models.Document)}
+                userId={user.id}
+              />
+              <PostComments postId={post?.$id ?? ''} userId={user.id} />
             </div>
           </div>
         </div>

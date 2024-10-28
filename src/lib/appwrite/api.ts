@@ -891,7 +891,7 @@ export async function getCommentReplies(commentId: string) {
   }
 }
 export async function addCommentReply(
-  commentId: string,
+  parentId: string,
   userId: string,
   content: string
 ): Promise<{ success: boolean; error?: unknown }> {
@@ -901,7 +901,7 @@ export async function addCommentReply(
       appwriteConfig.commentRepliesCollectionId,
       ID.unique(),
       {
-        commentId,
+        commentId: parentId,
         accountId: userId,
         content,
       }
@@ -928,7 +928,7 @@ export async function getFeedbackReplies(feedbackId: string) {
   }
 }
 export async function addFeedbackReply(
-  feedbackId: string,
+  parentId: string,
   userId: string,
   content: string
 ): Promise<{ success: boolean; error?: unknown }> {
@@ -938,7 +938,7 @@ export async function addFeedbackReply(
       appwriteConfig.feedbackRepliesCollectionId,
       ID.unique(),
       {
-        feedbackId,
+        feedbackId :parentId,
         accountId: userId,
         content,
       }

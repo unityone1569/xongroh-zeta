@@ -257,8 +257,10 @@
   }
 
   .post-comments-container{
-    @apply w-full p-1 mt-4 lg:mt-8
+    @apply w-full  mt-6 lg:mt-8
   }
+
+
   .tabs{
     @apply  flex justify-start mb-5 gap-5
   }
@@ -285,6 +287,9 @@
 
   .shad-comment {
     @apply h-24 bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+  }
+  .shad-reply {
+    @apply h-[72px] bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
   }
 
   /* Button */
