@@ -131,6 +131,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
           createdAt={comment.$createdAt}
           commentId={comment.$id}
           postId={postId}
+          userId={userId}
         />
       ));
     }
@@ -142,6 +143,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
         createdAt={feedback.$createdAt}
         feedbackId={feedback.$id}
         postId={postId}
+        userId={userId}
       />
     ));
   }, [
@@ -151,6 +153,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
     isCommentsLoading,
     isFeedbacksLoading,
     postId,
+    userId, 
   ]);
 
   return (
@@ -240,10 +243,11 @@ type CommentProps = {
   accountId: string;
   commentId: string;
   postId: string;
+  userId: string; 
 };
 
 const CommentItem = React.memo(
-  ({ content, createdAt, accountId, commentId }: CommentProps) => {
+  ({ content, createdAt, accountId, commentId, userId }: CommentProps) => {
     const { data: userData } = useGetUserInfo(accountId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dpUrl }
@@ -292,7 +296,7 @@ const CommentItem = React.memo(
         <div>
           <Replies
             parentId={commentId}
-            userId={accountId}
+            userId={userId}
             isFeedback={false}
             showReplyForm={showReplyForm}
             toggleReplyForm={toggleReplyForm}
@@ -311,10 +315,11 @@ type FeedbackProps = {
   accountId: string;
   feedbackId: string;
   postId: string;
+  userId: string; 
 };
 
 const FeedbackItem = React.memo(
-  ({ content, createdAt, accountId, feedbackId }: FeedbackProps) => {
+  ({ content, createdAt, accountId, feedbackId, userId }: FeedbackProps) => {
     const { data: userData } = useGetUserInfo(accountId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dpUrl }
@@ -363,7 +368,7 @@ const FeedbackItem = React.memo(
         <div>
           <Replies
             parentId={feedbackId}
-            userId={accountId}
+            userId={userId}
             isFeedback={true}
             showReplyForm={showReplyForm}
             toggleReplyForm={toggleReplyForm}
