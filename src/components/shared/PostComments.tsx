@@ -248,6 +248,9 @@ const CommentItem = React.memo(
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dpUrl }
       : { name: '', dpUrl: '' };
+    // State for reply form visibility
+    const [showReplyForm, setShowReplyForm] = useState(false);
+    const toggleReplyForm = () => setShowReplyForm((prev) => !prev);
 
     return (
       <div className="w-full mx-auto px-2 py-4 rounded-lg">
@@ -272,21 +275,28 @@ const CommentItem = React.memo(
             </div>
           </Link>
         </div>
-        <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base lg:ml-1 mb-3">
+        <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base ml-1 lg:ml-2 mb-3">
           {content}
         </p>
-        <div className="flex justify-between items-center ml-1">
-          <div>
-            <a href="#" className="text-gray-500 hover:text-gray-700 mr-4">
-              Like
-            </a>
-            <a href="#" className="text-gray-500 hover:text-gray-700">
+        <div className="flex justify-between items-center ml-1 lg:ml-2">
+          <div className="flex justify-start gap-4">
+            <img src={'/assets/icons/like.svg'} alt="like" width={20} />
+            <button
+              onClick={toggleReplyForm}
+              className="text-gray-500 hover:text-gray-700"
+            >
               Reply
-            </a>
+            </button>
           </div>
         </div>
         <div>
-          <Replies parentId={commentId} userId={accountId} isFeedback={true} />
+          <Replies
+            parentId={commentId}
+            userId={accountId}
+            isFeedback={false}
+            showReplyForm={showReplyForm}
+            toggleReplyForm={toggleReplyForm}
+          />
         </div>
       </div>
     );
@@ -310,6 +320,9 @@ const FeedbackItem = React.memo(
       ? { name: userData.name, dpUrl: userData.dpUrl }
       : { name: '', dpUrl: '' };
 
+    const [showReplyForm, setShowReplyForm] = useState(false);
+    const toggleReplyForm = () => setShowReplyForm((prev) => !prev);
+
     return (
       <div className="w-full mx-auto px-2 py-4 rounded-lg">
         <div className="flex-between mb-6">
@@ -333,21 +346,28 @@ const FeedbackItem = React.memo(
             </div>
           </Link>
         </div>
-        <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base lg:ml-1 mb-3">
+        <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base ml-1 lg:ml-2 mb-3">
           {content}
         </p>
-        <div className="flex justify-between items-center ml-1">
-          <div>
-            <a href="#" className="text-gray-500 hover:text-gray-700 mr-4">
-              Like
-            </a>
-            <a href="#" className="text-gray-500 hover:text-gray-700">
+        <div className="flex justify-between items-center ml-1 lg:ml-2">
+          <div className="flex justify-start gap-4">
+            <img src={'/assets/icons/like.svg'} alt="like" width={20} />
+            <button
+              onClick={toggleReplyForm} // Toggle visibility of reply form
+              className="text-gray-500 hover:text-gray-700"
+            >
               Reply
-            </a>
+            </button>
           </div>
         </div>
         <div>
-          <Replies parentId={feedbackId} userId={accountId} isFeedback={true} />
+          <Replies
+            parentId={feedbackId}
+            userId={accountId}
+            isFeedback={true}
+            showReplyForm={showReplyForm}
+            toggleReplyForm={toggleReplyForm}
+          />
         </div>
       </div>
     );
