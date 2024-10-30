@@ -26,6 +26,7 @@ import {
   getPostById,
   getRecentPosts,
   getUserInfo,
+  getUserPosts,
   likePost,
   loginWithGoogle,
   savePost,
@@ -195,6 +196,24 @@ export const useSearchPosts = (searchTerm: string) => {
     enabled: !!searchTerm,
   });
 };
+
+export const useGetUserPosts = (userId: string) => {
+  return useInfiniteQuery({
+    initialPageParam: null,
+    queryKey: [QUERY_KEYS.GET_USER_POSTS, userId], // Unique key per user
+    queryFn: ({ pageParam }) => getUserPosts({ pageParam, userId }), // Pass userId to getUserPosts
+    getNextPageParam: (lastPage: any) => {
+      if (lastPage && lastPage.documents.length === 0) {
+        return null; // No more pages if no data
+      }
+
+      // Use the $id of the last document as the cursor for the next page
+      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
+      return lastId;
+    },
+  });
+};
+
 
 // ***** LIKE & SAVE *****
 export const useLikePost = () => {

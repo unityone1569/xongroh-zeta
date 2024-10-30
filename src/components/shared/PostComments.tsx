@@ -165,7 +165,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
             onClick={() => handleTabChange(tab as 'comments' | 'feedbacks')}
             className={`font-semibold ${
               activeTab === tab
-                ? 'underline decoration-primary-500 underline-offset-8'
+                ? 'underline text-primary-500 underline-offset-8'
                 : ''
             }`}
           >
@@ -250,7 +250,7 @@ const CommentItem = React.memo(
   ({ content, createdAt, accountId, commentId, userId }: CommentProps) => {
     const { data: userData } = useGetUserInfo(accountId);
     const userInfo = userData
-      ? { name: userData.name, dpUrl: userData.dpUrl }
+      ? { name: userData.name, dpUrl: userData.dp }
       : { name: '', dpUrl: '' };
     // State for reply form visibility
     const [showReplyForm, setShowReplyForm] = useState(false);
@@ -322,7 +322,7 @@ const FeedbackItem = React.memo(
   ({ content, createdAt, accountId, feedbackId, userId }: FeedbackProps) => {
     const { data: userData } = useGetUserInfo(accountId);
     const userInfo = userData
-      ? { name: userData.name, dpUrl: userData.dpUrl }
+      ? { name: userData.name, dpUrl: userData.dp }
       : { name: '', dpUrl: '' };
 
     const [showReplyForm, setShowReplyForm] = useState(false);

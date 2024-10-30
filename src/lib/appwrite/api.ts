@@ -2,7 +2,7 @@ import { ID, ImageGravity, Models, OAuthProvider, Query } from 'appwrite';
 import { INewPost, INewUser, IUpdatePost } from '@/types';
 import { account, appwriteConfig, avatars, databases, storage } from './config';
 
-// ********************** AUTH **************************
+// ***** AUTH *****
 
 export async function createUserAccount(
   user: INewUser
@@ -231,7 +231,7 @@ export async function getUserInfo(accountId: string) {
       appwriteConfig.userCollectionId,
       accountId
     );
-    return { name: user.name, dpUrl: user.dpUrl };
+    return { name: user.name, dp: user.dpUrl, cover: user.coverUrl,bio: user.bio };
   } catch (error) {
     console.error("Error fetching user info:", error);
     return { name: "Unknown", dpUrl: "" };
@@ -239,7 +239,7 @@ export async function getUserInfo(accountId: string) {
 }
 
 
-//********************* POSTS **************************
+//***** POSTS *****
 
 export async function createPost(post: INewPost) {
   try {
@@ -356,7 +356,6 @@ export async function getRecentPosts() {
       ...post,
       creator: {
         name: users[index]?.name || '',
-        username: users[index]?.username || '',
         dpUrl: users[index]?.dpUrl || null,
       },
     }));
@@ -559,7 +558,62 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
   }
 }
 
-// ********** LIKE & Save K **********
+// User Posts
+
+export async function getUserPosts({
+  pageParam,
+  userId,
+}: {
+  pageParam: number;
+  userId: string;
+}) {
+  const queries: any[] = [
+    Query.orderDesc('$createdAt'),
+    Query.equal('creatorId', userId), // Filter by userId
+    Query.limit(9),
+  ];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
+  try {
+    const { documents: posts } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      queries
+    );
+
+    if (!posts || posts.length === 0) return { documents: [] };
+
+    const userFetchPromises = posts.map((post) =>
+      databases.getDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId, // Replace with actual user collection ID
+        post.creatorId
+      )
+    );
+
+    // Resolve all user fetch promises in parallel
+    const users = await Promise.all(userFetchPromises);
+
+    // Combine posts with their corresponding user details
+    const postsWithUserDetails = posts.map((post, index) => ({
+      ...post,
+      creator: {
+        name: users[index]?.name || '',
+        dpUrl: users[index]?.dpUrl || null,
+      },
+    }));
+    return { documents: postsWithUserDetails };
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    throw error;
+  }
+}
+
+
+// ***** LIKE & Save *****
 
 export async function likePost(
   postId: string,
@@ -801,7 +855,7 @@ export async function checkPostSave(
     return false;
   }
 }
-// ********** COMMENT & FEEDBACK **********
+// ***** COMMENT & FEEDBACK *****
 
 export async function getComments(postId: string) {
   try {

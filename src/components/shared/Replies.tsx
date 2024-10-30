@@ -136,7 +136,7 @@ const ReplyItem = React.memo(
   ({ content, createdAt, accountId, toggleReplyForm }: ReplyItemProps) => {
     const { data: userData } = useGetUserInfo(accountId);
     const userInfo = userData
-      ? { name: userData.name, dpUrl: userData.dpUrl }
+      ? { name: userData.name, dpUrl: userData.dp }
       : { name: '', dpUrl: '' };
 
     return (
