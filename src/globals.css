@@ -185,7 +185,7 @@
   }
 
   .profile-inner_container {
-    @apply  max-w-5xl w-full;
+    @apply  max-w-3xl w-full;
   }
 
   .profile-tab {
@@ -217,7 +217,7 @@
 
   /* Grid Post List */
   .grid-container {
-    @apply w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-7 max-w-5xl;
+    @apply w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-7 max-w-5xl pb-6;
   }
 
   .grid-post_link {
@@ -282,7 +282,7 @@
   }
 
   .shad-textarea {
-    @apply h-72 bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+    @apply h-72 lg:h-96 bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
   }
 
   .shad-comment {

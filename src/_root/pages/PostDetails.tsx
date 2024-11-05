@@ -33,21 +33,17 @@ const PostDetails = () => {
                 <img
                   src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
                   alt="creator"
-                  className="rounded-full w-9 lf:w-12"
+                  className="rounded-full w-10 h-10 lg:w-14 lg:h-14"
                 />
 
                 <div className="flex flex-col">
                   <p className="base-medium lg:body-bold text-light-1">
                     {author?.name}
                   </p>
-                  <div className="flex-start text-light-3">
+                  <div className="flex-start pt-0.5 text-light-3">
                     <p className="subtle-semibold lg:small-regular ">
                       {formatDateString(post?.$createdAt)}
                     </p>
-                    {/* •
-              <p className="subtle-semibold lg:small-regular">
-                {post.location}
-              </p> */}
                   </div>
                 </div>
               </Link>
