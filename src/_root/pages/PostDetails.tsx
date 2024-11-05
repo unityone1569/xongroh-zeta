@@ -1,4 +1,5 @@
 import Loader from '@/components/shared/Loader';
+import PostComments from '@/components/shared/PostComments';
 import PostStats from '@/components/shared/PostStats';
 import { Button } from '@/components/ui/button';
 import { useUserContext } from '@/context/AuthContext';
@@ -11,7 +12,7 @@ const PostDetails = () => {
   const { id } = useParams();
   const { data: post, isPending } = useGetPostById(id || '');
   const { user } = useUserContext();
-  const {data: author } = useGetAuthorById (post?.creatorId)
+  const { data: author } = useGetAuthorById(post?.creatorId);
 
   const handleDeletePost = () => {};
 
@@ -30,26 +31,19 @@ const PostDetails = () => {
                 className="flex items-center gap-3"
               >
                 <img
-                  src={
-                    author?.dpUrl ||
-                    '/assets/icons/profile-placeholder.svg'
-                  }
+                  src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
                   alt="creator"
-                  className="rounded-full w-9 lf:w-12"
+                  className="rounded-full w-10 h-10 lg:w-14 lg:h-14"
                 />
 
                 <div className="flex flex-col">
                   <p className="base-medium lg:body-bold text-light-1">
                     {author?.name}
                   </p>
-                  <div className="flex-start text-light-3">
+                  <div className="flex-start pt-0.5 text-light-3">
                     <p className="subtle-semibold lg:small-regular ">
                       {formatDateString(post?.$createdAt)}
                     </p>
-                    {/* •
-              <p className="subtle-semibold lg:small-regular">
-                {post.location}
-              </p> */}
                   </div>
                 </div>
               </Link>
@@ -73,7 +67,7 @@ const PostDetails = () => {
             </div>
             <hr className="border w-full my-2 border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-              <p>{post?.content}</p>
+              <p className="font-normal text-pretty">{post?.content}</p>
               <ul className="flex gap-1 mt-2">
                 {post?.tags.map((tag: string, index: string) => (
                   <li
@@ -87,7 +81,11 @@ const PostDetails = () => {
             </div>
 
             <div className="w-full">
-            <PostStats post={post ?? {} as Models.Document} userId={user.id} />
+              <PostStats
+                post={post ?? ({} as Models.Document)}
+                userId={user.id}
+              />
+              <PostComments postId={post?.$id ?? ''} userId={user.id} />
             </div>
           </div>
         </div>

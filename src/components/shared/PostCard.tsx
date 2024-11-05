@@ -16,13 +16,13 @@ const PostCard = ({ post }: PostCardProps) => {
     <div className="post-card">
       <div className="flex-between">
         <div className="flex items-center gap-3">
-          <Link to={`/profile/${post.creatorId.$id}`}>
+          <Link to={`/profile/${post.creatorId}`}>
             <img
               src={
                 post?.creator?.dpUrl || '/assets/icons/profile-placeholder.svg'
               }
               alt="creator"
-              className="rounded-full w-12 lf:h-12"
+              className="rounded-full w-10 h-10 lg:w-14 lg:h-14"
             />
           </Link>
           <div className="flex flex-col">
@@ -50,7 +50,7 @@ const PostCard = ({ post }: PostCardProps) => {
 
       <Link to={`/posts/${post.$id}`}>
         <div className="small-medium lg:base-medium py-5">
-          <p>{post.content}</p>
+          <p className='font-normal line-clamp-3 text-pretty'>{post.content}</p>
           <ul className="flex gap-1 mt-2">
             {post.tags.map((tag: string, index: string) => (
               <li key={`${tag}${index}`} className="text-light-3 small-regular">

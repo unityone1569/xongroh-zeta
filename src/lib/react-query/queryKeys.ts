@@ -6,6 +6,7 @@ export enum QUERY_KEYS {
   GET_CURRENT_USER = 'getCurrentUser',
   GET_USERS = 'getUsers',
   GET_USER_BY_ID = 'getUserById',
+  GET_USER_INFO = 'getUserInfo',
 
   // POST KEYS
   GET_POSTS = 'getPosts',
@@ -15,8 +16,13 @@ export enum QUERY_KEYS {
   GET_USER_POSTS = 'getUserPosts',
   GET_FILE_PREVIEW = 'getFilePreview',
 
-  CHECK_POST_LIKE ='checkPostLike',
-  CHECK_POST_SAVE ='checkPostSave',
+  CHECK_POST_LIKE = 'checkPostLike',
+  CHECK_POST_SAVE = 'checkPostSave',
+
+  GET_POST_COMMENTS = 'getComments',
+  GET_POST_FEEDBACKS = 'getFeedbacks',
+  GET_COMMENT_REPLIES = 'getCommentReplies',
+  GET_FEEDBACK_REPLIES = 'getFeedbackReplies',
 
   //  SEARCH KEYS
   SEARCH_POSTS = 'getSearchPosts',
