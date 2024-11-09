@@ -20,7 +20,7 @@ const EditProject = () => {
           <h2 className="h3-bold md:h2-bold text-left w-full">Edit Project</h2>
         </div>
 
-        <PortfolioForm action="Add" project={project} />
+        <PortfolioForm action="Update" project={project} />
       </div>
     </div>
   );

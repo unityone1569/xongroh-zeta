@@ -29,7 +29,7 @@ const PostCard = ({ post }: PostCardProps) => {
             <p className="base-medium lg:body-bold text-light-1">
               {post.creator.name}
             </p>
-            <div className="flex-start text-light-3">
+            <div className="flex-start text-light-3 pt-0.5">
               <p className="subtle-semibold lg:small-regular ">
                 {multiFormatDateString(post.$createdAt)}
               </p>
@@ -51,10 +51,12 @@ const PostCard = ({ post }: PostCardProps) => {
       <Link to={`/posts/${post.$id}`}>
         <div className="small-medium lg:base-medium py-5">
           <p className='font-normal line-clamp-3 text-pretty'>{post.content}</p>
-          <ul className="flex gap-1 mt-2">
+          <ul className="flex gap-2 mt-3">
             {post.tags.map((tag: string, index: string) => (
-              <li key={`${tag}${index}`} className="text-light-3 small-regular">
-                #{tag}
+              <li key={`${tag}${index}`}>
+                <span className="px-4 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
+                  #{tag}
+                </span>
               </li>
             ))}
           </ul>

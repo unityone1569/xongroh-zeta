@@ -600,6 +600,7 @@ export async function getPostById(postId: string) {
     console.log(error);
   }
 }
+
 export async function getProjectById(projectId: string) {
   try {
     const project = await databases.getDocument(
@@ -716,7 +717,6 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
 }
 
 // User Posts
-
 export async function getUserPosts({
   pageParam,
   userId,
@@ -765,6 +765,60 @@ export async function getUserPosts({
     return { documents: postsWithUserDetails };
   } catch (error) {
     console.error('Error fetching posts:', error);
+    throw error;
+  }
+}
+
+
+// User Projects
+export async function getUserProjects({
+  pageParam,
+  userId,
+}: {
+  pageParam: number;
+  userId: string;
+}) {
+  const queries: any[] = [
+    Query.orderDesc('$createdAt'),
+    Query.equal('creatorId', userId), // Filter by userId
+    Query.limit(9),
+  ];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
+  try {
+    const { documents: projects } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.portfolioPostCollectionId,
+      queries
+    );
+
+    if (!projects || projects.length === 0) return { documents: [] };
+
+    const userFetchPromises = projects.map((project) =>
+      databases.getDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId, // Replace with actual user collection ID
+        project.creatorId
+      )
+    );
+
+    // Resolve all user fetch promises in parallel
+    const users = await Promise.all(userFetchPromises);
+
+    // Combine posts with their corresponding user details
+    const projectsWithUserDetails = projects.map((project, index) => ({
+      ...project,
+      creator: {
+        name: users[index]?.name || '',
+        dpUrl: users[index]?.dpUrl || null,
+      },
+    }));
+    return { documents: projectsWithUserDetails };
+  } catch (error) {
+    console.error('Error fetching projects:', error);
     throw error;
   }
 }

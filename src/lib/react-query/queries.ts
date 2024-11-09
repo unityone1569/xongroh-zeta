@@ -1,4 +1,10 @@
-import { INewPost, INewProject, INewUser, IUpdatePost, IUpdateProject } from '@/types';
+import {
+  INewPost,
+  INewProject,
+  INewUser,
+  IUpdatePost,
+  IUpdateProject,
+} from '@/types';
 import {
   useInfiniteQuery,
   useMutation,
@@ -39,6 +45,7 @@ import {
   updatePost,
   updateProject,
   getProjectById,
+  getUserProjects,
 } from '../appwrite/api';
 import { QUERY_KEYS } from './queryKeys';
 
@@ -102,7 +109,7 @@ export const useGetUserInfo = (accountId: string) => {
     queryFn: () => getUserInfo(accountId),
     enabled: !!accountId,
   });
-}
+};
 
 // ***** POSTS, PROJECTS & DISCUSSIONS *****
 
@@ -118,6 +125,7 @@ export const useCreatePost = () => {
     },
   });
 };
+
 export const useAddProject = () => {
   const queryClient = useQueryClient();
 
@@ -130,8 +138,6 @@ export const useAddProject = () => {
     },
   });
 };
-
-
 
 export const useGetRecentPosts = () => {
   return useQuery({
@@ -154,6 +160,7 @@ export const useGetPostById = (postId: string) => {
     enabled: !!postId,
   });
 };
+
 export const useGetProjectById = (projectId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_PROJECT_BY_ID, projectId],
@@ -181,6 +188,7 @@ export const useUpdatePost = () => {
     },
   });
 };
+
 export const useUpdateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -249,6 +257,21 @@ export const useGetUserPosts = (userId: string) => {
   });
 };
 
+export const useGetUserProjects = (userId: string) => {
+  return useInfiniteQuery({
+    initialPageParam: null,
+    queryKey: [QUERY_KEYS.GET_USER_PROJECTS, userId],
+    queryFn: ({ pageParam }) => getUserProjects({ pageParam, userId }),
+    getNextPageParam: (lastPage: any) => {
+      if (lastPage && lastPage.documents.length === 0) {
+        return null;
+      }
+
+      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
+      return lastId;
+    },
+  });
+};
 
 // ***** LIKE & SAVE *****
 export const useLikePost = () => {
@@ -274,8 +297,6 @@ export const useLikePost = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.CHECK_POST_LIKE],
       });
-     
-
     },
   });
 };
@@ -401,16 +422,16 @@ export const useAddComment = () => {
         queryKey: [QUERY_KEYS.GET_POST_COMMENTS, postId],
       });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_USER_INFO], 
+        queryKey: [QUERY_KEYS.GET_USER_INFO],
       });
     },
   });
 };
 
-export const useGetFeedbacks = (postId: string, ) => {
+export const useGetFeedbacks = (postId: string) => {
   return useQuery({
-    queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS, postId, ],
-    queryFn: () => getFeedbacks(postId,),
+    queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS, postId],
+    queryFn: () => getFeedbacks(postId),
     enabled: !!postId,
   });
 };
@@ -429,12 +450,11 @@ export const useAddFeedback = () => {
     }) => addFeedback(postId, userId, content),
     onSuccess: (_, { postId }) => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS, postId], 
+        queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS, postId],
       });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_USER_INFO], 
+        queryKey: [QUERY_KEYS.GET_USER_INFO],
       });
-
     },
   });
 };
@@ -464,9 +484,8 @@ export const useAddCommentReply = () => {
         queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES, parentId],
       });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_USER_INFO], 
+        queryKey: [QUERY_KEYS.GET_USER_INFO],
       });
-      
     },
   });
 };
@@ -496,7 +515,7 @@ export const useAddFeedbackReply = () => {
         queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, parentId],
       });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_USER_INFO], 
+        queryKey: [QUERY_KEYS.GET_USER_INFO],
       });
     },
   });

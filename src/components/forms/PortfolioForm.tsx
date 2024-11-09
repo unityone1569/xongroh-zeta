@@ -54,7 +54,7 @@ const PortfolioForm = ({ project, action }: PortfolioFormProps) => {
         projectId: project.$id,
         mediaId: project?.mediaId,
         mediaUrl: project?.mediaUrl,
-      }); 
+      });
 
       if (!updatedPost) {
         toast({ title: 'Please try again!' });
@@ -71,7 +71,7 @@ const PortfolioForm = ({ project, action }: PortfolioFormProps) => {
       toast({ title: 'Please try again!' });
     }
 
-    navigate('/');
+    navigate(`/portfolio/${user.id}`);
   }
 
   return (
