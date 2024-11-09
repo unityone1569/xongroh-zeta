@@ -22,6 +22,7 @@ import Community from './_root/pages/Community';
 import Marketplace from './_root/pages/Marketplace';
 import Portfolio from './_root/pages/Portfolio';
 import AddProject from './_root/pages/AddProject';
+import EditProject from './_root/pages/EditProject';
 
 const App = () => {
   return (
@@ -42,13 +43,18 @@ const App = () => {
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/saved" element={<SavedPosts />} />
           <Route path="/all-users" element={<AllUsers />} />
-          <Route path="/create-post" element={<CreatePost />} />
-          <Route path="/update-post/:id" element={<EditPost />} />
-          <Route path="/posts/:id" element={<PostDetails />} />
+
           <Route path="/profile/:id/*" element={<Profile />} />
           <Route path="/update-profile/:id" element={<UpdateProfile />} />
 
+          {/* creationPost */}
+          <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/update-post/:id" element={<EditPost />} />
+          <Route path="/posts/:id" element={<PostDetails />} />
+
+          {/* portfolioPost */}
           <Route path="/add-project" element={<AddProject />} />
+          <Route path="/update-project/:id" element={<EditProject />} />
           <Route path="/portfolio/:id/*" element={<Portfolio />} />
         </Route>
       </Routes>

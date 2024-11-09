@@ -353,6 +353,7 @@ export async function addProject(project: INewProject) {
   }
 }
 
+//  ** uploadFile **
 export async function uploadFile(file: File) {
   try {
     const uploadedFile = await storage.createFile(
@@ -595,6 +596,18 @@ export async function getPostById(postId: string) {
       postId
     );
     return post;
+  } catch (error) {
+    console.log(error);
+  }
+}
+export async function getProjectById(projectId: string) {
+  try {
+    const project = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.portfolioPostCollectionId,
+      projectId
+    );
+    return project;
   } catch (error) {
     console.log(error);
   }

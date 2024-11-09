@@ -16,6 +16,8 @@ export enum QUERY_KEYS {
   GET_USER_POSTS = 'getUserPosts',
   GET_FILE_PREVIEW = 'getFilePreview',
 
+  GET_PROJECT_BY_ID = 'getProjectById',
+
   CHECK_POST_LIKE = 'checkPostLike',
   CHECK_POST_SAVE = 'checkPostSave',
 
