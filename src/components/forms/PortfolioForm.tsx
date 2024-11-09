@@ -13,60 +13,61 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '../ui/textarea';
 import FileUploader from '../shared/FileUploader';
-import { PostValidation } from '@/lib/validation';
+import { ProjectValidation } from '@/lib/validation';
 import { Models } from 'appwrite';
 import { useUserContext } from '@/context/AuthContext';
 import { useToast } from '../ui/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { useCreatePost, useUpdatePost } from '@/lib/react-query/queries';
+import { useAddProject, useUpdateProject } from '@/lib/react-query/queries';
 import Loader from '../shared/Loader';
 
-type PostFormProps = {
-  post?: Models.Document;
-  action: 'Create' | 'Update';
+type PortfolioFormProps = {
+  project?: Models.Document;
+  action: 'Add' | 'Update';
 };
 
-const PostForm = ({ post, action }: PostFormProps) => {
+const PortfolioForm = ({ project, action }: PortfolioFormProps) => {
   const { user } = useUserContext();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const form = useForm<z.infer<typeof PostValidation>>({
-    resolver: zodResolver(PostValidation),
+  const form = useForm<z.infer<typeof ProjectValidation>>({
+    resolver: zodResolver(ProjectValidation),
     defaultValues: {
-      content: post ? post?.content : '',
+      title: project ? project?.title : '',
+      description: project ? project?.description : '',
       file: [],
-      tags: post ? post.tags.join(',') : '',
+      links: project ? project.links.join(',') : [],
+      tags: project ? project.tags.join(',') : '',
     },
   });
 
   // Query
-  const { mutateAsync: createPost, isPending: isLoadingCreate } =
-    useCreatePost();
-  const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
-    useUpdatePost();
+  const { mutateAsync: addProject, isPending: isLoadingAdd } = useAddProject();
+  const { mutateAsync: updateProject, isPending: isLoadingUpdate } =
+    useUpdateProject();
 
-  async function onSubmit(values: z.infer<typeof PostValidation>) {
-    if (post && action === 'Update') {
-      const updatedPost = await updatePost({
+  async function onSubmit(values: z.infer<typeof ProjectValidation>) {
+    if (project && action === 'Update') {
+      const updatedPost = await updateProject({
         ...values,
-        postId: post.$id,
-        mediaId: post?.mediaId,
-        mediaUrl: post?.mediaUrl,
-      });
+        projectId: project.$id,
+        mediaId: project?.mediaId,
+        mediaUrl: project?.mediaUrl,
+      }); 
 
       if (!updatedPost) {
         toast({ title: 'Please try again!' });
       }
-      return navigate(`/posts/${post.$id}`);
+      return navigate(`/projects/${project.$id}`);
     }
 
-    const newPost = await createPost({
+    const newProject = await addProject({
       ...values,
       userId: user.id,
     });
 
-    if (!newPost) {
+    if (!newProject) {
       toast({ title: 'Please try again!' });
     }
 
@@ -81,10 +82,25 @@ const PostForm = ({ post, action }: PostFormProps) => {
       >
         <FormField
           control={form.control}
-          name="content"
+          name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Content</FormLabel>
+              <FormLabel className="shad-form_label">Title</FormLabel>
+              <FormControl>
+                <Input className="shad-input custom-scrollbar" {...field} />
+              </FormControl>
+
+              <FormMessage className="shad-form_message" />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="shad-form_label">Description</FormLabel>
               <FormControl>
                 <Textarea
                   className="shad-textarea custom-scrollbar"
@@ -106,7 +122,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
               <FormControl>
                 <FileUploader
                   fieldChange={field.onChange}
-                  docUrl={post?.mediaUrl}
+                  docUrl={project?.mediaUrl}
                 />
               </FormControl>
 
@@ -114,18 +130,37 @@ const PostForm = ({ post, action }: PostFormProps) => {
             </FormItem>
           )}
         />
-
+        <FormField
+          control={form.control}
+          name="links"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="shad-form_label">
+                Add Links (separated by a comma " , ")
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="https://www.youtube.com/@xongroh, https://www.behance.net/xongroh"
+                  type="text"
+                  className="shad-input"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="shad-form_message" />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="tags"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="shad-form_label">
-                Add Tags (separated by comma " , ")
+                Add Tags (separated by a comma " , ")
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Art, Expression, Learn"
+                  placeholder="Art, Music, Photography..."
                   type="text"
                   className="shad-input"
                   {...field}
@@ -140,7 +175,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
             type="button"
             className="shad-button_dark_4"
             onClick={() => {
-              form.reset();
+              form.reset(); // Clears the form fields
               navigate(-1); // Navigates to the previous location
             }}
           >
@@ -150,10 +185,10 @@ const PostForm = ({ post, action }: PostFormProps) => {
           <Button
             type="submit"
             className="shad-button_primary whitespace-nowrap"
-            disabled={isLoadingCreate || isLoadingUpdate}
+            disabled={isLoadingAdd || isLoadingUpdate}
           >
-            {action} Post
-            {(isLoadingCreate || isLoadingUpdate) && <Loader />}
+            {action} Project
+            {(isLoadingAdd || isLoadingUpdate) && <Loader />}
           </Button>
         </div>
       </form>
@@ -161,4 +196,4 @@ const PostForm = ({ post, action }: PostFormProps) => {
   );
 };
 
-export default PostForm;
+export default PortfolioForm;

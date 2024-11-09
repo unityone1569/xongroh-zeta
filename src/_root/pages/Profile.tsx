@@ -75,7 +75,7 @@ const ProfileCardItem = ({
               <img
                 src="/assets/icons/profession.svg"
                 alt="profession"
-                className="w-6 md:w-7"
+                 className="w-5 h-5 md:w-6 md:h-6"
               />
               <p className="text-sm lg:text-base font-light">Guitarist</p>
             </div>
@@ -83,7 +83,7 @@ const ProfileCardItem = ({
               <img
                 src="/assets/icons/hometown.svg"
                 alt="hometown"
-                className="w-6 md:w-7"
+                className="w-5 h-5 md:w-6 md:h-6"
               />
               <p className="text-sm lg:text-base font-light">
                 Dibrugarh, Assam 🇮🇳
@@ -108,7 +108,7 @@ const ProfileCardItem = ({
                   {buttonText}
                 </Button>
               )}
-              <Link to="/portfolio">
+              <Link to={`/portfolio/${userId}`}>
                 <Button className="font-semibold shad-button_dark_4">
                   Portfolio
                 </Button>

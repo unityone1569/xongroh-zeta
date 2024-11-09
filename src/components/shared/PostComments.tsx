@@ -153,7 +153,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
     isCommentsLoading,
     isFeedbacksLoading,
     postId,
-    userId, 
+    userId,
   ]);
 
   return (
@@ -243,7 +243,7 @@ type CommentProps = {
   accountId: string;
   commentId: string;
   postId: string;
-  userId: string; 
+  userId: string;
 };
 
 const CommentItem = React.memo(
@@ -258,7 +258,7 @@ const CommentItem = React.memo(
 
     return (
       <div className="w-full mx-auto px-2 py-4 rounded-lg">
-        <div className="flex-between mb-6">
+        <div className="flex-between mb-5">
           <Link
             to={`/profile/${accountId}`}
             className="flex items-center gap-3"
@@ -270,10 +270,10 @@ const CommentItem = React.memo(
             />
 
             <div>
-              <p className="text-base font-medium text-light-1">
+              <p className="text-base font-medium text-light-1 pb-0.5">
                 {userInfo.name}
               </p>
-              <p className="text-xs font-thin ">
+              <p className="subtle-semibold lg:small-regular text-light-3">
                 {multiFormatDateString(createdAt)}
               </p>
             </div>
@@ -283,8 +283,8 @@ const CommentItem = React.memo(
           {content}
         </p>
         <div className="flex justify-between items-center ml-1 lg:ml-2">
-          <div className="flex justify-start gap-4">
-            <img src={'/assets/icons/like.svg'} alt="like" width={20} />
+          <div className="flex justify-start gap-3">
+            <img src={'/assets/icons/like.svg'} alt="like" width={24} />
             <button
               onClick={toggleReplyForm}
               className="text-gray-500 hover:text-gray-700"
@@ -315,7 +315,7 @@ type FeedbackProps = {
   accountId: string;
   feedbackId: string;
   postId: string;
-  userId: string; 
+  userId: string;
 };
 
 const FeedbackItem = React.memo(
@@ -330,7 +330,7 @@ const FeedbackItem = React.memo(
 
     return (
       <div className="w-full mx-auto px-2 py-4 rounded-lg">
-        <div className="flex-between mb-6">
+        <div className="flex-between mb-5">
           <Link
             to={`/profile/${accountId}`}
             className="flex items-center gap-3"
@@ -342,10 +342,10 @@ const FeedbackItem = React.memo(
             />
 
             <div>
-              <p className="text-base font-medium text-light-1">
+              <p className="text-base font-medium text-light-1 pb-0.5">
                 {userInfo.name}
               </p>
-              <p className="text-xs font-thin ">
+              <p className="subtle-semibold lg:small-regular text-light-3">
                 {multiFormatDateString(createdAt)}
               </p>
             </div>
@@ -355,8 +355,8 @@ const FeedbackItem = React.memo(
           {content}
         </p>
         <div className="flex justify-between items-center ml-1 lg:ml-2">
-          <div className="flex justify-start gap-4">
-            <img src={'/assets/icons/like.svg'} alt="like" width={20} />
+          <div className="flex justify-start gap-3">
+            <img src={'/assets/icons/like.svg'} alt="like" width={24} />
             <button
               onClick={toggleReplyForm} // Toggle visibility of reply form
               className="text-gray-500 hover:text-gray-700"

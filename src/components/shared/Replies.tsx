@@ -141,7 +141,7 @@ const ReplyItem = React.memo(
 
     return (
       <div className="w-full mx-auto px-2 pt-1 pb-5 rounded-lg">
-        <div className="flex-between mb-6">
+        <div className="flex-between mb-5">
           <Link
             to={`/profile/${accountId}`}
             className="flex items-center gap-3"
@@ -152,10 +152,10 @@ const ReplyItem = React.memo(
               className="rounded-full w-8 h-8"
             />
             <div>
-              <p className="text-base font-medium text-light-1">
+              <p className="text-base font-medium text-light-1 pb-0.5">
                 {userInfo.name}
               </p>
-              <p className="text-xs font-thin ">
+              <p className="subtle-semibold lg:small-regular text-light-3">
                 {multiFormatDateString(createdAt)}
               </p>
             </div>
@@ -164,7 +164,7 @@ const ReplyItem = React.memo(
         <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base ml-1 lg:ml-2 mb-3">
           {content}
         </p>
-        <div className="flex justify-start gap-4 items-center ml-1 lg:ml-2">
+        <div className="flex justify-start gap-3 items-center ml-1 lg:ml-2">
           <img src={'/assets/icons/like.svg'} alt="like" width={20} />
           <button
             onClick={(e) => {

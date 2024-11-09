@@ -1,5 +1,11 @@
 import { ID, ImageGravity, Models, OAuthProvider, Query } from 'appwrite';
-import { INewPost, INewUser, IUpdatePost } from '@/types';
+import {
+  INewPost,
+  INewProject,
+  INewUser,
+  IUpdatePost,
+  IUpdateProject,
+} from '@/types';
 import { account, appwriteConfig, avatars, databases, storage } from './config';
 
 // ***** AUTH *****
@@ -158,8 +164,6 @@ export async function updateUserAccountId(
   }
 }
 
-
-
 // Function to save the user to the user collection
 async function saveUserToDB(user: {
   accountId: string;
@@ -231,16 +235,22 @@ export async function getUserInfo(accountId: string) {
       appwriteConfig.userCollectionId,
       accountId
     );
-    return { name: user.name, dp: user.dpUrl, cover: user.coverUrl,bio: user.bio };
+    return {
+      name: user.name,
+      dp: user.dpUrl,
+      cover: user.coverUrl,
+      bio: user.bio,
+      about: user.about,
+    };
   } catch (error) {
-    console.error("Error fetching user info:", error);
-    return { name: "Unknown", dpUrl: "" };
+    console.error('Error fetching user info:', error);
+    return { name: 'Unknown', dpUrl: '' };
   }
 }
 
+//***** POSTS, PROJECTS & DISCUSSIONS *****
 
-//***** POSTS *****
-
+// ** createPost **
 export async function createPost(post: INewPost) {
   try {
     // Upload file to storage
@@ -282,6 +292,67 @@ export async function createPost(post: INewPost) {
   }
 }
 
+// ** addProject **
+export async function addProject(project: INewProject) {
+  try {
+    let fileUrl: string = ''; // Explicitly set fileUrl as string
+    let uploadedFileId = ''; // Default to an empty string
+
+    // Check if a file is provided
+    if (project.file && project.file.length > 0) {
+      // Upload file to storage
+      const uploadedFile = await uploadFile(project.file[0]);
+
+      if (!uploadedFile) throw Error;
+
+      // Get file URL and cast it to string
+      fileUrl = String(getFilePreview(uploadedFile.$id));
+      uploadedFileId = uploadedFile.$id;
+
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      }
+    }
+    // Normalize links to an array
+    const links = Array.isArray(project.links)
+      ? project.links // Use directly if it's already an array
+      : project.links
+      ? project.links.replace(/ /g, '').split(',')
+      : []; // Empty array if no links provided
+
+    // Normalize tags to an array
+    const tags = Array.isArray(project.tags)
+      ? project.tags
+      : project.tags?.replace(/ /g, '').split(',') || [];
+
+    // Create the project document
+    const newProject = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.portfolioPostCollectionId,
+      ID.unique(),
+      {
+        creatorId: project.userId,
+        title: project.title,
+        description: project.description,
+        mediaUrl: fileUrl ? [fileUrl] : [],
+        mediaId: uploadedFileId ? [uploadedFileId] : [],
+        links: links,
+        tags: tags,
+      }
+    );
+
+    if (!newProject && uploadedFileId) {
+      await deleteFile(uploadedFileId);
+      throw Error;
+    }
+
+    return newProject;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function uploadFile(file: File) {
   try {
     const uploadedFile = await storage.createFile(
@@ -290,6 +361,142 @@ export async function uploadFile(file: File) {
       file
     );
     return uploadedFile;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ** updatePost **
+export async function updatePost(post: IUpdatePost) {
+  const hasFileToUpdate = post.file.length > 0;
+
+  try {
+    let media = {
+      mediaUrl: post.mediaUrl,
+      mediaId: post.mediaId,
+    };
+
+    if (hasFileToUpdate) {
+      // Upload new file to appwrite storage
+      const uploadedFile = await uploadFile(post.file[0]);
+      if (!uploadedFile) throw Error;
+
+      // Get new file url
+      const fileUrl = getFilePreview(uploadedFile.$id);
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      }
+
+      media = { ...media, mediaUrl: fileUrl, mediaId: uploadedFile.$id };
+    }
+
+    // Convert tags into array
+    const tags = post.tags?.replace(/ /g, '').split(',') || [];
+
+    //  Update post
+    const updatedPost = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      post.postId,
+      {
+        content: post.content,
+        mediaUrl: media.mediaUrl,
+        mediaId: media.mediaId,
+        tags: tags,
+      }
+    );
+
+    // Failed to update
+    if (!updatedPost) {
+      // Delete new file that has been recently uploaded
+      if (hasFileToUpdate) {
+        await deleteFile(media.mediaId);
+      }
+
+      // If no new file uploaded, just throw error
+      throw Error;
+    }
+
+    // Safely delete old file after successful update
+    if (hasFileToUpdate) {
+      await deleteFile(post.mediaId);
+    }
+
+    return updatedPost;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ** updateProject **
+export async function updateProject(project: IUpdateProject) {
+  const hasFileToUpdate = project.file.length > 0;
+
+  try {
+    let media = {
+      mediaUrl: project.mediaUrl,
+      mediaId: project.mediaId,
+    };
+
+    if (hasFileToUpdate) {
+      // Upload new file to appwrite storage
+      const uploadedFile = await uploadFile(project.file[0]);
+      if (!uploadedFile) throw Error;
+
+      // Get new file url
+      const fileUrl = getFilePreview(uploadedFile.$id);
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      }
+
+      media = { ...media, mediaUrl: fileUrl, mediaId: uploadedFile.$id };
+    }
+
+    // Normalize links to an array
+    const links = Array.isArray(project.links)
+      ? project.links // Use directly if it's already an array
+      : project.links
+      ? project.links.replace(/ /g, '').split(',')
+      : []; // Empty array if no links provided
+
+    // Normalize tags to an array
+    const tags = Array.isArray(project.tags)
+      ? project.tags
+      : project.tags?.replace(/ /g, '').split(',') || [];
+    //  Update post
+    const updatedPost = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      project.projectId,
+      {
+        title: project.title,
+        description: project.description,
+        mediaUrl: media.mediaUrl,
+        mediaId: media.mediaId,
+        links: links,
+        tags: tags,
+      }
+    );
+
+    // Failed to update
+    if (!updatedPost) {
+      // Delete new file that has been recently uploaded
+      if (hasFileToUpdate) {
+        await deleteFile(media.mediaId);
+      }
+
+      // If no new file uploaded, just throw error
+      throw Error;
+    }
+
+    // Safely delete old file after successful update
+    if (hasFileToUpdate) {
+      await deleteFile(project.mediaId);
+    }
+
+    return updatedPost;
   } catch (error) {
     console.log(error);
   }
@@ -308,7 +515,7 @@ export function getFilePreview(fileId: string) {
 
     if (!fileUrl) throw Error;
 
-    console.log(fileUrl);
+    // console.log(fileUrl);
 
     return fileUrl;
   } catch (error) {
@@ -401,69 +608,6 @@ export async function getAuthorById(creatorId: string) {
       creatorId
     );
     return post;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function updatePost(post: IUpdatePost) {
-  const hasFileToUpdate = post.file.length > 0;
-
-  try {
-    let media = {
-      mediaUrl: post.mediaUrl,
-      mediaId: post.mediaId,
-    };
-
-    if (hasFileToUpdate) {
-      // Upload new file to appwrite storage
-      const uploadedFile = await uploadFile(post.file[0]);
-      if (!uploadedFile) throw Error;
-
-      // Get new file url
-      const fileUrl = getFilePreview(uploadedFile.$id);
-      if (!fileUrl) {
-        await deleteFile(uploadedFile.$id);
-        throw Error;
-      }
-
-      media = { ...media, mediaUrl: fileUrl, mediaId: uploadedFile.$id };
-    }
-
-    // Convert tags into array
-    const tags = post.tags?.replace(/ /g, '').split(',') || [];
-
-    //  Update post
-    const updatedPost = await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
-      post.postId,
-      {
-        content: post.content,
-        mediaUrl: media.mediaUrl,
-        mediaId: media.mediaId,
-        location: post.location,
-        tags: tags,
-      }
-    );
-
-    // Failed to update
-    if (!updatedPost) {
-      // Delete new file that has been recently uploaded
-      if (hasFileToUpdate) {
-        await deleteFile(media.mediaId);
-      }
-
-      // If no new file uploaded, just throw error
-      throw Error;
-    }
-
-    // Safely delete old file after successful update
-    if (hasFileToUpdate) {
-      await deleteFile(post.mediaId);
-    }
-
-    return updatedPost;
   } catch (error) {
     console.log(error);
   }
@@ -611,7 +755,6 @@ export async function getUserPosts({
     throw error;
   }
 }
-
 
 // ***** LIKE & Save *****
 
@@ -992,7 +1135,7 @@ export async function addFeedbackReply(
       appwriteConfig.feedbackRepliesCollectionId,
       ID.unique(),
       {
-        feedbackId :parentId,
+        feedbackId: parentId,
         accountId: userId,
         content,
       }

@@ -1,4 +1,4 @@
-import { INewPost, INewUser, IUpdatePost } from '@/types';
+import { INewPost, INewProject, INewUser, IUpdatePost, IUpdateProject } from '@/types';
 import {
   useInfiniteQuery,
   useMutation,
@@ -13,6 +13,7 @@ import {
   checkPostLike,
   checkPostSave,
   createPost,
+  addProject,
   createUserAccount,
   createUserAccountWithGoogle,
   deletePost,
@@ -36,6 +37,7 @@ import {
   unlikePost,
   unsavePost,
   updatePost,
+  updateProject,
 } from '../appwrite/api';
 import { QUERY_KEYS } from './queryKeys';
 
@@ -101,7 +103,7 @@ export const useGetUserInfo = (accountId: string) => {
   });
 }
 
-// ***** POSTS *****
+// ***** POSTS, PROJECTS & DISCUSSIONS *****
 
 export const useCreatePost = () => {
   const queryClient = useQueryClient();
@@ -115,6 +117,20 @@ export const useCreatePost = () => {
     },
   });
 };
+export const useAddProject = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (project: INewProject) => addProject(project),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+      });
+    },
+  });
+};
+
+
 
 export const useGetRecentPosts = () => {
   return useQuery({
@@ -150,6 +166,17 @@ export const useUpdatePost = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (post: IUpdatePost) => updatePost(post),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id],
+      });
+    },
+  });
+};
+export const useUpdateProject = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (project: IUpdateProject) => updateProject(project),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id],

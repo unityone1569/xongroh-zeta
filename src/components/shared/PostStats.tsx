@@ -8,11 +8,12 @@ import {
   useUnlikePost,
   useUnsavePost,
 } from '@/lib/react-query/queries';
-import { Loader } from 'lucide-react';
+
 import { Models } from 'appwrite';
 import { useLocation } from 'react-router-dom';
 import { toast } from '../ui/use-toast';
 import { QUERY_KEYS } from '@/lib/react-query/queryKeys';
+import Loader from './Loader';
 
 type PostStatsProps = {
   post: Models.Document;
@@ -61,8 +62,8 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
 
   const handleLikePost = () => {
     const updateLikeCount = () => {
-      setInitialLikesCount(prevCount => prevCount + (isLikedState ? -1 : 1));
-      
+      setInitialLikesCount((prevCount) => prevCount + (isLikedState ? -1 : 1));
+
       if (!isLikedState) {
         setIsLikedState(true);
         likePostMutation(
@@ -76,7 +77,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
             },
             onError: () => {
               setIsLikedState(false);
-              setInitialLikesCount(prevCount => prevCount - 1); // Revert the count change
+              setInitialLikesCount((prevCount) => prevCount - 1); // Revert the count change
               toast({ title: 'Failed to like the post.' });
             },
           }
@@ -94,7 +95,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
             },
             onError: () => {
               setIsLikedState(true);
-              setInitialLikesCount(prevCount => prevCount + 1); // Revert the count change
+              setInitialLikesCount((prevCount) => prevCount + 1); // Revert the count change
               toast({ title: 'Failed to unlike the post.' });
             },
           }
@@ -154,13 +155,13 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     <div
       className={`flex justify-between items-center z-20 ${containerStyles}`}
     >
-      <div className="flex gap-2 mr-5">
+      <div className="flex gap-1 items-center">
         <img
           src={
             isLikedState ? '/assets/icons/liked.svg' : '/assets/icons/like.svg'
           }
           alt="like"
-          width={20}
+          width={27}
           onClick={handleLikePost}
           className={`cursor-pointer ${
             likePostPending || unlikePostPending
@@ -168,9 +169,11 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
               : ''
           }`}
         />
-        <p className="small-medium lg:base-medium">
-          {initialLikesCount}
-        </p>
+        {initialLikesCount > 0 && (
+          <p className="small-semibold lg:base-semibold text-light-3">
+            {initialLikesCount}
+          </p>
+        )}
       </div>
 
       <div className="flex gap-2">
@@ -185,7 +188,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
                   : '/assets/icons/save.svg'
               }
               alt="save"
-              width={20}
+              width={25}
               onClick={handleSavePost}
               className={`cursor-pointer ${
                 savePostPending || unsavePostPending

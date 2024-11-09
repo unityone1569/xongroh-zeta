@@ -34,6 +34,14 @@ export type INewPost = {
   file: File[];
   tags?: string;
 };
+export type INewProject = {
+  userId: string;
+  title: string;
+  description: string;
+  file: File[];
+  links?: string|string[];
+  tags?: string;
+};
 
 export type IUpdatePost = {
   postId: string;
@@ -41,7 +49,16 @@ export type IUpdatePost = {
   mediaId: string;
   mediaUrl: URL;
   file: File[];
-  location?: string;
+  tags?: string;
+};
+export type IUpdateProject = {
+  projectId: string;
+  title: string;
+  description: string;
+  mediaId: string;
+  mediaUrl: URL;
+  file: File[];
+  links?: string|string[];
   tags?: string;
 };
 

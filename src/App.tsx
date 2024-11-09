@@ -2,7 +2,16 @@ import SignInForm from './_auth/forms/SignInForm';
 import SignUpForm from './_auth/forms/SignUpForm';
 import AuthLayout from './_auth/AuthLayout';
 import RootLayout from './_root/RootLayout';
-import { AllUsers, CreatePost, EditPost, Explore, Home, PostDetails, Profile, UpdateProfile } from './_root/pages';
+import {
+  AllUsers,
+  CreatePost,
+  EditPost,
+  Explore,
+  Home,
+  PostDetails,
+  Profile,
+  UpdateProfile,
+} from './_root/pages';
 
 import './globals.css';
 import { Route, Routes } from 'react-router-dom';
@@ -11,6 +20,8 @@ import { Toaster } from './components/ui/toaster';
 import SavedPosts from './_root/pages/SavedPosts';
 import Community from './_root/pages/Community';
 import Marketplace from './_root/pages/Marketplace';
+import Portfolio from './_root/pages/Portfolio';
+import AddProject from './_root/pages/AddProject';
 
 const App = () => {
   return (
@@ -25,7 +36,7 @@ const App = () => {
 
         {/* Private */}
         <Route element={<RootLayout />}>
-        <Route index element={<Home />} />
+          <Route index element={<Home />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/community" element={<Community />} />
           <Route path="/marketplace" element={<Marketplace />} />
@@ -36,6 +47,9 @@ const App = () => {
           <Route path="/posts/:id" element={<PostDetails />} />
           <Route path="/profile/:id/*" element={<Profile />} />
           <Route path="/update-profile/:id" element={<UpdateProfile />} />
+
+          <Route path="/add-project" element={<AddProject />} />
+          <Route path="/portfolio/:id/*" element={<Portfolio />} />
         </Route>
       </Routes>
 
