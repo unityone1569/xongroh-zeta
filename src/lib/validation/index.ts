@@ -59,10 +59,20 @@ export const ProjectValidation = z.object({
       )
   ),
   links: z
-    .union([
-      z.array(z.string().url()).optional(), // Allow an empty array or an array of URLs
-      z.string().url(), // Or a single URL string
-    ])
+    .string()
+    .transform((str) => (str ? str.split(',').map((link) => link.trim()) : [])) // Convert non-empty input to array, otherwise empty array
+    .refine(
+      (arr) =>
+        arr.every(
+          (link) =>
+            link === '' ||
+            /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}(\/\S*)?$/.test(link)
+        ),
+      {
+        message:
+          'Each link must be a valid URL, starting with http:// or https://',
+      }
+    )
     .optional(),
 
   tags: z.string(),

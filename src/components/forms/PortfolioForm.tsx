@@ -37,7 +37,7 @@ const PortfolioForm = ({ project, action }: PortfolioFormProps) => {
       title: project ? project?.title : '',
       description: project ? project?.description : '',
       file: [],
-      links: project ? project.links.join(',') : [],
+      links: project && project.links ? project.links.join(',') : '',
       tags: project ? project.tags.join(',') : '',
     },
   });
@@ -78,7 +78,7 @@ const PortfolioForm = ({ project, action }: PortfolioFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-9 w-full max-w-5xl"
+        className="flex flex-col gap-9 w-full max-w-3xl"
       >
         <FormField
           control={form.control}

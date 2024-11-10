@@ -373,8 +373,8 @@ export async function updatePost(post: IUpdatePost) {
 
   try {
     let media = {
-      mediaUrl: post.mediaUrl,
-      mediaId: post.mediaId,
+      mediaUrl: Array.isArray(post.mediaUrl) ? post.mediaUrl : [post.mediaUrl],
+      mediaId: Array.isArray(post.mediaId) ? post.mediaId : [post.mediaId],
     };
 
     if (hasFileToUpdate) {
@@ -389,11 +389,16 @@ export async function updatePost(post: IUpdatePost) {
         throw Error;
       }
 
-      media = { ...media, mediaUrl: fileUrl, mediaId: uploadedFile.$id };
+      media = {
+        mediaUrl: [fileUrl],
+        mediaId: [uploadedFile.$id],
+      };
     }
 
     // Convert tags into array
-    const tags = post.tags?.replace(/ /g, '').split(',') || [];
+    const tags = Array.isArray(post.tags)
+      ? post.tags
+      : post.tags?.replace(/ /g, '').split(',') || [];
 
     //  Update post
     const updatedPost = await databases.updateDocument(
@@ -412,7 +417,7 @@ export async function updatePost(post: IUpdatePost) {
     if (!updatedPost) {
       // Delete new file that has been recently uploaded
       if (hasFileToUpdate) {
-        await deleteFile(media.mediaId);
+        await deleteFile(media.mediaId[0]);
       }
 
       // If no new file uploaded, just throw error
@@ -421,7 +426,7 @@ export async function updatePost(post: IUpdatePost) {
 
     // Safely delete old file after successful update
     if (hasFileToUpdate) {
-      await deleteFile(post.mediaId);
+      await deleteFile(post.mediaId[0]);
     }
 
     return updatedPost;
@@ -435,71 +440,74 @@ export async function updateProject(project: IUpdateProject) {
   const hasFileToUpdate = project.file.length > 0;
 
   try {
+    // Ensure `mediaUrl` and `mediaId` are single-level arrays
     let media = {
-      mediaUrl: project.mediaUrl,
-      mediaId: project.mediaId,
+      mediaUrl: Array.isArray(project.mediaUrl)
+        ? project.mediaUrl
+        : [project.mediaUrl],
+      mediaId: Array.isArray(project.mediaId)
+        ? project.mediaId
+        : [project.mediaId],
     };
 
     if (hasFileToUpdate) {
-      // Upload new file to appwrite storage
+      // Upload new file to Appwrite storage
       const uploadedFile = await uploadFile(project.file[0]);
-      if (!uploadedFile) throw Error;
+      if (!uploadedFile) throw new Error('File upload failed');
 
-      // Get new file url
+      // Get new file URL
       const fileUrl = getFilePreview(uploadedFile.$id);
       if (!fileUrl) {
         await deleteFile(uploadedFile.$id);
-        throw Error;
+        throw new Error('File preview generation failed');
       }
 
-      media = { ...media, mediaUrl: fileUrl, mediaId: uploadedFile.$id };
+      // Update media with the new URL and file ID, wrapped in arrays
+      media = {
+        mediaUrl: [fileUrl],
+        mediaId: [uploadedFile.$id],
+      };
     }
 
-    // Normalize links to an array
     const links = Array.isArray(project.links)
-      ? project.links // Use directly if it's already an array
+      ? project.links
       : project.links
       ? project.links.replace(/ /g, '').split(',')
-      : []; // Empty array if no links provided
+      : [];
 
-    // Normalize tags to an array
     const tags = Array.isArray(project.tags)
       ? project.tags
       : project.tags?.replace(/ /g, '').split(',') || [];
-    //  Update post
+
+    // Update post with mediaUrl and mediaId as single-level arrays
     const updatedPost = await databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
+      appwriteConfig.portfolioPostCollectionId,
       project.projectId,
       {
         title: project.title,
         description: project.description,
-        mediaUrl: media.mediaUrl,
-        mediaId: media.mediaId,
+        mediaUrl: media.mediaUrl, // Ensured to be a single-level array
+        mediaId: media.mediaId, // Ensured to be a single-level array
         links: links,
         tags: tags,
       }
     );
 
-    // Failed to update
-    if (!updatedPost) {
-      // Delete new file that has been recently uploaded
-      if (hasFileToUpdate) {
-        await deleteFile(media.mediaId);
-      }
-
-      // If no new file uploaded, just throw error
-      throw Error;
+    // If update failed, delete newly uploaded file (if any)
+    if (!updatedPost && hasFileToUpdate) {
+      await deleteFile(media.mediaId[0]);
+      throw new Error('Document update failed');
     }
 
-    // Safely delete old file after successful update
+    // Safely delete the old file after a successful update
     if (hasFileToUpdate) {
-      await deleteFile(project.mediaId);
+      await deleteFile(project.mediaId[0]);
     }
 
     return updatedPost;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -768,7 +776,6 @@ export async function getUserPosts({
     throw error;
   }
 }
-
 
 // User Projects
 export async function getUserProjects({

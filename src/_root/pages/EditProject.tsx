@@ -15,8 +15,7 @@ const EditProject = () => {
   return (
     <div className="flex flex-1 ">
       <div className="common-container pb-16">
-        <div className="max-w-5xl flex-start gap-3 justify-start w-full">
-          <img src="/assets/icons/add-post.svg" alt="add-post" width={36} />
+        <div className="max-w-3xl flex-start gap-3 justify-start w-full">
           <h2 className="h3-bold md:h2-bold text-left w-full">Edit Project</h2>
         </div>
 

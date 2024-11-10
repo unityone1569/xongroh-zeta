@@ -165,13 +165,16 @@
   .post_details-card {
     @apply bg-dark-2 w-full max-w-5xl rounded-[30px] flex-col flex xl:flex-row border border-dark-4 xl:rounded-l-[24px];
   }
+  .project_details-card {
+    @apply bg-dark-2 w-full max-w-3xl rounded-[30px] flex-col flex border border-dark-4 xl:rounded-l-[24px];
+  }
 
   .post_details-img {
     @apply h-80 lg:h-[480px] xl:w-[48%] rounded-t-[30px] xl:rounded-l-[24px] xl:rounded-tr-none object-contain p-5 bg-dark-1;
   }
 
   .post_details-info {
-    @apply bg-dark-2 flex flex-col gap-5 lg:gap-7 flex-1 items-start p-8 rounded-[30px];
+    @apply bg-dark-2 flex flex-col gap-5 lg:gap-7 flex-1 items-start p-3 md:p-6 rounded-[30px];
   }
 
   .post_details-delete_btn {
