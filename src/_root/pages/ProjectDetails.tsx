@@ -101,7 +101,7 @@ const ProjectDetails = () => {
                 {project?.description}
               </p>
 
-              <ul className="flex gap-3 mt-5">
+              <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
                 {project?.tags.map((tag: string, index: string) => (
                   <li key={`${tag}${index}`}>
                     <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">

@@ -68,13 +68,12 @@ const PostDetails = () => {
             <hr className="border w-full my-2 border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
               <p className="font-normal text-pretty">{post?.content}</p>
-              <ul className="flex gap-1 mt-2">
+              <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
                 {post?.tags.map((tag: string, index: string) => (
-                  <li
-                    key={`${tag}${index}`}
-                    className="text-light-3 small-regular"
-                  >
-                    #{tag}
+                  <li key={`${tag}${index}`}>
+                    <span className="px-3 py-1  bg-[#2A2A2A] rounded-full text-xs font-medium">
+                      {tag}
+                    </span>
                   </li>
                 ))}
               </ul>

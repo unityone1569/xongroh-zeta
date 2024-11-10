@@ -34,23 +34,13 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
     <div className="post-card">
       <Link to={`/projects/${project.$id}`}>
-        <div className="pb-7">
+        <div className="pb-2">
           <p className="base-semibold lg:body-bold line-clamp-2 text-pretty">
             {project?.title}
           </p>
           <p className="small-regular line-clamp-6 text-pretty pt-1.5 md:pt-2">
             {project?.description}
           </p>
-
-          <ul className="flex gap-2 mt-3">
-            {project?.tags.map((tag: string, index: string) => (
-              <li key={`${tag}${index}`}>
-                <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
-                  {tag}
-                </span>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* {project.mediaUrl && project.mediaUrl.length > 0 && (
@@ -61,6 +51,16 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           />
         )} */}
       </Link>
+
+      <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
+        {project?.tags.map((tag: string, index: string) => (
+          <li key={`${tag}${index}`}>
+            <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
+              {tag}
+            </span>
+          </li>
+        ))}
+      </ul>
 
       <div className="flex-between">
         <div className="flex items-center gap-3">
