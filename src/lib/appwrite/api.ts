@@ -241,6 +241,8 @@ export async function getUserInfo(accountId: string) {
       cover: user.coverUrl,
       bio: user.bio,
       about: user.about,
+      projectsCount: user.projectsCount,
+      creationsCount: user.creationsCount,
     };
   } catch (error) {
     console.error('Error fetching user info:', error);
@@ -286,9 +288,36 @@ export async function createPost(post: INewPost) {
       await deleteFile(uploadedFile.$id);
       throw Error;
     }
+
+    // Increment the projectsCount for the user
+    await incrementUsercreationsCount(post.userId);
     return newPost;
   } catch (error) {
     console.log(error);
+  }
+}
+
+async function incrementUsercreationsCount(userId: string) {
+  try {
+    // Retrieve the user document
+    const userDoc = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId
+    );
+
+    // Increment the projectsCount attribute
+    const updatedCreationsCount = (userDoc.creationsCount || 0) + 1;
+
+    // Update the user document with the incremented projectsCount
+    await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId,
+      { creationsCount: updatedCreationsCount }
+    );
+  } catch (error) {
+    console.error('Failed to increment projects count:', error);
   }
 }
 
@@ -302,8 +331,7 @@ export async function addProject(project: INewProject) {
     if (project.file && project.file.length > 0) {
       // Upload file to storage
       const uploadedFile = await uploadFile(project.file[0]);
-
-      if (!uploadedFile) throw Error;
+      if (!uploadedFile) throw new Error('File upload failed');
 
       // Get file URL and cast it to string
       fileUrl = String(getFilePreview(uploadedFile.$id));
@@ -311,12 +339,13 @@ export async function addProject(project: INewProject) {
 
       if (!fileUrl) {
         await deleteFile(uploadedFile.$id);
-        throw Error;
+        throw new Error('File preview generation failed');
       }
     }
+
     // Normalize links to an array
     const links = Array.isArray(project.links)
-      ? project.links // Use directly if it's already an array
+      ? project.links
       : project.links
       ? project.links.replace(/ /g, '').split(',')
       : []; // Empty array if no links provided
@@ -344,12 +373,40 @@ export async function addProject(project: INewProject) {
 
     if (!newProject && uploadedFileId) {
       await deleteFile(uploadedFileId);
-      throw Error;
+      throw new Error('Project creation failed');
     }
+
+    // Increment the projectsCount for the user
+    await incrementUserProjectsCount(project.userId);
 
     return newProject;
   } catch (error) {
     console.log(error);
+  }
+}
+
+// Function to increment the projectsCount in the Users collection
+async function incrementUserProjectsCount(userId: string) {
+  try {
+    // Retrieve the user document
+    const userDoc = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId
+    );
+
+    // Increment the projectsCount attribute
+    const updatedProjectsCount = (userDoc.projectsCount || 0) + 1;
+
+    // Update the user document with the incremented projectsCount
+    await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId,
+      { projectsCount: updatedProjectsCount }
+    );
+  } catch (error) {
+    console.error('Failed to increment projects count:', error);
   }
 }
 
@@ -440,7 +497,7 @@ export async function updateProject(project: IUpdateProject) {
   const hasFileToUpdate = project.file.length > 0;
 
   try {
-    // Ensure `mediaUrl` and `mediaId` are single-level arrays
+    // Normalize mediaUrl and mediaId as single-level arrays
     let media = {
       mediaUrl: Array.isArray(project.mediaUrl)
         ? project.mediaUrl
@@ -462,7 +519,7 @@ export async function updateProject(project: IUpdateProject) {
         throw new Error('File preview generation failed');
       }
 
-      // Update media with the new URL and file ID, wrapped in arrays
+      // Update media with new URL and file ID, ensuring they are arrays
       media = {
         mediaUrl: [fileUrl],
         mediaId: [uploadedFile.$id],
@@ -479,7 +536,7 @@ export async function updateProject(project: IUpdateProject) {
       ? project.tags
       : project.tags?.replace(/ /g, '').split(',') || [];
 
-    // Update post with mediaUrl and mediaId as single-level arrays
+    // Update document in the database
     const updatedPost = await databases.updateDocument(
       appwriteConfig.databaseId,
       appwriteConfig.portfolioPostCollectionId,
@@ -501,7 +558,11 @@ export async function updateProject(project: IUpdateProject) {
     }
 
     // Safely delete the old file after a successful update
-    if (hasFileToUpdate) {
+    if (
+      hasFileToUpdate &&
+      Array.isArray(project.mediaId) &&
+      project.mediaId.length > 0
+    ) {
       await deleteFile(project.mediaId[0]);
     }
 

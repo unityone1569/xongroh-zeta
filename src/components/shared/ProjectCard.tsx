@@ -52,17 +52,24 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         )} */}
       </Link>
 
-      <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
-        {project?.tags.map((tag: string, index: string) => (
-          <li key={`${tag}${index}`}>
-            <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
-              {tag}
-            </span>
-          </li>
-        ))}
-      </ul>
+      {project?.tags &&
+                Array.isArray(project.tags) &&
+                project.tags.filter((tag: string) => tag.trim() !== '').length >
+                  0 && (
+                  <ul className="flex py-1.5 flex-wrap gap-3.5 mt-1.5 overflow-x-hidden">
+                    {project.tags
+                      .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
+                      .map((tag: string, index: number) => (
+                        <li key={`${tag}${index}`}>
+                          <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
+                            {tag}
+                          </span>
+                        </li>
+                      ))}
+                  </ul>
+                )}
 
-      <div className="flex-between">
+      <div className="flex-between pt-6">
         <div className="flex items-center gap-3">
           <Link to={`/profile/${project.creatorId}`}>
             <img

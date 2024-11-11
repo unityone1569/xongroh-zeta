@@ -11,20 +11,21 @@ interface ProfileCardItemProps {
   name: string;
   cover: string;
   dp: string;
-  creations: string;
+  creationsCount: string;
   supporting: string;
   bio: string;
   isCurrentUser: boolean;
   userId: string;
+
 }
 
 const ProfileCardItem = ({
   name,
   cover,
   dp,
-  creations,
   supporting,
   bio,
+  creationsCount,
   isCurrentUser,
   userId,
 }: ProfileCardItemProps) => {
@@ -52,7 +53,7 @@ const ProfileCardItem = ({
               />
               <div className="flex gap-6 lg:gap-20 pt-2 lg:pt-4">
                 <div className="text-center">
-                  <div className="small-medium lg:base-medium">{creations}</div>
+                  <div className="small-medium lg:base-medium">{creationsCount}</div>
                   <div className="small-regular lg:base-regular pt-1">
                     Creations
                   </div>
@@ -224,7 +225,7 @@ const Profile = () => {
       name: profileUser?.name || 'Unknown User',
       cover: profileUser?.cover || '/assets/icons/cover-placeholder.png',
       dp: profileUser?.dp || '/assets/icons/profile-placeholder.svg',
-      creations: '19',
+      creationsCount: profileUser?.creationsCount || '',
       supporting: '65',
       bio: profileUser?.bio || '',
     }),

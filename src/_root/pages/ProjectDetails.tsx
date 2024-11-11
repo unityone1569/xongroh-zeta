@@ -95,21 +95,51 @@ const ProjectDetails = () => {
             <hr className="border w-full my-2 border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
               <p className="base-semibold lg:body-bold text-pretty px-1">
+                <span className="body-bold ">Title: </span>
                 {project?.title}
               </p>
               <p className="small-regular text-pretty pt-3 px-1">
+                <span className="base-semibold">Description: </span>
                 {project?.description}
               </p>
+              {project?.tags &&
+                Array.isArray(project.tags) &&
+                project.tags.filter((tag: string) => tag.trim() !== '').length >
+                  0 && (
+                  <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
+                    {project.tags
+                      .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
+                      .map((tag: string, index: number) => (
+                        <li key={`${tag}${index}`}>
+                          <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
+                            {tag}
+                          </span>
+                        </li>
+                      ))}
+                  </ul>
+                )}
 
-              <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
-                {project?.tags.map((tag: string, index: string) => (
-                  <li key={`${tag}${index}`}>
-                    <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
-                      {tag}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              {project?.links && project.links.length > 0 && (
+                <ul className="flex flex-col pl-1 py-1.5 flex-wrap gap-3 mt-5 overflow-x-hidden">
+                  {project.links.map((link: string, index: number) => (
+                    <li key={`${link}${index}`}>
+                      <a
+                        href={link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-xs font-medium underline text-purple-200 hover:text-purple-400"
+                      >
+                        <img
+                          src="/assets/icons/link.svg"
+                          alt="link"
+                          width={19}
+                        />
+                        {link}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             <div className="flex justify-between py-2 px-0.5 md:px-0 items-center w-full">
