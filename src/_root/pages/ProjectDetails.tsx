@@ -35,17 +35,18 @@ const ProjectDetails = () => {
         .catch((error) => console.error('Error copying text: ', error));
     }
   };
+
   return (
     <div className="post_details-container">
       {isPending ? (
         <Loader />
       ) : (
-        <div className="project_details-card">
+        <div className="post_details-card">
           {project?.mediaUrl && project?.mediaUrl.length > 0 && (
             <img
               src={project?.mediaUrl}
               alt="post image"
-              className="post-card_img"
+              className="post_details-img"
             />
           )}
 
@@ -72,7 +73,7 @@ const ProjectDetails = () => {
                   </div>
                 </div>
               </Link>
-              <div className="flex-center">
+              <div className="flex-center gap-5">
                 <Link
                   to={`/update-project/${project?.$id}`}
                   className={`pr-1 ${
@@ -81,25 +82,21 @@ const ProjectDetails = () => {
                 >
                   <img src="/assets/icons/edit.svg" alt="edit" width={22} />
                 </Link>
-                <Button
+                <a
                   onClick={handleDeleteProject}
-                  variant="ghost"
+                 
                   className={`ghost_details-delete_btn ${
                     user.id !== project?.creatorId && 'hidden'
                   }`}
                 >
                   <img src="/assets/icons/delete.svg" alt="delete" width={22} />
-                </Button>
+                </a>
               </div>
             </div>
             <hr className="border w-full my-2 border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-              <p className="base-semibold lg:body-bold text-pretty px-1">
-                <span className="body-bold ">Title: </span>
-                {project?.title}
-              </p>
-              <p className="small-regular text-pretty pt-3 px-1">
-                <span className="base-semibold">Description: </span>
+              <p className="body-bold text-pretty px-1">{project?.title}</p>
+              <p className="small-regular whitespace-pre-line text-pretty pt-3 px-1">
                 {project?.description}
               </p>
               {project?.tags &&

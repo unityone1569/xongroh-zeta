@@ -25,6 +25,28 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   const location = useLocation();
   const queryClient = useQueryClient();
 
+  const handleShare = () => {
+    const urlToShare = window.location.href;
+    const shareText = 'Check out this post from Xongroh!';
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title: 'Creation Post',
+          text: shareText,
+          url: urlToShare,
+        })
+        .then(() => console.log('Content shared successfully!'))
+        .catch((error) => console.error('Error sharing content:', error));
+    } else {
+      // Fallback for browsers that do not support the Web Share API
+      navigator.clipboard
+        .writeText(`${shareText} ${urlToShare}`)
+        .then(() => alert('Link copied to clipboard!'))
+        .catch((error) => console.error('Error copying text: ', error));
+    }
+  };
+
   const { data: isLikedData, isLoading: isLikeLoading } = useCheckPostLike(
     postId,
     userId
@@ -176,28 +198,37 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
         )}
       </div>
 
-      <div className="flex gap-2">
-        {savePostPending || unsavePostPending ? (
-          <Loader />
-        ) : (
-          postType !== 'portfolioPost' && (
-            <img
-              src={
-                isSavedState
-                  ? '/assets/icons/saved.svg'
-                  : '/assets/icons/save.svg'
-              }
-              alt="save"
-              width={25}
-              onClick={handleSavePost}
-              className={`cursor-pointer ${
-                savePostPending || unsavePostPending
-                  ? 'opacity-50 cursor-not-allowed'
-                  : ''
-              }`}
-            />
-          )
-        )}
+      <div className="flex-center gap-5">
+        <div className="flex gap-2">
+          {savePostPending || unsavePostPending ? (
+            <Loader />
+          ) : (
+            postType !== 'portfolioPost' && (
+              <img
+                src={
+                  isSavedState
+                    ? '/assets/icons/saved.svg'
+                    : '/assets/icons/save.svg'
+                }
+                alt="save"
+                width={25}
+                onClick={handleSavePost}
+                className={`cursor-pointer ${
+                  savePostPending || unsavePostPending
+                    ? 'opacity-50 cursor-not-allowed'
+                    : ''
+                }`}
+              />
+            )
+          )}
+        </div>
+        <img
+          src="/assets/icons/share.svg"
+          alt="share"
+          width={26}
+          onClick={handleShare}
+          className="cursor-pointer"
+        />
       </div>
     </div>
   );

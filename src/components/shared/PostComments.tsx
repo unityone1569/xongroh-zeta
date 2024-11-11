@@ -158,14 +158,14 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
 
   return (
     <div className="post-comments-container">
-      <div className="tabs">
+      <div className="tabs pt-1">
         {['comments', 'feedbacks'].map((tab) => (
           <button
             key={tab}
             onClick={() => handleTabChange(tab as 'comments' | 'feedbacks')}
             className={`font-semibold ${
               activeTab === tab
-                ? 'underline text-primary-500 underline-offset-8'
+                ? 'underline decoration-purple-300 lg:decoration-2 underline-offset-8'
                 : ''
             }`}
           >
@@ -175,6 +175,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
       </div>
 
       <div className="comment-input">
+        <div className="comments-list">{RenderedItems}</div>
         {activeTab === 'comments' ? (
           <Form {...commentForm} key="comment-form">
             <form onSubmit={commentForm.handleSubmit(onSubmitComment)}>
@@ -187,7 +188,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
                       <Textarea
                         {...field}
                         className="shad-comment custom-scrollbar"
-                        placeholder="Write something..."
+                        placeholder="Write a comment..."
                       />
                     </FormControl>
                     <FormMessage className="shad-form_message" />
@@ -198,7 +199,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
                 className="shad-button_primary ml-1 mt-4 mb-6 whitespace-nowrap"
                 type="submit"
               >
-                Comment
+                Submit
               </Button>
             </form>
           </Form>
@@ -214,7 +215,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
                       <Textarea
                         {...field}
                         className="shad-comment custom-scrollbar"
-                        placeholder="Give feedback to the creator..."
+                        placeholder="Send feedback to the creator..."
                       />
                     </FormControl>
                     <FormMessage className="shad-form_message" />
@@ -231,8 +232,6 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
           </Form>
         )}
       </div>
-
-      <div className="comments-list">{RenderedItems}</div>
     </div>
   );
 };

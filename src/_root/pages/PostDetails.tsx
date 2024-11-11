@@ -47,22 +47,21 @@ const PostDetails = () => {
                   </div>
                 </div>
               </Link>
-              <div className="flex-center">
+              <div className="flex-center gap-5">
                 <Link
                   to={`/update-post/${post?.$id}`}
                   className={`${user.id !== post?.creatorId && 'hidden'}`}
                 >
                   <img src="/assets/icons/edit.svg" alt="edit" width={22} />
                 </Link>
-                <Button
+                <a
                   onClick={handleDeletePost}
-                  variant="ghost"
                   className={`ghost_details-delete_btn ${
                     user.id !== post?.creatorId && 'hidden'
                   }`}
                 >
                   <img src="/assets/icons/delete.svg" alt="delete" width={22} />
-                </Button>
+                </a>
               </div>
             </div>
             <hr className="border w-full my-2 border-dark-4/80" />
@@ -86,7 +85,7 @@ const PostDetails = () => {
                 )}
             </div>
 
-            <div className="w-full">
+            <div className="w-full  pt-1.5">
               <PostStats
                 post={post ?? ({} as Models.Document)}
                 userId={user.id}
