@@ -51,15 +51,21 @@ const PostCard = ({ post }: PostCardProps) => {
       <Link to={`/posts/${post.$id}`}>
         <div className="small-medium lg:base-medium pt-5 pb-4">
           <p className="font-normal line-clamp-3 text-pretty">{post.content}</p>
-          <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
-            {post?.tags.map((tag: string, index: string) => (
-              <li key={`${tag}${index}`}>
-                <span className="px-3 py-1  bg-[#2A2A2A] rounded-full text-xs font-medium">
-                  {tag}
-                </span>
-              </li>
-            ))}
-          </ul>
+          {post?.tags &&
+            Array.isArray(post.tags) &&
+            post.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
+              <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
+                {post.tags
+                  .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
+                  .map((tag: string, index: number) => (
+                    <li key={`${tag}${index}`}>
+                      <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
+                        {tag}
+                      </span>
+                    </li>
+                  ))}
+              </ul>
+            )}
         </div>
 
         <img

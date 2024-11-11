@@ -225,7 +225,7 @@ const Profile = () => {
       name: profileUser?.name || 'Unknown User',
       cover: profileUser?.cover || '/assets/icons/cover-placeholder.png',
       dp: profileUser?.dp || '/assets/icons/profile-placeholder.svg',
-      creationsCount: profileUser?.creationsCount || '',
+      creationsCount: profileUser?.creationsCount || '0',
       supporting: '65',
       bio: profileUser?.bio || '',
     }),
