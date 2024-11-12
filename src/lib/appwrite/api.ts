@@ -5,6 +5,7 @@ import {
   INewUser,
   IUpdatePost,
   IUpdateProject,
+  IUpdateUser,
 } from '@/types';
 import { account, appwriteConfig, avatars, databases, storage } from './config';
 
@@ -56,6 +57,9 @@ export async function createUserAccount(
       hometown: user.hometown,
       email: newAccount.email,
       dpUrl: avatarUrl,
+      coverUrl: new URL(
+        'https://cloud.appwrite.io/v1/storage/buckets/66eb8c5f0005ac84ff73/files/67334e3c0020012b0960/view?project=66e2a98a00192795ca51&project=66e2a98a00192795ca51&mode=admin'
+      ),
       username: username, // Add the generated username
     });
 
@@ -120,6 +124,9 @@ export async function createUserAccountWithGoogle(
       name: session.name,
       email: session.email,
       dpUrl: avatars.getInitials(session.name),
+      coverUrl: new URL(
+        'https://cloud.appwrite.io/v1/storage/buckets/66eb8c5f0005ac84ff73/files/67334e3c0020012b0960/view?project=66e2a98a00192795ca51&project=66e2a98a00192795ca51&mode=admin'
+      ),
       username: username,
     });
 
@@ -172,6 +179,7 @@ async function saveUserToDB(user: {
   hometown?: string;
   email: string;
   dpUrl: URL;
+  coverUrl: URL;
 }): Promise<Models.Document> {
   try {
     // Save the user to the database
@@ -197,12 +205,12 @@ export async function getAccount(): Promise<any | null> {
   }
 }
 
-export async function getCurrentUser(): Promise<Models.Document | null> {
+export async function getCurrentUser(): Promise<Models.Document> {
   try {
     const currentAccount = await getAccount();
 
     if (!currentAccount) {
-      return null;
+      throw new Error('No current account found.');
     }
 
     const currentUser = await databases.listDocuments(
@@ -211,10 +219,15 @@ export async function getCurrentUser(): Promise<Models.Document | null> {
       [Query.equal('accountId', currentAccount.$id)]
     );
 
-    return currentUser.documents?.[0] || null;
+    const user = currentUser.documents?.[0];
+    if (!user) {
+      throw new Error('No user document found for the current account.');
+    }
+
+    return user;
   } catch (error) {
     console.error('Error getting current user:', error);
-    return null;
+    throw error; // Re-throw error to be handled by the calling code
   }
 }
 
@@ -247,6 +260,106 @@ export async function getUserInfo(accountId: string) {
   } catch (error) {
     console.error('Error fetching user info:', error);
     return { name: 'Unknown', dpUrl: '' };
+  }
+}
+
+export async function getUserById(userId: string) {
+  try {
+    const user = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId
+    );
+    return user;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ** updateProfile **
+export async function updateProfile(user: IUpdateUser) {
+  try {
+    let profileMedia = {
+      dpUrl: user.dpUrl || '',
+      dpId: user.dpId || '',
+    };
+    let coverMedia = {
+      coverUrl: user.coverUrl || '',
+      coverId: user.coverId || '',
+    };
+
+    // Upload new dpFile if provided
+    if (user.dpFile) {
+      const uploadedDpFile = await uploadFile(user.dpFile);
+      if (!uploadedDpFile) throw new Error('File upload failed');
+      const dpFileUrl = getFilePreview(uploadedDpFile.$id);
+      if (!dpFileUrl) {
+        await deleteFile(uploadedDpFile.$id);
+        throw new Error('File preview generation failed');
+      }
+
+      profileMedia = {
+        dpUrl: dpFileUrl,
+        dpId: uploadedDpFile.$id,
+      };
+    }
+
+    // Upload new coverFile if provided
+    if (user.coverFile) {
+      const uploadedCoverFile = await uploadFile(user.coverFile);
+      if (!uploadedCoverFile) throw new Error('File upload failed');
+      const coverFileUrl = getFilePreview(uploadedCoverFile.$id);
+      if (!coverFileUrl) {
+        await deleteFile(uploadedCoverFile.$id);
+        throw new Error('File preview generation failed');
+      }
+
+      coverMedia = {
+        coverUrl: coverFileUrl,
+        coverId: uploadedCoverFile.$id,
+      };
+    }
+
+    const updatedUser = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      user.userId,
+      {
+        name: user.name,
+        username: user.username,
+        hometown: user.hometown,
+        profession: user.profession,
+        bio: user.bio,
+        about: user.about,
+        dpUrl: profileMedia.dpUrl,
+        dpId: profileMedia.dpId,
+        coverUrl: coverMedia.coverUrl,
+        coverId: coverMedia.coverId,
+      }
+    );
+
+    // If update failed, delete newly uploaded file (if any)
+    if (!updatedUser && user.dpFile) {
+      await deleteFile(profileMedia.dpId);
+      throw new Error('Document update failed');
+    }
+    if (!updatedUser && user.coverFile) {
+      await deleteFile(coverMedia.coverId);
+      throw new Error('Document update failed');
+    }
+
+    // Safely delete the old file after a successful update
+    if (user.dpFile && user.dpId) {
+      await deleteFile(user.dpId);
+    }
+    if (user.coverFile && user.coverId) {
+      await deleteFile(user.coverId);
+    }
+
+    return updatedUser;
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    throw new Error('Profile update failed');
   }
 }
 

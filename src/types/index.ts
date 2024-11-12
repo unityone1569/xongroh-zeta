@@ -13,21 +13,6 @@ export type INavLink = {
   label: string;
 };
 
-export type IUpdateUser = {
-  userId: string;
-  name: string;
-  username: string;
-  hometown: string;
-  profession: string;
-  bio: string;
-  dpId: string;
-  dpUrl: URL | string;
-  coverId: string;
-  coverUrl: URL | string;
-  dpFile: File[];
-  coverFile: File[];
-};
-
 export type INewPost = {
   userId: string;
   content: string;
@@ -39,7 +24,7 @@ export type INewProject = {
   title: string;
   description: string;
   file: File[];
-  links?: string|string[];
+  links?: string | string[];
   tags?: string;
 };
 
@@ -58,7 +43,7 @@ export type IUpdateProject = {
   mediaId: string;
   mediaUrl: URL;
   file: File[];
-  links?: string|string[];
+  links?: string | string[];
   tags?: string;
 };
 
@@ -80,3 +65,20 @@ export type INewUser = {
   email: string;
   password: string;
 };
+
+export type IUpdateUser = {
+  userId: string;
+  name?: string;
+  username?: string;
+  hometown?: string;
+  profession?: string;
+  bio?: string;
+  about?: string;
+  dpUrl?: URL;
+  dpId?: string;
+  coverUrl?: URL;
+  coverId?: string;
+  dpFile?: File;
+  coverFile?: File;
+};
+

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '../ui/textarea';
-import FileUploader from '../shared/FileUploader';
+import {FileUploader} from '../shared/FileUploader';
 import { ProjectValidation } from '@/lib/validation';
 import { Models } from 'appwrite';
 import { useUserContext } from '@/context/AuthContext';

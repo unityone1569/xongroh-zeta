@@ -92,7 +92,7 @@ const ProfileCardItem = ({
             </div>
             <div className="flex w-full justify-start gap-6 pt-9 lg:pt-12">
               {isCurrentUser ? (
-                <Link to={`/edit-profile/${userId}`}>
+                <Link to={`/update-profile/${userId}`}>
                   <Button className="font-semibold shad-button_dark_4">
                     Edit Profile
                   </Button>

@@ -77,3 +77,45 @@ export const ProjectValidation = z.object({
 
   tags: z.string(),
 });
+
+export const ProfileValidation = z.object({
+  name: z.string().min(2).max(100).optional(),
+  username: z
+    .string()
+    .min(3)
+    .max(30)
+    .regex(/^[a-zA-Z0-9_]+$/)
+    .optional(),
+  hometown: z.string().max(100).optional(),
+  profession: z.string().max(100).optional(),
+  bio: z.string().max(160).optional(),
+  about: z.string().max(251).optional(),
+  dpFile: z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        [
+          'image/jpeg',
+          'image/jpg',
+          'image/png',
+          'image/gif',
+          'image/webp',
+        ].includes(file.type),
+      { message: 'Invalid image type' }
+    )
+    .optional(),
+  coverFile: z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        [
+          'image/jpeg',
+          'image/jpg',
+          'image/png',
+          'image/gif',
+          'image/webp',
+        ].includes(file.type),
+      { message: 'Invalid image type' }
+    )
+    .optional(),
+});

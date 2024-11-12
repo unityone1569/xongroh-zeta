@@ -4,6 +4,7 @@ import {
   INewUser,
   IUpdatePost,
   IUpdateProject,
+  IUpdateUser,
 } from '@/types';
 import {
   useInfiniteQuery,
@@ -46,6 +47,8 @@ import {
   updateProject,
   getProjectById,
   getUserProjects,
+  updateProfile,
+  getUserById,
 } from '../appwrite/api';
 import { QUERY_KEYS } from './queryKeys';
 
@@ -98,6 +101,9 @@ export const useSignOutAccount = () => {
   return useMutation({
     mutationFn: signOutAccount,
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
       queryClient.invalidateQueries({ queryKey: ['auth'] });
     },
   });
@@ -108,6 +114,35 @@ export const useGetUserInfo = (accountId: string) => {
     queryKey: [QUERY_KEYS.GET_USER_INFO, accountId],
     queryFn: () => getUserInfo(accountId),
     enabled: !!accountId,
+  });
+};
+
+export const useGetCurrentUser = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+    queryFn: getCurrentUser,
+  });
+};
+export const useGetUserById = (userId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
+    queryFn: () => getUserById(userId),
+    enabled: !!userId,
+  });
+};
+
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (user: IUpdateUser) => updateProfile(user),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID],
+      });
+    },
   });
 };
 
@@ -143,13 +178,6 @@ export const useGetRecentPosts = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
     queryFn: getRecentPosts,
-  });
-};
-
-export const useGetCurrentUser = () => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.GET_CURRENT_USER],
-    queryFn: getCurrentUser,
   });
 };
 
@@ -195,7 +223,7 @@ export const useUpdateProject = () => {
     mutationFn: (project: IUpdateProject) => updateProject(project),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id],
+        queryKey: [QUERY_KEYS.GET_PROJECT_BY_ID, data?.$id],
       });
     },
   });
