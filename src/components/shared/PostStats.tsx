@@ -36,14 +36,15 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
           text: shareText,
           url: urlToShare,
         })
-        .then(() => console.log('Content shared successfully!'))
-        .catch((error) => console.error('Error sharing content:', error));
+        .then(() => toast({ title: 'Content shared successfully!' }))
+        .catch(() =>
+          toast({ title: 'Error sharing content. Please try again.' })
+        );
     } else {
-      // Fallback for browsers that do not support the Web Share API
       navigator.clipboard
         .writeText(`${shareText} ${urlToShare}`)
-        .then(() => alert('Link copied to clipboard!'))
-        .catch((error) => console.error('Error copying text: ', error));
+        .then(() => toast({ title: 'Link copied to clipboard!' }))
+        .catch(() => toast({ title: 'Error copying text. Please try again.' }));
     }
   };
 

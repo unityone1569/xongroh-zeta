@@ -1,8 +1,10 @@
 import Loader from '@/components/shared/Loader';
+import ProjectStats from '@/components/shared/projectStats';
+import { toast } from '@/components/ui/use-toast';
 import { useUserContext } from '@/context/AuthContext';
 import { useGetAuthorById, useGetProjectById } from '@/lib/react-query/queries';
 import { formatDateString } from '@/lib/utils';
-
+import { Models } from 'appwrite';
 import { Link, useParams } from 'react-router-dom';
 
 const ProjectDetails = () => {
@@ -24,14 +26,16 @@ const ProjectDetails = () => {
           text: shareText,
           url: urlToShare,
         })
-        .then(() => console.log('Content shared successfully!'))
-        .catch((error) => console.error('Error sharing content:', error));
+        .then(() => toast({ title: 'Content shared successfully!' }))
+        .catch(() =>
+          toast({ title: 'Error sharing content. Please try again.' })
+        );
     } else {
       // Fallback for browsers that do not support the Web Share API
       navigator.clipboard
         .writeText(`${shareText} ${urlToShare}`)
-        .then(() => alert('Link copied to clipboard!'))
-        .catch((error) => console.error('Error copying text: ', error));
+        .then(() => toast({ title: 'Link copied to clipboard!' }))
+        .catch(() => toast({ title: 'Error copying text. Please try again.' }));
     }
   };
 
@@ -83,7 +87,6 @@ const ProjectDetails = () => {
                 </Link>
                 <a
                   onClick={handleDeleteProject}
-                 
                   className={`ghost_details-delete_btn ${
                     user.id !== project?.creatorId && 'hidden'
                   }`}
@@ -139,7 +142,10 @@ const ProjectDetails = () => {
             </div>
 
             <div className="flex justify-between py-2 px-0.5 md:px-0 items-center w-full">
-              <img src="/assets/icons/like.svg" alt="like" width={26} />
+              <ProjectStats
+                project={project ?? ({} as Models.Document)}
+                userId={user.id}
+              />
               <img
                 src="/assets/icons/share.svg"
                 alt="share"

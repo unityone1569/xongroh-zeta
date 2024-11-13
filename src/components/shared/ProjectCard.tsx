@@ -2,11 +2,15 @@ import { Models } from 'appwrite';
 
 import { Link } from 'react-router-dom';
 
+import { useUserContext } from '@/context/AuthContext';
+import ProjectStats from './projectStats';
+
 type ProjectCardProps = {
   project: Models.Document;
 };
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
+  const { user } = useUserContext();
   if (!project.creatorId) return;
 
   return (
@@ -31,21 +35,20 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       </Link>
 
       {project?.tags &&
-                Array.isArray(project.tags) &&
-                project.tags.filter((tag: string) => tag.trim() !== '').length >
-                  0 && (
-                  <ul className="flex py-1.5 flex-wrap gap-3.5 mt-1.5 overflow-x-hidden">
-                    {project.tags
-                      .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
-                      .map((tag: string, index: number) => (
-                        <li key={`${tag}${index}`}>
-                          <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
-                            {tag}
-                          </span>
-                        </li>
-                      ))}
-                  </ul>
-                )}
+        Array.isArray(project.tags) &&
+        project.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
+          <ul className="flex py-1.5 flex-wrap gap-3.5 mt-1.5 overflow-x-hidden">
+            {project.tags
+              .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
+              .map((tag: string, index: number) => (
+                <li key={`${tag}${index}`}>
+                  <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
+                    {tag}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        )}
 
       <div className="flex-between pt-6">
         <div className="flex items-center gap-3">
@@ -66,8 +69,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <img src="/assets/icons/like.svg" alt="like" width={25} />
-          
+          <ProjectStats project={project} userId={user.id} />
         </div>
       </div>
     </div>

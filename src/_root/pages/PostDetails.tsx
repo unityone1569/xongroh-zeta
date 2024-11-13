@@ -24,7 +24,7 @@ const PostDetails = () => {
           {post?.mediaUrl && post?.mediaUrl.length > 0 && (
             <img src={post?.mediaUrl} alt="post" className="post_details-img" />
           )}
-          <div className="post_details-info">
+          <div className="post_details-info mt-3">
             <div className="flex-between w-full">
               <Link
                 to={`/profile/${post?.creatorId}`}
@@ -36,7 +36,7 @@ const PostDetails = () => {
                   className="rounded-full w-10 h-10 lg:w-14 lg:h-14"
                 />
 
-                <div className="flex flex-col">
+                <div className="flex flex-col ">
                   <p className="base-medium lg:body-bold text-light-1">
                     {author?.name}
                   </p>
@@ -64,9 +64,9 @@ const PostDetails = () => {
                 </a>
               </div>
             </div>
-            <hr className="border w-full my-2 border-dark-4/80" />
+            <hr className="border w-full mt-2 mb-0.5 border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-              <p className="font-normal text-pretty">{post?.content}</p>
+              <p className="font-normal whitespace-pre-line text-pretty">{post?.content}</p>
               {post?.tags &&
                 Array.isArray(post.tags) &&
                 post.tags.filter((tag: string) => tag.trim() !== '').length >
