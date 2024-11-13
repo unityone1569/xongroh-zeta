@@ -47,18 +47,18 @@ const PostCard = ({ post }: PostCardProps) => {
       <Link to={`/posts/${post.$id}`}>
         <div className="small-medium lg:base-medium pt-5 pb-4">
           {post.mediaUrl.length > 0 ? (
-            <p className="font-normal line-clamp-3 text-pretty">
+            <p className="font-normal pl-0.5 line-clamp-3 text-pretty">
               {post.content}
             </p>
           ) : (
-            <p className="font-normal line-clamp-[9] text-pretty">
+            <p className="font-normal pl-0.5 line-clamp-[9] text-pretty">
               {post.content}
             </p>
           )}
           {post?.tags &&
             Array.isArray(post.tags) &&
             post.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
-              <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
+              <ul className="flex py-1.5 flex-wrap gap-3.5 mt-3 mb-1.5 overflow-x-hidden">
                 {post.tags
                   .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
                   .map((tag: string, index: number) => (

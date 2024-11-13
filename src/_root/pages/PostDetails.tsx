@@ -21,7 +21,7 @@ const PostDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
-          {post?.mediaUrl > 0 && (
+          {post?.mediaUrl && post?.mediaUrl.length > 0 && (
             <img src={post?.mediaUrl} alt="post" className="post_details-img" />
           )}
           <div className="post_details-info">
