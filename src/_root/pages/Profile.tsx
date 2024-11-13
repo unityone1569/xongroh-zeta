@@ -16,7 +16,8 @@ interface ProfileCardItemProps {
   bio: string;
   isCurrentUser: boolean;
   userId: string;
-
+  hometown: string;
+  profession: string;
 }
 
 const ProfileCardItem = ({
@@ -25,6 +26,8 @@ const ProfileCardItem = ({
   dp,
   supporting,
   bio,
+  hometown,
+  profession,
   creationsCount,
   isCurrentUser,
   userId,
@@ -43,8 +46,8 @@ const ProfileCardItem = ({
           className="lg:h-72 w-full h-52 object-cover rounded-t-xl"
           alt="Cover"
         />
-        <div className="flex flex-col justify-start items-start pb-6 px-3 sm:px-6 lg:pl-14">
-          <div className="lg:pl-2 w-full">
+        <div className="flex flex-col justify-start items-start pb-6 px-3 sm:px-6 lg:pl-9">
+          <div className="w-full">
             <div className="flex justify-between gap-10 ">
               <img
                 src={dp}
@@ -53,7 +56,9 @@ const ProfileCardItem = ({
               />
               <div className="flex gap-6 lg:gap-20 pt-2 lg:pt-4">
                 <div className="text-center">
-                  <div className="small-medium lg:base-medium">{creationsCount}</div>
+                  <div className="small-medium lg:base-medium">
+                    {creationsCount}
+                  </div>
                   <div className="small-regular lg:base-regular pt-1">
                     Creations
                   </div>
@@ -72,23 +77,29 @@ const ProfileCardItem = ({
             <p className="pt-3 max-w-xl text-pretty small-regular font-light">
               {bio}
             </p>
-            <div className="flex gap-2 pt-6 justify-start items-center">
-              <img
-                src="/assets/icons/profession.svg"
-                alt="profession"
-                 className="w-5 h-5 md:w-6 md:h-6"
-              />
-              <p className="text-sm lg:text-base font-light">Guitarist</p>
-            </div>
-            <div className="flex gap-2 pt-3 justify-start items-center">
-              <img
-                src="/assets/icons/hometown.svg"
-                alt="hometown"
-                className="w-5 h-5 md:w-6 md:h-6"
-              />
-              <p className="text-sm lg:text-base font-light">
-                Dibrugarh, Assam 🇮🇳
-              </p>
+            <div className='pt-3'>
+              {profession && (
+                <div className="flex gap-2 pt-3 justify-start items-center">
+                  <img
+                    src="/assets/icons/profession.svg"
+                    alt="profession"
+                    className="w-5 h-5 md:w-6 md:h-6"
+                  />
+                  <p className="text-sm lg:text-base font-light">
+                    {profession}
+                  </p>
+                </div>
+              )}
+              {hometown && (
+                <div className="flex gap-2 pt-3 justify-start items-center">
+                  <img
+                    src="/assets/icons/hometown.svg"
+                    alt="hometown"
+                    className="w-5 h-5 md:w-6 md:h-6"
+                  />
+                  <p className="text-sm lg:text-base font-light">{hometown}</p>
+                </div>
+              )}
             </div>
             <div className="flex w-full justify-start gap-6 pt-9 lg:pt-12">
               {isCurrentUser ? (
@@ -191,7 +202,7 @@ const ProfileFeed = ({ userId }: { userId: string }) => {
 
   return (
     <>
-      <div className="flex-start lg:mt-8 lg:mb-10 whitespace-nowrap pl-1 sm:pl-3 lg:pl-14 lg:overflow-hidden">
+      <div className="flex-start lg:mt-8 lg:mb-10 whitespace-nowrap pl-1 sm:pl-3 lg:pl-9 lg:overflow-hidden">
         {tabs.map((tab) => (
           <button
             key={tab.name}
@@ -206,7 +217,7 @@ const ProfileFeed = ({ userId }: { userId: string }) => {
           </button>
         ))}
       </div>
-      <div className="mx-3 mt-8 mb-20 pl-1 sm:pl-3 lg:pl-14">
+      <div className="mx-3 mt-8 mb-20 pl-1 sm:pl-3 lg:pl-9">
         {renderContent()}
       </div>
     </>
@@ -227,7 +238,9 @@ const Profile = () => {
       dp: profileUser?.dp || '/assets/icons/profile-placeholder.svg',
       creationsCount: profileUser?.creationsCount || '0',
       supporting: '65',
-      bio: profileUser?.bio || '',
+      bio: profileUser?.bio,
+      hometown: profileUser?.hometown,
+      profession: profileUser?.profession,
     }),
     [profileUser]
   );

@@ -116,10 +116,10 @@ const UpdateprofileForm = ({ user }: ProfileFormProps) => {
 
         <FormField
           control={form.control}
-          name="hometown"
+          name="profession"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Hometown</FormLabel>
+              <FormLabel className="shad-form_label">Profession</FormLabel>
               <FormControl>
                 <Input className="shad-input" {...field} />
               </FormControl>
@@ -130,10 +130,10 @@ const UpdateprofileForm = ({ user }: ProfileFormProps) => {
 
         <FormField
           control={form.control}
-          name="profession"
+          name="hometown"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Profession</FormLabel>
+              <FormLabel className="shad-form_label">Hometown</FormLabel>
               <FormControl>
                 <Input className="shad-input" {...field} />
               </FormControl>

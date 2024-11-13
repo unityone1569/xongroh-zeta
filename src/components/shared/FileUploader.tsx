@@ -40,7 +40,7 @@ const FileUploader = ({ fieldChange, docUrl }: FileUploaderProps) => {
     >
       <input {...getInputProps()} className="cursor-pointer" />
 
-      {fileUrl ? (
+      {fileUrl.length > 0 ? (
         <>
           <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
             <img src={fileUrl} alt="image" className="file_uploader-img" />
@@ -101,7 +101,7 @@ const SingleFileUploader = ({
     >
       <input {...getInputProps()} className="cursor-pointer" />
 
-      {fileUrl ? (
+      {fileUrl.length > 0 ? (
         <>
           <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
             <img src={fileUrl} alt="image" className="file_uploader-img" />

@@ -153,6 +153,7 @@ export async function checkUserExists(
     return null;
   }
 }
+
 export async function updateUserAccountId(
   userId: string,
   newAccountId: string
@@ -254,6 +255,8 @@ export async function getUserInfo(accountId: string) {
       cover: user.coverUrl,
       bio: user.bio,
       about: user.about,
+      hometown: user.hometown,
+      profession: user.profession,
       projectsCount: user.projectsCount,
       creationsCount: user.creationsCount,
     };
@@ -368,16 +371,19 @@ export async function updateProfile(user: IUpdateUser) {
 // ** createPost **
 export async function createPost(post: INewPost) {
   try {
-    // Upload file to storage
-    const uploadedFile = await uploadFile(post.file[0]);
+    let fileUrl: string = '';
+    let uploadedFileId = '';
 
-    if (!uploadedFile) throw Error;
+    if (post.file && post.file.length > 0) {
+      const uploadedFile = await uploadFile(post.file[0]);
+      if (!uploadedFile) throw Error;
 
-    // Get file Url
-    const fileUrl = getFilePreview(uploadedFile.$id);
-    if (!fileUrl) {
-      await deleteFile(uploadedFile.$id);
-      throw Error;
+      // Get file Url
+      const fileUrl = getFilePreview(uploadedFile.$id);
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      }
     }
 
     // convert tags into an array
@@ -391,14 +397,14 @@ export async function createPost(post: INewPost) {
       {
         creatorId: post.userId,
         content: post.content,
-        mediaUrl: [fileUrl],
-        mediaId: [uploadedFile.$id],
+        mediaUrl: fileUrl ? [fileUrl] : [],
+        mediaId: uploadedFileId ? [uploadedFileId] : [],
         tags: tags,
       }
     );
 
-    if (!newPost) {
-      await deleteFile(uploadedFile.$id);
+    if (!newPost && uploadedFileId) {
+      await deleteFile(uploadedFileId);
       throw Error;
     }
 

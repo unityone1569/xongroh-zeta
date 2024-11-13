@@ -1,7 +1,6 @@
 import Loader from '@/components/shared/Loader';
 import PostComments from '@/components/shared/PostComments';
 import PostStats from '@/components/shared/PostStats';
-import { Button } from '@/components/ui/button';
 import { useUserContext } from '@/context/AuthContext';
 import { useGetAuthorById, useGetPostById } from '@/lib/react-query/queries';
 import { formatDateString } from '@/lib/utils';
@@ -22,8 +21,9 @@ const PostDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
-          <img src={post?.mediaUrl} alt="post" className="post_details-img" />
-
+          {post?.mediaUrl > 0 && (
+            <img src={post?.mediaUrl} alt="post" className="post_details-img" />
+          )}
           <div className="post_details-info">
             <div className="flex-between w-full">
               <Link

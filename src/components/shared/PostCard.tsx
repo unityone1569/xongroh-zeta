@@ -33,10 +33,6 @@ const PostCard = ({ post }: PostCardProps) => {
               <p className="subtle-semibold lg:small-regular ">
                 {multiFormatDateString(post.$createdAt)}
               </p>
-              {/* •
-              <p className="subtle-semibold lg:small-regular">
-                {post.location}
-              </p> */}
             </div>
           </div>
         </div>
@@ -50,7 +46,15 @@ const PostCard = ({ post }: PostCardProps) => {
 
       <Link to={`/posts/${post.$id}`}>
         <div className="small-medium lg:base-medium pt-5 pb-4">
-          <p className="font-normal line-clamp-3 text-pretty">{post.content}</p>
+          {post.mediaUrl.length > 0 ? (
+            <p className="font-normal line-clamp-3 text-pretty">
+              {post.content}
+            </p>
+          ) : (
+            <p className="font-normal line-clamp-[9] text-pretty">
+              {post.content}
+            </p>
+          )}
           {post?.tags &&
             Array.isArray(post.tags) &&
             post.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
@@ -68,11 +72,9 @@ const PostCard = ({ post }: PostCardProps) => {
             )}
         </div>
 
-        <img
-          src={post.mediaUrl || '/assets/icons/profile-placeholder.svg'}
-          alt="post image"
-          className="post-card_img"
-        />
+        {post.mediaUrl.length > 0 && (
+          <img src={post.mediaUrl} alt="post image" className="post-card_img" />
+        )}
       </Link>
       <PostStats post={post} userId={user.id} />
     </div>
