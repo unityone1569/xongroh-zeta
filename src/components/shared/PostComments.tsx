@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useUserContext } from '@/context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,6 +25,8 @@ import Loader from './Loader';
 import { multiFormatDateString } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import Replies from './Replies';
+import LikedItems from './LikedItems';
+import { Models } from 'appwrite';
 
 type PostCommentsProps = {
   postId: string;
@@ -33,6 +36,7 @@ type PostCommentsProps = {
 interface CommentFormValues {
   comment: string;
 }
+
 interface FeedbackFormValues {
   feedback: string;
 }
@@ -132,6 +136,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
           commentId={comment.$id}
           postId={postId}
           userId={userId}
+          item={comment}
         />
       ));
     }
@@ -144,6 +149,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
         feedbackId={feedback.$id}
         postId={postId}
         userId={userId}
+        item={feedback}
       />
     ));
   }, [
@@ -243,10 +249,19 @@ type CommentProps = {
   commentId: string;
   postId: string;
   userId: string;
+  item: Models.Document;
 };
 
 const CommentItem = React.memo(
-  ({ content, createdAt, accountId, commentId, userId }: CommentProps) => {
+  ({
+    content,
+    createdAt,
+    accountId,
+    commentId,
+    userId,
+    item,
+  }: CommentProps) => {
+    const { user } = useUserContext();
     const { data: userData } = useGetUserInfo(accountId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dp }
@@ -281,9 +296,9 @@ const CommentItem = React.memo(
         <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base ml-1 lg:ml-2 mb-3">
           {content}
         </p>
-        <div className="flex justify-between items-center ml-1 lg:ml-2">
-          <div className="flex justify-start gap-3">
-            <img src={'/assets/icons/like.svg'} alt="like" width={24} />
+        <div className="flex justify-between items-center ml-1">
+          <div className="flex justify-start gap-3.5">
+            <LikedItems item={item} userId={user.id} />
             <button
               onClick={toggleReplyForm}
               className="text-gray-500 hover:text-gray-700"
@@ -315,10 +330,19 @@ type FeedbackProps = {
   feedbackId: string;
   postId: string;
   userId: string;
+  item: Models.Document;
 };
 
 const FeedbackItem = React.memo(
-  ({ content, createdAt, accountId, feedbackId, userId }: FeedbackProps) => {
+  ({
+    content,
+    createdAt,
+    accountId,
+    feedbackId,
+    userId,
+    item,
+  }: FeedbackProps) => {
+    const { user } = useUserContext();
     const { data: userData } = useGetUserInfo(accountId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dp }
@@ -353,9 +377,9 @@ const FeedbackItem = React.memo(
         <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base ml-1 lg:ml-2 mb-3">
           {content}
         </p>
-        <div className="flex justify-between items-center ml-1 lg:ml-2">
-          <div className="flex justify-start gap-3">
-            <img src={'/assets/icons/like.svg'} alt="like" width={24} />
+        <div className="flex justify-between items-center ml-1">
+          <div className="flex justify-start gap-3.5">
+            <LikedItems item={item} userId={user.id} />
             <button
               onClick={toggleReplyForm} // Toggle visibility of reply form
               className="text-gray-500 hover:text-gray-700"

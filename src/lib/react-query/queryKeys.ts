@@ -20,6 +20,8 @@ export enum QUERY_KEYS {
   GET_USER_PROJECTS = 'getUserProjects',
 
   CHECK_POST_LIKE = 'checkPostLike',
+  CHECK_ITEM_LIKE = 'checkItemLike',
+
   CHECK_POST_SAVE = 'checkPostSave',
 
   GET_POST_COMMENTS = 'getComments',

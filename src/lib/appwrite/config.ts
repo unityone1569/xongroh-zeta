@@ -18,6 +18,8 @@ export const appwriteConfig = {
 
   savesCollectionId: import.meta.env.VITE_APPWRITE_SAVES_COLLECTION_ID,
   postLikesCollectionId: import.meta.env.VITE_APPWRITE_POST_LIKES_COLLECTION_ID,
+  interactionLikesCollectionId: import.meta.env
+    .VITE_APPWRITE_INTERACTION_LIKES_COLLECTION_ID,
 
   commentsCollectionId: import.meta.env.VITE_APPWRITE_COMMENTS_COLLECTION_ID,
   feedbacksCollectionId: import.meta.env.VITE_APPWRITE_FEEDBACKS_COLLECTION_ID,

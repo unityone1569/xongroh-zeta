@@ -1,9 +1,7 @@
 import { Models } from 'appwrite';
-
 import { Link } from 'react-router-dom';
-
 import { useUserContext } from '@/context/AuthContext';
-import ProjectStats from './projectStats';
+import ProjectStats from './ProjectStats';
 
 type ProjectCardProps = {
   project: Models.Document;

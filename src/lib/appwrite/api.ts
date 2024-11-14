@@ -763,19 +763,6 @@ export async function getRecentPosts() {
   }
 }
 
-function getPostCollectionId(postType: string): string {
-  switch (postType) {
-    case 'creationPost':
-      return appwriteConfig.creationPostCollectionId;
-    case 'communityPost':
-      return appwriteConfig.communityPostCollectionId;
-    case 'portfolioPost':
-      return appwriteConfig.portfolioPostCollectionId;
-    default:
-      throw new Error('Unknown post type');
-  }
-}
-
 export async function getPostById(postId: string) {
   try {
     const post = await databases.getDocument(
@@ -1012,6 +999,34 @@ export async function getUserProjects({
 
 // ***** LIKE & SAVE *****
 
+function getPostCollectionId(postType: string): string {
+  switch (postType) {
+    case 'creationPost':
+      return appwriteConfig.creationPostCollectionId;
+    case 'communityPost':
+      return appwriteConfig.communityPostCollectionId;
+    case 'portfolioPost':
+      return appwriteConfig.portfolioPostCollectionId;
+    default:
+      throw new Error('Unknown post type');
+  }
+}
+
+function getItemCollectionId(itemType: string): string {
+  switch (itemType) {
+    case 'comment':
+      return appwriteConfig.commentsCollectionId;
+    case 'feedback':
+      return appwriteConfig.feedbacksCollectionId;
+    case 'commentReply':
+      return appwriteConfig.commentRepliesCollectionId;
+    case 'feedbackReply':
+      return appwriteConfig.feedbackRepliesCollectionId;
+    default:
+      throw new Error('Unknown item type');
+  }
+}
+
 export async function likePost(
   postId: string,
   userId: string,
@@ -1104,6 +1119,109 @@ export async function unlikePost(
       databases.deleteDocument(
         appwriteConfig.databaseId,
         appwriteConfig.postLikesCollectionId,
+        likeDocumentId
+      ),
+    ]);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error unliking post:', error);
+    return { success: false, error };
+  }
+}
+
+export async function likeItem(
+  itemId: string,
+  userId: string,
+  itemType: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    const collectionId = getItemCollectionId(itemType);
+
+    // Fetch the current post document to get the current likesCount
+    const item = await databases.getDocument(
+      appwriteConfig.databaseId,
+      collectionId,
+      itemId
+    );
+    const currentLikesCount = item.likesCount || 0;
+
+    // Increment the likesCount manually
+    const updatedLikesCount = currentLikesCount + 1;
+
+    // Update the post with the new likesCount
+    await Promise.all([
+      databases.updateDocument(
+        appwriteConfig.databaseId,
+        collectionId,
+        itemId,
+        {
+          likesCount: updatedLikesCount,
+        }
+      ),
+      databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.interactionLikesCollectionId,
+        ID.unique(),
+        {
+          accountId: userId,
+          itemId,
+          itemType,
+        }
+      ),
+    ]);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error liking post:', error);
+    return { success: false, error };
+  }
+}
+
+export async function unlikeItem(
+  itemId: string,
+  userId: string,
+  postType: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    const collectionId = getItemCollectionId(postType);
+
+    // Fetch current post document to get the current likesCount
+    const item = await databases.getDocument(
+      appwriteConfig.databaseId,
+      collectionId,
+      itemId
+    );
+    const currentLikesCount = item.likesCount || 0;
+
+    // Decrement the likesCount manually
+    const updatedLikesCount = currentLikesCount > 0 ? currentLikesCount - 1 : 0;
+
+    // Find the document to delete in the 'postLikes' collection
+    const likes = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.interactionLikesCollectionId,
+      [Query.equal('accountId', userId), Query.equal('itemId', itemId)]
+    );
+
+    if (likes.documents.length === 0) {
+      throw new Error('Like document not found');
+    }
+
+    const likeDocumentId = likes.documents[0].$id; // Assuming there's only one match
+
+    await Promise.all([
+      databases.updateDocument(
+        appwriteConfig.databaseId,
+        collectionId,
+        itemId,
+        {
+          likesCount: updatedLikesCount,
+        }
+      ),
+      databases.deleteDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.interactionLikesCollectionId,
         likeDocumentId
       ),
     ]);
@@ -1235,6 +1353,24 @@ export async function checkPostLike(
   }
 }
 
+export async function checkItemLike(
+  itemId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    const likes = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.interactionLikesCollectionId,
+      [Query.equal('accountId', userId), Query.equal('itemId', itemId)]
+    );
+
+    return likes.documents.length > 0;
+  } catch (error) {
+    console.error('Error checking items like:', error);
+    return false;
+  }
+}
+
 export async function checkPostSave(
   postId: string,
   userId: string
@@ -1252,8 +1388,6 @@ export async function checkPostSave(
     return false;
   }
 }
-
-
 
 // ***** COMMENT & FEEDBACK *****
 

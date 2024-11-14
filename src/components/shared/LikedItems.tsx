@@ -1,33 +1,29 @@
 import {
-  useCheckPostLike,
-  useLikePost,
-  useUnlikePost,
+  useCheckItemLike,
+  useLikeItem,
+  useUnlikeItem,
 } from '@/lib/react-query/queries';
-import { QUERY_KEYS } from '@/lib/react-query/queryKeys';
 import { Models } from 'appwrite';
-import { toast } from '../ui/use-toast';
 import { useEffect, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { toast } from '../ui/use-toast';
 
-type ProjectStatsProps = {
-  project: Models.Document;
+type LikedItemsProps = {
+  item: Models.Document;
   userId: string;
 };
 
-const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
-  const { $id: projectId, postType, likesCount } = project;
+const LikedItems = ({ item, userId }: LikedItemsProps) => {
+  const { $id: itemId, itemType, likesCount } = item;
 
-  const queryClient = useQueryClient();
-
-  const { data: isLikedData, isLoading: isLikeLoading } = useCheckPostLike(
-    projectId,
+  const { data: isLikedData, isLoading: isLikeLoading } = useCheckItemLike(
+    itemId,
     userId
   );
 
-  const { mutateAsync: likePostMutation, isPending: likePostPending } =
-    useLikePost();
-  const { mutateAsync: unlikePostMutation, isPending: unlikePostPending } =
-    useUnlikePost();
+  const { mutateAsync: likeItemMutation, isPending: likeItemPending } =
+    useLikeItem();
+  const { mutateAsync: unlikeItemMutation, isPending: unlikeItemPending } =
+    useUnlikeItem();
 
   const [isLikedState, setIsLikedState] = useState<boolean>(false);
 
@@ -40,20 +36,17 @@ const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
     }
   }, [isLikedData, isLikeLoading]);
 
-  const handleLikeProject = () => {
+  const handleLikeItem = () => {
     const updateLikeCount = () => {
       setInitialLikesCount((prevCount) => prevCount + (isLikedState ? -1 : 1));
 
       if (!isLikedState) {
         setIsLikedState(true);
-        likePostMutation(
-          { postId: projectId, userId, postType },
+        likeItemMutation(
+          { itemId, userId, itemType },
           {
-            onSuccess: () => {
-              queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POST_BY_ID, projectId, postType],
-              });
-              toast({ title: 'Post liked!' });
+            onSuccess: (itemType) => {
+              toast({ title: `${itemType}' liked!'` });
             },
             onError: () => {
               setIsLikedState(false);
@@ -64,14 +57,11 @@ const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
         );
       } else {
         setIsLikedState(false);
-        unlikePostMutation(
-          { postId: projectId, userId, postType },
+        unlikeItemMutation(
+          { itemId, userId, itemType },
           {
-            onSuccess: () => {
-              queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POST_BY_ID, projectId, postType],
-              });
-              toast({ title: 'Post unliked!' });
+            onSuccess: (itemType) => {
+              toast({ title: `${itemType}' unliked!'` });
             },
             onError: () => {
               setIsLikedState(true);
@@ -87,7 +77,7 @@ const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
   };
 
   return (
-    <div className=" z-20">
+    <div className="z-20">
       <div className="flex gap-1 items-center">
         <img
           src={
@@ -95,9 +85,9 @@ const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
           }
           alt="like"
           width={25}
-          onClick={handleLikeProject}
+          onClick={handleLikeItem}
           className={`cursor-pointer ${
-            likePostPending || unlikePostPending
+            likeItemPending || unlikeItemPending
               ? 'opacity-50 cursor-not-allowed'
               : ''
           }`}
@@ -112,4 +102,4 @@ const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
   );
 };
 
-export default ProjectStats;
+export default LikedItems;

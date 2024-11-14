@@ -49,6 +49,9 @@ import {
   getUserProjects,
   updateProfile,
   getUserById,
+  checkItemLike,
+  likeItem,
+  unlikeItem,
 } from '../appwrite/api';
 import { QUERY_KEYS } from './queryKeys';
 
@@ -356,6 +359,47 @@ export const useUnlikePost = () => {
   });
 };
 
+export const useLikeItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      itemId,
+      userId,
+      itemType,
+    }: {
+      itemId: string;
+      userId: string;
+      itemType: string;
+    }) => likeItem(itemId, userId, itemType),
+    onSuccess: (_, { itemId, userId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.CHECK_ITEM_LIKE, itemId, userId],
+      });
+    },
+  });
+};
+export const useUnlikeItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      itemId,
+      userId,
+      itemType,
+    }: {
+      itemId: string;
+      userId: string;
+      itemType: string;
+    }) => unlikeItem(itemId, userId, itemType),
+    onSuccess: (_, { itemId, userId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.CHECK_ITEM_LIKE, itemId, userId],
+      });
+    },
+  });
+};
+
 export const useSavePost = () => {
   const queryClient = useQueryClient();
 
@@ -416,6 +460,14 @@ export const useCheckPostLike = (postId: string, userId: string) => {
     queryFn: () => checkPostLike(postId, userId),
   });
 };
+
+export const useCheckItemLike = (itemId: string, userId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.CHECK_ITEM_LIKE, itemId, userId],
+    queryFn: () => checkItemLike(itemId, userId),
+  });
+};
+
 export const useCheckPostSave = (postId: string, userId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.CHECK_POST_SAVE, postId, userId],

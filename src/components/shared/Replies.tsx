@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { useUserContext } from '@/context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,6 +22,8 @@ import Loader from './Loader';
 import { toast } from '@/components/ui/use-toast';
 import { multiFormatDateString } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { Models } from 'appwrite';
+import LikedItems from './LikedItems';
 
 interface RepliesSectionProps {
   parentId: string;
@@ -89,6 +92,7 @@ const Replies = ({
               accountId={reply.accountId}
               createdAt={reply.$createdAt}
               toggleReplyForm={toggleReplyForm} // Pass toggleReplyForm as a prop
+              item={reply}
             />
           ))
         )}
@@ -129,11 +133,19 @@ type ReplyItemProps = {
   content: string;
   createdAt: string;
   accountId: string;
+  item: Models.Document;
   toggleReplyForm: () => void;
 };
 
 const ReplyItem = React.memo(
-  ({ content, createdAt, accountId, toggleReplyForm }: ReplyItemProps) => {
+  ({
+    content,
+    createdAt,
+    accountId,
+    item,
+    toggleReplyForm,
+  }: ReplyItemProps) => {
+    const { user } = useUserContext();
     const { data: userData } = useGetUserInfo(accountId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dp }
@@ -164,8 +176,8 @@ const ReplyItem = React.memo(
         <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base ml-1 lg:ml-2 mb-3">
           {content}
         </p>
-        <div className="flex justify-start gap-3 items-center ml-1 lg:ml-2">
-          <img src={'/assets/icons/like.svg'} alt="like" width={20} />
+        <div className="flex justify-start gap-3 items-center ml-1">
+          <LikedItems item={item} userId={user.id} />
           <button
             onClick={(e) => {
               e.preventDefault();
