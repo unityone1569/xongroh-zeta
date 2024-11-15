@@ -23,14 +23,14 @@ export const SignInValidation = z.object({
 });
 
 export const PostValidation = z.object({
-  content: z.string().min(5).max(5000),
+  content: z.string().min(5).max(63206),
   file: z.custom<File[]>(),
   tags: z.string(),
 });
 
 export const ProjectValidation = z.object({
   title: z.string().min(5).max(250),
-  description: z.string().min(5).max(63206),
+  description: z.string().min(5).max(9000),
   file: z.array(
     z
       .instanceof(File)
@@ -83,12 +83,12 @@ export const ProfileValidation = z.object({
   username: z
     .string()
     .min(3)
-    .max(30)
+    .max(65)
     .regex(/^[a-zA-Z0-9_]+$/)
     .optional(),
-  hometown: z.string().max(100).optional(),
-  profession: z.string().max(100).optional(),
-  bio: z.string().max(160).optional(),
+  profession: z.string().max(65).optional(),
+  hometown: z.string().max(65).optional(),
+  bio: z.string().max(150).optional(),
   about: z.string().max(251).optional(),
   dpFile: z
     .instanceof(File)

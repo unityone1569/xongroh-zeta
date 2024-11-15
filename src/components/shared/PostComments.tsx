@@ -193,7 +193,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
                     <FormControl>
                       <Textarea
                         {...field}
-                        className="shad-comment custom-scrollbar"
+                        className="shad-comment subtle-comment md:small-regular pl-3.5 pt-3.5 custom-scrollbar"
                         placeholder="Write a comment..."
                       />
                     </FormControl>
@@ -220,7 +220,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
                     <FormControl>
                       <Textarea
                         {...field}
-                        className="shad-comment custom-scrollbar"
+                        className="shad-comment subtle-comment md:small-regular custom-scrollbar pl-3.5 pt-3.5 "
                         placeholder="Send feedback to the creator..."
                       />
                     </FormControl>
@@ -293,7 +293,7 @@ const CommentItem = React.memo(
             </div>
           </Link>
         </div>
-        <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base ml-1 lg:ml-2 mb-3">
+        <p className="text-pretty leading-relaxed subtle-comment md:small-regular ml-2 mb-3">
           {content}
         </p>
         <div className="flex justify-between items-center ml-1">
@@ -301,7 +301,7 @@ const CommentItem = React.memo(
             <LikedItems item={item} userId={user.id} />
             <button
               onClick={toggleReplyForm}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-gray-700 small-medium"
             >
               Reply
             </button>
@@ -374,7 +374,7 @@ const FeedbackItem = React.memo(
             </div>
           </Link>
         </div>
-        <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base ml-1 lg:ml-2 mb-3">
+        <p className="text-pretty subtle-comment md:small-regular leading-relaxed ml-2 mb-3">
           {content}
         </p>
         <div className="flex justify-between items-center ml-1">
@@ -382,7 +382,7 @@ const FeedbackItem = React.memo(
             <LikedItems item={item} userId={user.id} />
             <button
               onClick={toggleReplyForm} // Toggle visibility of reply form
-              className="text-gray-500 hover:text-gray-700"
+              className="small-medium text-gray-500 hover:text-gray-700"
             >
               Reply
             </button>

@@ -50,14 +50,14 @@ const PostDetails = () => {
               <div className="flex-center gap-5">
                 <Link
                   to={`/update-post/${post?.$id}`}
-                  className={`${user.id !== post?.creatorId && 'hidden'}`}
+                  className={`${user?.id !== post?.creatorId && 'hidden'}`}
                 >
                   <img src="/assets/icons/edit.svg" alt="edit" width={22} />
                 </Link>
                 <a
                   onClick={handleDeletePost}
                   className={`ghost_details-delete_btn ${
-                    user.id !== post?.creatorId && 'hidden'
+                    user?.id !== post?.creatorId && 'hidden'
                   }`}
                 >
                   <img src="/assets/icons/delete.svg" alt="delete" width={22} />
@@ -66,13 +66,13 @@ const PostDetails = () => {
             </div>
             <hr className="border w-full mt-2 mb-0.5 border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-              <p className="font-normal whitespace-pre-line text-pretty">{post?.content}</p>
+              <p className="small-regular whitespace-pre-line text-pretty">{post?.content}</p>
               {post?.tags &&
-                Array.isArray(post.tags) &&
-                post.tags.filter((tag: string) => tag.trim() !== '').length >
+                Array.isArray(post?.tags) &&
+                post?.tags.filter((tag: string) => tag.trim() !== '').length >
                   0 && (
                   <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
-                    {post.tags
+                    {post?.tags
                       .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
                       .map((tag: string, index: number) => (
                         <li key={`${tag}${index}`}>
@@ -88,7 +88,7 @@ const PostDetails = () => {
             <div className="w-full  pt-1.5">
               <PostStats
                 post={post ?? ({} as Models.Document)}
-                userId={user.id}
+                userId={user?.id}
               />
               <PostComments postId={post?.$id ?? ''} userId={user.id} />
             </div>

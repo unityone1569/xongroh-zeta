@@ -13,7 +13,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
 
   return (
     <div className="post-card">
-      <Link to={`/projects/${project.$id}`}>
+      <Link to={`/projects/${project?.$id}`}>
         <div className="pb-2">
           <p className="base-semibold lg:body-bold line-clamp-2 text-pretty">
             {project?.title}
@@ -33,10 +33,10 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       </Link>
 
       {project?.tags &&
-        Array.isArray(project.tags) &&
-        project.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
+        Array.isArray(project?.tags) &&
+        project?.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
           <ul className="flex py-1.5 flex-wrap gap-3.5 mt-1.5 overflow-x-hidden">
-            {project.tags
+            {project?.tags
               .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
               .map((tag: string, index: number) => (
                 <li key={`${tag}${index}`}>
@@ -50,7 +50,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
 
       <div className="flex-between pt-6">
         <div className="flex items-center gap-3">
-          <Link to={`/profile/${project.creatorId}`}>
+          <Link to={`/profile/${project?.creatorId}`}>
             <img
               src={
                 project?.creator?.dpUrl ||
@@ -62,7 +62,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           </Link>
           <div className="flex flex-col">
             <p className="small-medium lg:base-medium text-light-1">
-              {project.creator.name}
+              {project?.creator?.name}
             </p>
           </div>
         </div>

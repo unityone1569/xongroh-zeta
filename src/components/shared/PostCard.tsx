@@ -16,7 +16,7 @@ const PostCard = ({ post }: PostCardProps) => {
     <div className="post-card">
       <div className="flex-between">
         <div className="flex items-center gap-3">
-          <Link to={`/profile/${post.creatorId}`}>
+          <Link to={`/profile/${post?.creatorId}`}>
             <img
               src={
                 post?.creator?.dpUrl || '/assets/icons/profile-placeholder.svg'
@@ -27,39 +27,39 @@ const PostCard = ({ post }: PostCardProps) => {
           </Link>
           <div className="flex flex-col">
             <p className="base-medium lg:body-bold text-light-1">
-              {post.creator.name}
+              {post?.creator?.name}
             </p>
             <div className="flex-start text-light-3 pt-0.5">
               <p className="subtle-semibold lg:small-regular ">
-                {multiFormatDateString(post.$createdAt)}
+                {multiFormatDateString(post?.$createdAt)}
               </p>
             </div>
           </div>
         </div>
         <Link
-          to={`/update-post/${post.$id}`}
-          className={`${user.id !== post.creatorId && 'hidden'}`}
+          to={`/update-post/${post?.$id}`}
+          className={`${user.id !== post?.creatorId && 'hidden'}`}
         >
           <img src="/assets/icons/edit.svg" alt="edit" width={20} />
         </Link>
       </div>
 
-      <Link to={`/posts/${post.$id}`}>
+      <Link to={`/posts/${post?.$id}`}>
         <div className="small-medium lg:base-medium pt-5 pb-4">
-          {post.mediaUrl.length > 0 ? (
-            <p className="font-normal pl-0.5 line-clamp-3 text-pretty">
-              {post.content}
+          {post?.mediaUrl?.length > 0 ? (
+            <p className=" pl-0.5 small-regular line-clamp-3 text-pretty">
+              {post?.content}
             </p>
           ) : (
-            <p className="font-normal pl-0.5 line-clamp-[9] text-pretty">
-              {post.content}
+            <p className=" pl-0.5 small-regular line-clamp-[9] text-pretty">
+              {post?.content}
             </p>
           )}
           {post?.tags &&
-            Array.isArray(post.tags) &&
-            post.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
+            Array.isArray(post?.tags) &&
+            post?.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
               <ul className="flex py-1.5 flex-wrap gap-3.5 mt-3 mb-1.5 overflow-x-hidden">
-                {post.tags
+                {post?.tags
                   .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
                   .map((tag: string, index: number) => (
                     <li key={`${tag}${index}`}>
@@ -72,8 +72,8 @@ const PostCard = ({ post }: PostCardProps) => {
             )}
         </div>
 
-        {post.mediaUrl.length > 0 && (
-          <img src={post.mediaUrl} alt="post image" className="post-card_img" />
+        {post?.mediaUrl?.length > 0 && (
+          <img src={post?.mediaUrl} alt="post image" className="post-card_img" />
         )}
       </Link>
       <PostStats post={post} userId={user.id} />

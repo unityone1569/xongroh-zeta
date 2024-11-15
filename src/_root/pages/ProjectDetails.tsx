@@ -45,7 +45,7 @@ const ProjectDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
-          {project?.mediaUrl && project?.mediaUrl.length > 0 && (
+          {project?.mediaUrl && project?.mediaUrl?.length > 0 && (
             <img
               src={project?.mediaUrl}
               alt="post image"
@@ -80,7 +80,7 @@ const ProjectDetails = () => {
                 <Link
                   to={`/update-project/${project?.$id}`}
                   className={`pr-1 ${
-                    user.id !== project?.creatorId && 'hidden'
+                    user?.id !== project?.creatorId && 'hidden'
                   }`}
                 >
                   <img src="/assets/icons/edit.svg" alt="edit" width={22} />
@@ -88,7 +88,7 @@ const ProjectDetails = () => {
                 <a
                   onClick={handleDeleteProject}
                   className={`ghost_details-delete_btn ${
-                    user.id !== project?.creatorId && 'hidden'
+                    user?.id !== project?.creatorId && 'hidden'
                   }`}
                 >
                   <img src="/assets/icons/delete.svg" alt="delete" width={22} />
@@ -102,11 +102,11 @@ const ProjectDetails = () => {
                 {project?.description}
               </p>
               {project?.tags &&
-                Array.isArray(project.tags) &&
-                project.tags.filter((tag: string) => tag.trim() !== '').length >
+                Array.isArray(project?.tags) &&
+                project?.tags.filter((tag: string) => tag.trim() !== '').length >
                   0 && (
                   <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
-                    {project.tags
+                    {project?.tags
                       .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
                       .map((tag: string, index: number) => (
                         <li key={`${tag}${index}`}>
@@ -118,9 +118,9 @@ const ProjectDetails = () => {
                   </ul>
                 )}
 
-              {project?.links && project.links.length > 0 && (
+              {project?.links && project?.links?.length > 0 && (
                 <ul className="flex flex-col pl-1 py-1.5 flex-wrap gap-3 mt-5 overflow-x-hidden">
-                  {project.links.map((link: string, index: number) => (
+                  {project?.links.map((link: string, index: number) => (
                     <li key={`${link}${index}`}>
                       <a
                         href={link}
@@ -144,7 +144,7 @@ const ProjectDetails = () => {
             <div className="flex justify-between py-2 px-0.5 md:px-0 items-center w-full">
               <ProjectStats
                 project={project ?? ({} as Models.Document)}
-                userId={user.id}
+                userId={user?.id}
               />
               <img
                 src="/assets/icons/share.svg"

@@ -108,7 +108,7 @@ const Replies = ({
                   <FormControl>
                     <Textarea
                       {...field}
-                      className="custom-scrollbar shad-reply"
+                      className="custom-scrollbar subtle-comment md:small-regular pl-3.5 pt-3.5 shad-reply"
                       placeholder="Write a reply..."
                     />
                   </FormControl>
@@ -173,7 +173,7 @@ const ReplyItem = React.memo(
             </div>
           </Link>
         </div>
-        <p className="text-pretty leading-relaxed font-thin lg:font-normal text-sm lg:text-base ml-1 lg:ml-2 mb-3">
+        <p className="text-pretty leading-relaxed subtle-comment md:small-regular ml-1 lg:ml-2 mb-3">
           {content}
         </p>
         <div className="flex justify-start gap-3 items-center ml-1">
@@ -183,7 +183,7 @@ const ReplyItem = React.memo(
               e.preventDefault();
               toggleReplyForm();
             }}
-            className="text-gray-500 hover:text-gray-700"
+            className="small-medium text-gray-500 hover:text-gray-700"
           >
             Reply
           </button>
