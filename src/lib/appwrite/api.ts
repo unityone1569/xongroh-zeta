@@ -376,13 +376,15 @@ export async function createPost(post: INewPost) {
 
     if (post.file && post.file.length > 0) {
       const uploadedFile = await uploadFile(post.file[0]);
-      if (!uploadedFile) throw Error;
+      if (!uploadedFile) throw new Error('File upload failed');
 
       // Get file Url
-      const fileUrl = getFilePreview(uploadedFile.$id);
+      fileUrl = String(getFilePreview(uploadedFile.$id));
+      uploadedFileId = uploadedFile.$id;
+
       if (!fileUrl) {
         await deleteFile(uploadedFile.$id);
-        throw Error;
+        throw new Error('File preview generation failed');
       }
     }
 
@@ -1061,7 +1063,7 @@ export async function likePost(
         appwriteConfig.postLikesCollectionId,
         ID.unique(),
         {
-          accountId: userId,
+          creatorId: userId,
           postId,
           postType,
         }
@@ -1098,7 +1100,7 @@ export async function unlikePost(
     const likes = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.postLikesCollectionId,
-      [Query.equal('accountId', userId), Query.equal('postId', postId)]
+      [Query.equal('creatorId', userId), Query.equal('postId', postId)]
     );
 
     if (likes.documents.length === 0) {
@@ -1164,7 +1166,7 @@ export async function likeItem(
         appwriteConfig.interactionLikesCollectionId,
         ID.unique(),
         {
-          accountId: userId,
+          creatorId: userId,
           itemId,
           itemType,
         }
@@ -1201,7 +1203,7 @@ export async function unlikeItem(
     const likes = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.interactionLikesCollectionId,
-      [Query.equal('accountId', userId), Query.equal('itemId', itemId)]
+      [Query.equal('creatorId', userId), Query.equal('itemId', itemId)]
     );
 
     if (likes.documents.length === 0) {
@@ -1266,7 +1268,7 @@ export async function savePost(
         appwriteConfig.savesCollectionId,
         ID.unique(),
         {
-          accountId: userId,
+          creatorId: userId,
           postId,
           postType,
         }
@@ -1303,7 +1305,7 @@ export async function unsavePost(
     const saves = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.savesCollectionId,
-      [Query.equal('accountId', userId), Query.equal('postId', postId)]
+      [Query.equal('creatorId', userId), Query.equal('postId', postId)]
     );
 
     if (saves.documents.length === 0) {
@@ -1343,7 +1345,7 @@ export async function checkPostLike(
     const likes = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.postLikesCollectionId,
-      [Query.equal('accountId', userId), Query.equal('postId', postId)]
+      [Query.equal('creatorId', userId), Query.equal('postId', postId)]
     );
 
     return likes.documents.length > 0;
@@ -1361,7 +1363,7 @@ export async function checkItemLike(
     const likes = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.interactionLikesCollectionId,
-      [Query.equal('accountId', userId), Query.equal('itemId', itemId)]
+      [Query.equal('creatorId', userId), Query.equal('itemId', itemId)]
     );
 
     return likes.documents.length > 0;
@@ -1379,7 +1381,7 @@ export async function checkPostSave(
     const saves = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.savesCollectionId,
-      [Query.equal('accountId', userId), Query.equal('postId', postId)]
+      [Query.equal('creatorId', userId), Query.equal('postId', postId)]
     );
 
     return saves.documents.length > 0;
@@ -1417,7 +1419,7 @@ export async function addComment(
       ID.unique(),
       {
         postId,
-        accountId: userId,
+        creatorId: userId,
         content,
       }
     );
@@ -1454,7 +1456,7 @@ export async function addFeedback(
       ID.unique(),
       {
         postId,
-        accountId: userId,
+        creatorId: userId,
         content,
       }
     );
@@ -1492,7 +1494,7 @@ export async function addCommentReply(
       ID.unique(),
       {
         commentId: parentId,
-        accountId: userId,
+        creatorId: userId,
         content,
       }
     );
@@ -1530,7 +1532,7 @@ export async function addFeedbackReply(
       ID.unique(),
       {
         feedbackId: parentId,
-        accountId: userId,
+        creatorId: userId,
         content,
       }
     );

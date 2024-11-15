@@ -84,7 +84,7 @@ const LikedItems = ({ item, userId }: LikedItemsProps) => {
             isLikedState ? '/assets/icons/liked.svg' : '/assets/icons/like.svg'
           }
           alt="like"
-          width={25}
+          width={23}
           onClick={handleLikeItem}
           className={`cursor-pointer ${
             likeItemPending || unlikeItemPending

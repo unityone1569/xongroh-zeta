@@ -89,7 +89,7 @@ const Replies = ({
             <ReplyItem
               key={reply.$id}
               content={reply.content}
-              accountId={reply.accountId}
+              creatorId={reply.creatorId}
               createdAt={reply.$createdAt}
               toggleReplyForm={toggleReplyForm} // Pass toggleReplyForm as a prop
               item={reply}
@@ -132,7 +132,7 @@ const Replies = ({
 type ReplyItemProps = {
   content: string;
   createdAt: string;
-  accountId: string;
+  creatorId: string;
   item: Models.Document;
   toggleReplyForm: () => void;
 };
@@ -141,12 +141,12 @@ const ReplyItem = React.memo(
   ({
     content,
     createdAt,
-    accountId,
+    creatorId,
     item,
     toggleReplyForm,
   }: ReplyItemProps) => {
     const { user } = useUserContext();
-    const { data: userData } = useGetUserInfo(accountId);
+    const { data: userData } = useGetUserInfo(creatorId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dp }
       : { name: '', dpUrl: '' };
@@ -155,7 +155,7 @@ const ReplyItem = React.memo(
       <div className="w-full mx-auto px-2 pt-1 pb-5 rounded-lg">
         <div className="flex-between mb-5">
           <Link
-            to={`/profile/${accountId}`}
+            to={`/profile/${creatorId}`}
             className="flex items-center gap-3"
           >
             <img

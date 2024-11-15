@@ -1,5 +1,5 @@
 import Loader from '@/components/shared/Loader';
-import ProjectStats from '@/components/shared/projectStats';
+import ProjectStats from '@/components/shared/ProjectStats';
 import { toast } from '@/components/ui/use-toast';
 import { useUserContext } from '@/context/AuthContext';
 import { useGetAuthorById, useGetProjectById } from '@/lib/react-query/queries';

@@ -119,7 +119,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
   // Filtered feedbacks based on user role
   const visibleFeedbacks = useMemo(() => {
     return feedbacks?.filter(
-      (feedback) => isAuthor || feedback.accountId === userId
+      (feedback) => isAuthor || feedback.creatorId === userId
     );
   }, [feedbacks, isAuthor, userId]);
 
@@ -131,7 +131,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
         <CommentItem
           key={comment.$id}
           content={comment.content}
-          accountId={comment.accountId}
+          creatorId={comment.creatorId}
           createdAt={comment.$createdAt}
           commentId={comment.$id}
           postId={postId}
@@ -144,7 +144,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
       <FeedbackItem
         key={feedback.$id}
         content={feedback.content}
-        accountId={feedback.accountId}
+        creatorId={feedback.creatorId}
         createdAt={feedback.$createdAt}
         feedbackId={feedback.$id}
         postId={postId}
@@ -245,7 +245,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
 type CommentProps = {
   content: string;
   createdAt: string;
-  accountId: string;
+  creatorId: string;
   commentId: string;
   postId: string;
   userId: string;
@@ -256,13 +256,13 @@ const CommentItem = React.memo(
   ({
     content,
     createdAt,
-    accountId,
+    creatorId,
     commentId,
     userId,
     item,
   }: CommentProps) => {
     const { user } = useUserContext();
-    const { data: userData } = useGetUserInfo(accountId);
+    const { data: userData } = useGetUserInfo(creatorId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dp }
       : { name: '', dpUrl: '' };
@@ -274,7 +274,7 @@ const CommentItem = React.memo(
       <div className="w-full mx-auto px-2 py-4 rounded-lg">
         <div className="flex-between mb-5">
           <Link
-            to={`/profile/${accountId}`}
+            to={`/profile/${creatorId}`}
             className="flex items-center gap-3"
           >
             <img
@@ -326,7 +326,7 @@ CommentItem.displayName = 'CommentItem';
 type FeedbackProps = {
   content: string;
   createdAt: string;
-  accountId: string;
+  creatorId: string;
   feedbackId: string;
   postId: string;
   userId: string;
@@ -337,13 +337,13 @@ const FeedbackItem = React.memo(
   ({
     content,
     createdAt,
-    accountId,
+    creatorId,
     feedbackId,
     userId,
     item,
   }: FeedbackProps) => {
     const { user } = useUserContext();
-    const { data: userData } = useGetUserInfo(accountId);
+    const { data: userData } = useGetUserInfo(creatorId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dp }
       : { name: '', dpUrl: '' };
@@ -355,7 +355,7 @@ const FeedbackItem = React.memo(
       <div className="w-full mx-auto px-2 py-4 rounded-lg">
         <div className="flex-between mb-5">
           <Link
-            to={`/profile/${accountId}`}
+            to={`/profile/${creatorId}`}
             className="flex items-center gap-3"
           >
             <img
