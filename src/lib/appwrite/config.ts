@@ -8,6 +8,8 @@ export const appwriteConfig = {
 
   // DB COLLECTIONS
   userCollectionId: import.meta.env.VITE_APPWRITE_USER_COLLECTION_ID,
+  supportsCollectionId: import.meta.env
+    .VITE_APPWRITE_SUPPORTING_COLLECTION_ID,
 
   creationPostCollectionId: import.meta.env
     .VITE_APPWRITE_CREATION_POSTS_COLLECTION_ID,

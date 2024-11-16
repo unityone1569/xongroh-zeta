@@ -164,7 +164,7 @@ const ReplyItem = React.memo(
               className="rounded-full w-8 h-8"
             />
             <div>
-              <p className="text-base font-medium text-light-1 pb-0.5">
+              <p className="small-medium md:base-medium text-light-1 pb-0.5">
                 {userInfo.name}
               </p>
               <p className="subtle-semibold lg:small-regular text-light-3">

@@ -259,6 +259,7 @@ export async function getUserInfo(accountId: string) {
       profession: user.profession,
       projectsCount: user.projectsCount,
       creationsCount: user.creationsCount,
+      supportingCount: user.supportingCount,
     };
   } catch (error) {
     console.error('Error fetching user info:', error);
@@ -1249,6 +1250,7 @@ export async function savePost(
       collectionId,
       postId
     );
+
     const currentSavesCount = post.savesCount || 0;
 
     // Increment the savesCount manually
@@ -1337,6 +1339,144 @@ export async function unsavePost(
   }
 }
 
+export async function support(
+  creatorId: string,
+  supportingId: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    // Fetch user document to update supportingCount
+    const user = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      creatorId
+    );
+
+    // Update supportingCount in the user collection
+    const currentSupportingCount = user.supportingCount || 0;
+    const updatedSupportingCount = currentSupportingCount + 1;
+
+    const updateUserPromise = databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      creatorId,
+      { supportingCount: updatedSupportingCount }
+    );
+
+    // Manage supportingIds in the supports collection
+    const supportsQuery = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.supportsCollectionId,
+      [Query.equal('creatorId', creatorId)]
+    );
+
+    let updateSupportsPromise;
+
+    if (supportsQuery.total > 0) {
+      const supportDoc = supportsQuery.documents[0];
+
+      // Ensure supportingIds is an array and append supportingId
+      const currentSupportingIds = Array.isArray(supportDoc.supportingIds)
+        ? supportDoc.supportingIds
+        : [];
+      const updatedSupportingIds = [
+        ...new Set([...currentSupportingIds, supportingId]),
+      ];
+
+      // Update the existing document in supports collection
+      updateSupportsPromise = databases.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.supportsCollectionId,
+        supportDoc.$id,
+        { supportingIds: updatedSupportingIds }
+      );
+    } else {
+      // Create a new document in supports collection
+      updateSupportsPromise = databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.supportsCollectionId,
+        ID.unique(),
+        {
+          creatorId,
+          supportingIds: [supportingId],
+        }
+      );
+    }
+
+    // Perform both updates concurrently
+    await Promise.all([updateUserPromise, updateSupportsPromise]);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error supporting creator:', error);
+    return { success: false, error };
+  }
+}
+
+export async function unsupport(
+  creatorId: string,
+  supportingId: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    // Fetch user document to update supportingCount
+    const user = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      creatorId
+    );
+
+    // Ensure supportingCount is not negative
+    const currentSupportingCount = user.supportingCount || 0;
+    const updatedSupportingCount = Math.max(0, currentSupportingCount - 1);
+
+    const updateUserPromise = databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      creatorId,
+      { supportingCount: updatedSupportingCount }
+    );
+
+    // Manage supportingIds in the supports collection
+    const supportsQuery = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.supportsCollectionId,
+      [Query.equal('creatorId', creatorId)]
+    );
+
+    let updateSupportsPromise;
+
+    if (supportsQuery.total > 0) {
+      const supportDoc = supportsQuery.documents[0];
+
+      // Ensure supportingIds is an array and remove the supportingId
+      const currentSupportingIds = Array.isArray(supportDoc.supportingIds)
+        ? supportDoc.supportingIds
+        : [];
+      const updatedSupportingIds = currentSupportingIds.filter(
+        (id) => id !== supportingId
+      );
+
+      // Update the supports document with the new supportingIds array
+      updateSupportsPromise = databases.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.supportsCollectionId,
+        supportDoc.$id,
+        { supportingIds: updatedSupportingIds }
+      );
+    } else {
+      // No document found, no need to update
+      updateSupportsPromise = Promise.resolve();
+    }
+
+    // Perform both updates concurrently
+    await Promise.all([updateUserPromise, updateSupportsPromise]);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error unsupporting creator:', error);
+    return { success: false, error };
+  }
+}
+
 export async function checkPostLike(
   postId: string,
   userId: string
@@ -1387,6 +1527,33 @@ export async function checkPostSave(
     return saves.documents.length > 0;
   } catch (error) {
     console.error('Error checking post save:', error);
+    return false;
+  }
+}
+
+export async function checkSupportingUser(
+  creatorId: string,
+  supportingId: string
+): Promise<boolean> {
+  try {
+    const supports = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.supportsCollectionId,
+      [Query.equal('creatorId', creatorId)]
+    );
+
+    if (supports.documents.length > 0) {
+      const supportDoc = supports.documents[0];
+      const supportingIds = Array.isArray(supportDoc.supportingIds)
+        ? supportDoc.supportingIds
+        : [];
+
+      return supportingIds.includes(supportingId);
+    }
+
+    return false; // No document found for creatorId
+  } catch (error) {
+    console.error('Error checking supporting user:', error);
     return false;
   }
 }

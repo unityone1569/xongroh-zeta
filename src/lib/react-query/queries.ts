@@ -52,6 +52,9 @@ import {
   checkItemLike,
   likeItem,
   unlikeItem,
+  support,
+  checkSupportingUser,
+  unsupport,
 } from '../appwrite/api';
 import { QUERY_KEYS } from './queryKeys';
 
@@ -454,6 +457,50 @@ export const useUnsavePost = () => {
   });
 };
 
+export const useSupport = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      creatorId,
+      supportingId,
+    }: {
+      creatorId: string;
+      supportingId: string;
+    }) => support(creatorId, supportingId),
+    onSuccess: (_, { creatorId, supportingId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.CHECK_SUPPORTING_USER, creatorId, supportingId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_INFO, creatorId],
+      });
+    },
+  });
+};
+
+export const useUnSupport = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      creatorId,
+      supportingId,
+    }: {
+      creatorId: string;
+      supportingId: string;
+    }) => unsupport(creatorId, supportingId),
+    onSuccess: (_, { creatorId, supportingId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.CHECK_SUPPORTING_USER, creatorId, supportingId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_INFO, creatorId],
+      });
+    },
+  });
+};
+
 export const useCheckPostLike = (postId: string, userId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.CHECK_POST_LIKE, postId, userId],
@@ -472,6 +519,16 @@ export const useCheckPostSave = (postId: string, userId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.CHECK_POST_SAVE, postId, userId],
     queryFn: () => checkPostSave(postId, userId),
+  });
+};
+
+export const useCheckSupportingUser = (
+  creatorId: string,
+  supportingId: string
+) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.CHECK_SUPPORTING_USER, creatorId, supportingId],
+    queryFn: () => checkSupportingUser(creatorId, supportingId),
   });
 };
 

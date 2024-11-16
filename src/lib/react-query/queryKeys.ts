@@ -21,8 +21,8 @@ export enum QUERY_KEYS {
 
   CHECK_POST_LIKE = 'checkPostLike',
   CHECK_ITEM_LIKE = 'checkItemLike',
-
   CHECK_POST_SAVE = 'checkPostSave',
+  CHECK_SUPPORTING_USER = 'checkSupportingUser',
 
   GET_POST_COMMENTS = 'getComments',
   GET_POST_FEEDBACKS = 'getFeedbacks',

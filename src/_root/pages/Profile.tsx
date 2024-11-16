@@ -6,25 +6,29 @@ import { useGetUserInfo, useGetUserPosts } from '@/lib/react-query/queries';
 import Loader from '@/components/shared/Loader';
 import PostCard from '@/components/shared/PostCard';
 import { useUserContext } from '@/context/AuthContext';
+import UserSupport from '@/components/shared/UserSupport';
 
 interface ProfileCardItemProps {
+  creatorId: string;
   name: string;
   cover: string;
   dp: string;
   creationsCount: string;
-  supporting: string;
+  supportingCount: number;
   bio: string;
   isCurrentUser: boolean;
   userId: string;
   hometown: string;
   profession: string;
+
 }
 
 const ProfileCardItem = ({
+  creatorId,
   name,
   cover,
   dp,
-  supporting,
+  supportingCount,
   bio,
   hometown,
   profession,
@@ -32,12 +36,6 @@ const ProfileCardItem = ({
   isCurrentUser,
   userId,
 }: ProfileCardItemProps) => {
-  const [buttonText, setButtonText] = useState('Support');
-
-  const handleButtonClick = () => {
-    setButtonText((prev) => (prev === 'Support' ? 'Supporting' : 'Support'));
-  };
-
   return (
     <div className="overflow-hidden">
       <div className="pb-4 pt-10 md:pt-0 shadow-lg">
@@ -65,7 +63,7 @@ const ProfileCardItem = ({
                 </div>
                 <div className="text-center">
                   <div className="small-medium lg:base-medium">
-                    {supporting}
+                    {supportingCount}
                   </div>
                   <div className="small-regular lg:base-regular pt-1">
                     Supporting
@@ -77,7 +75,7 @@ const ProfileCardItem = ({
             <p className="pt-3 max-w-xl text-pretty small-regular font-light">
               {bio}
             </p>
-            <div className='pt-3'>
+            <div className="pt-3">
               {profession && (
                 <div className="flex gap-2 pt-3 justify-start items-center">
                   <img
@@ -109,16 +107,7 @@ const ProfileCardItem = ({
                   </Button>
                 </Link>
               ) : (
-                <Button
-                  className={`font-semibold ${
-                    buttonText === 'Support'
-                      ? 'shad-button_primary'
-                      : 'shad-button_dark_4'
-                  }`}
-                  onClick={handleButtonClick}
-                >
-                  {buttonText}
-                </Button>
+                <UserSupport creatorId={creatorId} supportingId={userId} />
               )}
               <Link to={`/portfolio/${userId}`}>
                 <Button className="font-semibold shad-button_dark_4">
@@ -237,10 +226,10 @@ const Profile = () => {
       cover: profileUser?.cover || '/assets/icons/cover-placeholder.png',
       dp: profileUser?.dp || '/assets/icons/profile-placeholder.svg',
       creationsCount: profileUser?.creationsCount || '0',
-      supporting: '65',
       bio: profileUser?.bio,
       hometown: profileUser?.hometown,
       profession: profileUser?.profession,
+      supportingCount: profileUser?.supportingCount || '0',
     }),
     [profileUser]
   );
@@ -252,6 +241,7 @@ const Profile = () => {
           {...data}
           isCurrentUser={isCurrentUser}
           userId={id || ''}
+          creatorId={user?.id}
         />
         <ProfileFeed userId={id || ''} />
       </div>

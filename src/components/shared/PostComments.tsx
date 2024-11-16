@@ -169,9 +169,9 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
           <button
             key={tab}
             onClick={() => handleTabChange(tab as 'comments' | 'feedbacks')}
-            className={`font-semibold ${
+            className={`small-medium md:base-medium ${
               activeTab === tab
-                ? 'underline decoration-purple-300 lg:decoration-2 underline-offset-8'
+                ? 'underline text-purple-300 lg:decoration-1 underline-offset-8'
                 : ''
             }`}
           >
@@ -284,7 +284,7 @@ const CommentItem = React.memo(
             />
 
             <div>
-              <p className="text-base font-medium text-light-1 pb-0.5">
+              <p className="small-medium md:base-medium text-light-1 pb-0.5">
                 {userInfo.name}
               </p>
               <p className="subtle-semibold lg:small-regular text-light-3">
@@ -365,7 +365,7 @@ const FeedbackItem = React.memo(
             />
 
             <div>
-              <p className="text-base font-medium text-light-1 pb-0.5">
+              <p className="small-medium md:base-medium text-light-1 pb-0.5">
                 {userInfo.name}
               </p>
               <p className="subtle-semibold lg:small-regular text-light-3">

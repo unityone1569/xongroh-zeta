@@ -58,7 +58,7 @@ const PostCard = ({ post }: PostCardProps) => {
           {post?.tags &&
             Array.isArray(post?.tags) &&
             post?.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
-              <ul className="flex py-1.5 flex-wrap gap-3.5 mt-3 mb-1.5 overflow-x-hidden">
+              <ul className="flex py-1.5 flex-wrap gap-3.5 mt-3 mb-0.5 overflow-x-hidden">
                 {post?.tags
                   .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
                   .map((tag: string, index: number) => (
