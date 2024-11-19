@@ -49,7 +49,7 @@ const ProfileCardItem = ({
             <div className="flex justify-between gap-10 ">
               <img
                 src={dp}
-                className="h-24 w-24 lg:h-32 lg:w-32 rounded-full bottom-9 lg:bottom-11 relative"
+                className="h-24 w-24 lg:h-32 lg:w-32 object-cover rounded-full bottom-9 lg:bottom-11 relative"
                 alt="Profile"
               />
               <div className="flex gap-6 lg:gap-20 pt-2 lg:pt-4">

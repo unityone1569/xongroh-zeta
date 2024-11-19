@@ -27,6 +27,7 @@ import { Link } from 'react-router-dom';
 import Replies from './Replies';
 import LikedItems from './LikedItems';
 import { Models } from 'appwrite';
+import { DeleteComment, DeleteFeedback } from './DeleteItems';
 
 type PostCommentsProps = {
   postId: string;
@@ -260,6 +261,7 @@ const CommentItem = React.memo(
     commentId,
     userId,
     item,
+    postId,
   }: CommentProps) => {
     const { user } = useUserContext();
     const { data: userData } = useGetUserInfo(creatorId);
@@ -280,7 +282,7 @@ const CommentItem = React.memo(
             <img
               src={userInfo.dpUrl || '/assets/icons/profile-placeholder.svg'}
               alt={`${userInfo.name}'s profile picture`}
-              className="rounded-full w-8 h-8"
+              className="rounded-full object-cover w-8 h-8"
             />
 
             <div>
@@ -299,6 +301,9 @@ const CommentItem = React.memo(
         <div className="flex justify-between items-center ml-1">
           <div className="flex justify-start gap-3.5">
             <LikedItems item={item} userId={user.id} />
+            <div className={`${user?.id !== creatorId && 'hidden'}`}>
+              <DeleteComment commentId={commentId} postId={postId} />
+            </div>
             <button
               onClick={toggleReplyForm}
               className="text-gray-500 hover:text-gray-700 small-medium"
@@ -341,6 +346,7 @@ const FeedbackItem = React.memo(
     feedbackId,
     userId,
     item,
+    postId,
   }: FeedbackProps) => {
     const { user } = useUserContext();
     const { data: userData } = useGetUserInfo(creatorId);
@@ -361,7 +367,7 @@ const FeedbackItem = React.memo(
             <img
               src={userInfo.dpUrl || '/assets/icons/profile-placeholder.svg'}
               alt={`${userInfo.name}'s profile picture`}
-              className="rounded-full w-8 h-8"
+              className="rounded-full object-cover w-8 h-8"
             />
 
             <div>
@@ -380,6 +386,9 @@ const FeedbackItem = React.memo(
         <div className="flex justify-between items-center ml-1">
           <div className="flex justify-start gap-3.5">
             <LikedItems item={item} userId={user.id} />
+            <div className={`${user?.id !== creatorId && 'hidden'}`}>
+              <DeleteFeedback feedbackId={feedbackId} postId={postId} />
+            </div>
             <button
               onClick={toggleReplyForm} // Toggle visibility of reply form
               className="small-medium text-gray-500 hover:text-gray-700"

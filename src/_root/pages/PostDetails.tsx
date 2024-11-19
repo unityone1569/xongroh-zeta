@@ -1,3 +1,4 @@
+import { DeleteCreation } from '@/components/shared/DeleteItems';
 import Loader from '@/components/shared/Loader';
 import PostComments from '@/components/shared/PostComments';
 import PostStats from '@/components/shared/PostStats';
@@ -12,8 +13,10 @@ const PostDetails = () => {
   const { data: post, isPending } = useGetPostById(id || '');
   const { user } = useUserContext();
   const { data: author } = useGetAuthorById(post?.creatorId);
+  const postId = id || '';
+  const mediaId = post?.mediaId[0];
+  const creatorId = post?.creatorId;
 
-  const handleDeletePost = () => {};
 
   return (
     <div className="post_details-container">
@@ -33,7 +36,7 @@ const PostDetails = () => {
                 <img
                   src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
                   alt="creator"
-                  className="rounded-full w-10 h-10 lg:w-14 lg:h-14"
+                  className="rounded-full object-cover w-10 h-10 lg:w-14 lg:h-14"
                 />
 
                 <div className="flex flex-col ">
@@ -48,25 +51,26 @@ const PostDetails = () => {
                 </div>
               </Link>
               <div className="flex-center gap-5">
-                <Link
-                  to={`/update-post/${post?.$id}`}
-                  className={`${user?.id !== post?.creatorId && 'hidden'}`}
-                >
-                  <img src="/assets/icons/edit.svg" alt="edit" width={22} />
-                </Link>
-                <a
-                  onClick={handleDeletePost}
-                  className={`ghost_details-delete_btn ${
-                    user?.id !== post?.creatorId && 'hidden'
-                  }`}
-                >
-                  <img src="/assets/icons/delete.svg" alt="delete" width={22} />
-                </a>
+                <div className={`${user?.id !== post?.creatorId && 'hidden'}`}>
+                  <Link to={`/update-post/${post?.$id}`}>
+                    <img src="/assets/icons/edit.svg" alt="edit" width={22} />
+                  </Link>
+                </div>
+
+                <div className={`${user?.id !== post?.creatorId && 'hidden'}`}>
+                  <DeleteCreation
+                    postId={postId}
+                    mediaId={mediaId}
+                    creatorId={creatorId}
+                  />
+                </div>
               </div>
             </div>
             <hr className="border w-full mt-2 mb-0.5 border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-              <p className="small-regular whitespace-pre-line text-pretty">{post?.content}</p>
+              <p className="small-regular pl-1 whitespace-pre-line text-pretty">
+                {post?.content}
+              </p>
               {post?.tags &&
                 Array.isArray(post?.tags) &&
                 post?.tags.filter((tag: string) => tag.trim() !== '').length >

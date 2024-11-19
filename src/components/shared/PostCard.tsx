@@ -22,7 +22,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 post?.creator?.dpUrl || '/assets/icons/profile-placeholder.svg'
               }
               alt="creator"
-              className="rounded-full w-10 h-10 lg:w-14 lg:h-14"
+              className="rounded-full object-cover w-10 h-10 lg:w-14 lg:h-14"
             />
           </Link>
           <div className="flex flex-col">
@@ -47,17 +47,19 @@ const PostCard = ({ post }: PostCardProps) => {
       <Link to={`/posts/${post?.$id}`}>
         <div className="small-medium lg:base-medium pt-5 pb-4">
           {post?.mediaUrl?.length > 0 ? (
-            <p className=" pl-0.5 small-regular line-clamp-3 text-pretty">
+            <p className="pl-0.5 whitespace-pre-line small-regular line-clamp-5 text-pretty">
               {post?.content}
             </p>
           ) : (
-            <p className=" pl-0.5 small-regular line-clamp-[9] text-pretty">
+            <p className="pl-0.5 whitespace-pre-line small-regular line-clamp-[11] text-pretty">
               {post?.content}
             </p>
           )}
+
           {post?.tags &&
             Array.isArray(post?.tags) &&
-            post?.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
+            post?.tags.filter((tag: string) => tag.trim() !== '').length >
+              0 && (
               <ul className="flex py-1.5 flex-wrap gap-3.5 mt-3 mb-0.5 overflow-x-hidden">
                 {post?.tags
                   .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
@@ -73,7 +75,11 @@ const PostCard = ({ post }: PostCardProps) => {
         </div>
 
         {post?.mediaUrl?.length > 0 && (
-          <img src={post?.mediaUrl} alt="post image" className="post-card_img" />
+          <img
+            src={post?.mediaUrl}
+            alt="post image"
+            className="post-card_img"
+          />
         )}
       </Link>
       <PostStats post={post} userId={user.id} />

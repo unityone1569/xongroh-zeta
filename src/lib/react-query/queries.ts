@@ -55,6 +55,11 @@ import {
   support,
   checkSupportingUser,
   unsupport,
+  deleteComment,
+  deleteCommentReply,
+  deleteFeedback,
+  deleteFeedbackReply,
+  deleteProject,
 } from '../appwrite/api';
 import { QUERY_KEYS } from './queryKeys';
 
@@ -129,6 +134,7 @@ export const useGetCurrentUser = () => {
     queryFn: getCurrentUser,
   });
 };
+
 export const useGetUserById = (userId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
@@ -235,14 +241,118 @@ export const useUpdateProject = () => {
   });
 };
 
+// *** DELETE ****
 export const useDeletePost = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ postId, mediaId }: { postId?: string; mediaId: string }) =>
-      deletePost(postId, mediaId),
-    onSuccess: () => {
+    mutationFn: ({
+      postId,
+      mediaId,
+      creatorId,
+    }: {
+      postId: string;
+      mediaId: string;
+      creatorId: string;
+    }) => deletePost(postId, mediaId, creatorId),
+    onSuccess: (_, { creatorId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_POSTS, creatorId],
+      });
+    },
+  });
+};
+
+export const useDeleteProject = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      postId,
+      mediaId,
+      creatorId,
+    }: {
+      postId: string;
+      mediaId: string;
+      creatorId: string;
+    }) => deleteProject(postId, mediaId, creatorId),
+    onSuccess: (_, { creatorId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_PROJECTS, creatorId],
+      });
+    },
+  });
+};
+
+export const useDeleteComment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      commentId,
+      postId,
+    }: {
+      commentId: string;
+      postId: string;
+    }) => deleteComment(commentId, postId),
+
+    onSuccess: (_, { postId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_COMMENTS, postId],
+      });
+    },
+  });
+};
+
+export const useDeleteFeedback = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      feedbackId,
+      postId,
+    }: {
+      feedbackId: string;
+      postId: string;
+    }) => deleteFeedback(feedbackId, postId),
+    onSuccess: (_, { postId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS, postId],
+      });
+    },
+  });
+};
+
+export const useDeleteCommentReply = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      commentReplyId,
+      commentId,
+    }: {
+      commentReplyId: string;
+      commentId: string;
+    }) => deleteCommentReply(commentReplyId, commentId),
+    onSuccess: (_, { commentId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES, commentId],
+      });
+    },
+  });
+};
+
+export const useDeleteFeedbackReply = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      feedbackReplyId,
+      feedbackId,
+    }: {
+      feedbackReplyId: string;
+      feedbackId: string;
+    }) => deleteFeedbackReply(feedbackReplyId, feedbackId),
+    onSuccess: (_, { feedbackId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, feedbackId],
       });
     },
   });
@@ -603,6 +713,7 @@ export const useGetCommentReplies = (commentId: string) => {
     enabled: !!commentId,
   });
 };
+
 export const useAddCommentReply = () => {
   const queryClient = useQueryClient();
 

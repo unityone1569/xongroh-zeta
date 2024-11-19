@@ -443,6 +443,33 @@ async function incrementUsercreationsCount(userId: string) {
   }
 }
 
+async function decrementUserCreationsCount(userId: string) {
+  try {
+    // Retrieve the user document
+    const userDoc = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId
+    );
+
+    // Ensure creationsCount is at least 1 before decrementing
+    const updatedCreationsCount = Math.max(
+      (userDoc.creationsCount || 0) - 1,
+      0
+    );
+
+    // Update the user document with the decremented creationsCount
+    await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId,
+      { creationsCount: updatedCreationsCount }
+    );
+  } catch (error) {
+    console.error('Failed to decrement projects count:', error);
+  }
+}
+
 // ** addProject **
 export async function addProject(project: INewProject) {
   try {
@@ -529,6 +556,30 @@ async function incrementUserProjectsCount(userId: string) {
     );
   } catch (error) {
     console.error('Failed to increment projects count:', error);
+  }
+}
+
+async function decrementUserProjectsCount(userId: string) {
+  try {
+    // Retrieve the user document
+    const userDoc = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId
+    );
+
+    // Ensure creationsCount is at least 1 before decrementing
+    const updatedProjectCount = Math.max((userDoc.projectsCount || 0) - 1, 0);
+
+    // Update the user document with the decremented creationsCount
+    await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId,
+      { projectsCount: updatedProjectCount }
+    );
+  } catch (error) {
+    console.error('Failed to decrement projects count:', error);
   }
 }
 
@@ -805,8 +856,13 @@ export async function getAuthorById(creatorId: string) {
   }
 }
 
-export async function deletePost(postId?: string, mediaId?: string) {
-  if (!postId || !mediaId) return;
+// Delete-Post
+export async function deletePost(
+  postId: string,
+  mediaId: string,
+  creatorId: string
+) {
+  if (!postId || !creatorId) return;
 
   try {
     const statusCode = await databases.deleteDocument(
@@ -819,9 +875,358 @@ export async function deletePost(postId?: string, mediaId?: string) {
 
     await deleteFile(mediaId);
 
+    await deleteAllCommentsForPost(postId);
+
+    await deleteAllFeedbacksForPost(postId);
+
+    await decrementUserCreationsCount(creatorId);
+
+    await deleteAllPostLikes(postId);
+
+    await deleteAllPostSaves(postId);
+
     return { status: 'Ok' };
   } catch (error) {
     console.log(error);
+  }
+}
+
+// Delete-Project
+export async function deleteProject(
+  postId: string,
+  mediaId: string,
+  creatorId: string
+) {
+  if (!postId || !creatorId) return;
+
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.portfolioPostCollectionId,
+      postId
+    );
+
+    if (!statusCode) throw Error;
+
+    await deleteFile(mediaId);
+
+    await decrementUserProjectsCount(creatorId);
+
+    await deleteAllPostLikes(postId);
+
+    return { status: 'Ok' };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// Delete All-Post-Likes
+export async function deleteAllPostLikes(postId: string) {
+  if (!postId) return;
+
+  try {
+    // Find documents with the matching postId
+    const postLikes = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postLikesCollectionId,
+      [Query.equal('postId', postId)]
+    );
+
+    // If no documents are found, throw an error
+    if (postLikes.documents.length === 0) {
+      throw new Error(`No likes found for postId: ${postId}`);
+    }
+
+    // Loop through each like and delete it
+    for (const like of postLikes.documents) {
+      const likeId = like.$id;
+
+      const statusCode = await databases.deleteDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.postLikesCollectionId,
+        likeId
+      );
+
+      if (!statusCode) {
+        throw new Error(`Failed to delete like with ID: ${likeId}`);
+      }
+    }
+
+    return { status: 'Ok', postId };
+  } catch (error) {
+    console.error(`Error deleting likes for postId: ${postId}`, error);
+    throw error;
+  }
+}
+
+// Delete All-Post-Saves
+export async function deleteAllPostSaves(postId: string) {
+  if (!postId) return;
+
+  try {
+    // Find the document with the matching postId
+    const postSaves = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.savesCollectionId,
+      [Query.equal('postId', postId)]
+    );
+
+    // If no document is found, throw an error
+    if (postSaves.documents.length === 0) {
+      throw new Error(`No saves found for postId: ${postId}`);
+    }
+
+    // Loop through each save and delete it
+    for (const save of postSaves.documents) {
+      const saveId = save.$id;
+
+      const statusCode = await databases.deleteDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.savesCollectionId,
+        saveId
+      );
+
+      if (!statusCode) {
+        throw new Error(`Failed to delete save with ID: ${saveId}`);
+      }
+    }
+
+    return { status: 'Ok', postId };
+  } catch (error) {
+    console.error(`Error deleting saves for postId: ${postId}`, error);
+    throw error;
+  }
+}
+
+// Delete-Interaction
+export async function deleteInteractionLike(itemId: string) {
+  if (!itemId) return;
+
+  try {
+    // Find the document with the matching itemId
+    const interactionLike = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.interactionLikesCollectionId,
+      [Query.equal('itemId', itemId)]
+    );
+
+    // If no document is found, throw an error
+    if (interactionLike.documents.length === 0) {
+      // throw new Error(`No interaction like found with itemId: ${itemId}`);
+      return;
+    }
+
+    // Get the document ID of the first matching document
+    const interactionLikeId = interactionLike.documents[0].$id;
+
+    // Delete the found document
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.interactionLikesCollectionId,
+      interactionLikeId
+    );
+
+    if (!statusCode) {
+      throw new Error(
+        `Failed to delete interaction like with itemId: ${itemId}`
+      );
+    }
+
+    return { status: 'Ok', interactionLikeId };
+  } catch (error) {
+    console.error(
+      `Error deleting interaction like with itemId: ${itemId}`,
+      error
+    );
+    throw error;
+  }
+}
+
+// Delete Single-Comment
+export async function deleteComment(commentId: string, postId: string) {
+  if (!commentId) return;
+
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentsCollectionId,
+      commentId
+    );
+
+    if (!statusCode) throw Error;
+
+    await deleteAllCommentReplies(commentId);
+
+    await deleteInteractionLike(commentId);
+
+    return { status: 'Ok', postId };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// Delete Single-Feedback
+export async function deleteFeedback(feedbackId: string, postId: string) {
+  if (!feedbackId) return;
+
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.feedbacksCollectionId,
+      feedbackId
+    );
+
+    if (!statusCode) throw Error;
+
+    await deleteAllFeedbackReplies(feedbackId);
+
+    await deleteInteractionLike(feedbackId);
+
+    return { status: 'Ok', postId };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// Delete Single-Comment-Reply
+export async function deleteCommentReply(
+  commentReplyId: string,
+  commentId: string
+) {
+  if (!commentReplyId) return;
+
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentRepliesCollectionId,
+      commentReplyId
+    );
+
+    if (!statusCode) throw Error;
+
+    await deleteInteractionLike(commentReplyId);
+
+    return { status: 'Ok', commentId };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// Delete Single-Feedback-Reply
+export async function deleteFeedbackReply(
+  feedbackReplyId: string,
+  feedbackId: string
+) {
+  if (!feedbackReplyId) return;
+
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.feedbackRepliesCollectionId,
+      feedbackReplyId
+    );
+
+    if (!statusCode) throw Error;
+
+    await deleteInteractionLike(feedbackReplyId);
+
+    return { status: 'Ok', feedbackId };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// Delete All-Comment
+export async function deleteAllCommentsForPost(postId: string) {
+  if (!postId) return;
+
+  try {
+    const comments = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentsCollectionId,
+      [Query.equal('postId', postId)]
+    );
+
+    for (const comment of comments.documents) {
+      await deleteComment(comment.$id, postId);
+      await deleteAllCommentReplies(comment.$id);
+    }
+
+    return { status: 'Ok' };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// Delete All-Feedback
+export async function deleteAllFeedbacksForPost(postId: string) {
+  if (!postId) return;
+
+  try {
+    const feedbacks = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.feedbacksCollectionId,
+      [Query.equal('postId', postId)]
+    );
+
+    for (const feedback of feedbacks.documents) {
+      await deleteFeedback(feedback.$id, postId);
+      await deleteAllFeedbackReplies(feedback.$id);
+    }
+
+    return { status: 'Ok' };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// Delete All-Comment-Replies
+export async function deleteAllCommentReplies(commentId: string) {
+  if (!commentId) return;
+
+  try {
+    const replies = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentRepliesCollectionId,
+      [Query.equal('commentId', commentId)]
+    );
+
+    for (const reply of replies.documents) {
+      await deleteCommentReply(reply.$id, commentId);
+    }
+
+    return { status: 'Ok' };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// Delete All-Feedback-Replies
+export async function deleteAllFeedbackReplies(feedbackId: string) {
+  if (!feedbackId) return;
+
+  try {
+    const replies = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.feedbackRepliesCollectionId,
+      [Query.equal('feedbackId', feedbackId)]
+    );
+
+    for (const reply of replies.documents) {
+      await deleteFeedbackReply(reply.$id, feedbackId);
+    }
+
+    return { status: 'Ok' };
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 }
 

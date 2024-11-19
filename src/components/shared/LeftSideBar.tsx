@@ -53,18 +53,18 @@ const LeftSidebar = () => {
           ) : (
             <li
               className={`leftsidebar-link group ${
-                pathname === `/profile/${user.id}` &&
+                pathname === `/profile/${user?.id}` &&
                 'bg-gradient-to-r from-violet-600 to-indigo-600'
               }`}
             >
               <NavLink
-                to={`/profile/${user.id}`}
+                to={`/profile/${user?.id}`}
                 className="flex gap-4 items-center p-3"
               >
                 <img
-                  src={user.dpUrl || '/assets/icons/profile-placeholder.svg'}
+                  src={user?.dpUrl || '/assets/icons/profile-placeholder.svg'}
                   alt="profile"
-                  className="w-7 h-7 rounded-full ml-0.5 "
+                  className="w-7 h-7 object-cover rounded-full ml-0.5 "
                 />
                 <div className="flex flex-col">
                   <p>Profile</p>

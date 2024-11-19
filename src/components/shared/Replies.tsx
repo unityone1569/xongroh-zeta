@@ -24,6 +24,7 @@ import { multiFormatDateString } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { Models } from 'appwrite';
 import LikedItems from './LikedItems';
+import { DeleteCommentReply, DeleteFeedbackReply } from './DeleteItems';
 
 interface RepliesSectionProps {
   parentId: string;
@@ -93,6 +94,8 @@ const Replies = ({
               createdAt={reply.$createdAt}
               toggleReplyForm={toggleReplyForm} // Pass toggleReplyForm as a prop
               item={reply}
+              isFeedback={isFeedback} // Pass isFeedback
+              parentId={parentId} // Pass parentId
             />
           ))
         )}
@@ -135,6 +138,8 @@ type ReplyItemProps = {
   creatorId: string;
   item: Models.Document;
   toggleReplyForm: () => void;
+  isFeedback: boolean; // Add isFeedback
+  parentId: string; // Add parentId
 };
 
 const ReplyItem = React.memo(
@@ -144,6 +149,8 @@ const ReplyItem = React.memo(
     creatorId,
     item,
     toggleReplyForm,
+    isFeedback,
+    parentId,
   }: ReplyItemProps) => {
     const { user } = useUserContext();
     const { data: userData } = useGetUserInfo(creatorId);
@@ -161,7 +168,7 @@ const ReplyItem = React.memo(
             <img
               src={userInfo.dpUrl || '/assets/icons/profile-placeholder.svg'}
               alt={`${userInfo.name}'s profile picture`}
-              className="rounded-full w-8 h-8"
+              className="rounded-full object-cover w-8 h-8"
             />
             <div>
               <p className="small-medium md:base-medium text-light-1 pb-0.5">
@@ -176,8 +183,21 @@ const ReplyItem = React.memo(
         <p className="text-pretty leading-relaxed subtle-comment md:small-regular ml-1 lg:ml-2 mb-3">
           {content}
         </p>
-        <div className="flex justify-start gap-3 items-center ml-1">
+        <div className="flex justify-start gap-3.5 items-center ml-1">
           <LikedItems item={item} userId={user.id} />
+          <div className={`${user?.id !== creatorId && 'hidden'}`}>
+            {isFeedback ? (
+              <DeleteFeedbackReply
+                feedbackReplyId={item.$id}
+                feedbackId={parentId}
+              />
+            ) : (
+              <DeleteCommentReply
+                commentReplyId={item.$id}
+                commentId={parentId}
+              />
+            )}
+          </div>
           <button
             onClick={(e) => {
               e.preventDefault();

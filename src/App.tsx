@@ -4,7 +4,7 @@ import AuthLayout from './_auth/AuthLayout';
 import RootLayout from './_root/RootLayout';
 import {
   AllUsers,
-  CreatePost,
+  AddCreation,
   EditPost,
   Explore,
   Home,
@@ -49,7 +49,7 @@ const App = () => {
           <Route path="/update-profile/:id" element={<UpdateProfile />} />
 
           {/* creationPost */}
-          <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/add-creation" element={<AddCreation />} />
           <Route path="/update-post/:id" element={<EditPost />} />
           <Route path="/posts/:id" element={<PostDetails />} />
 

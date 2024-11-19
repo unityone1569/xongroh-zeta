@@ -1,3 +1,4 @@
+import { DeleteProject } from '@/components/shared/DeleteItems';
 import Loader from '@/components/shared/Loader';
 import ProjectStats from '@/components/shared/ProjectStats';
 import { toast } from '@/components/ui/use-toast';
@@ -13,7 +14,11 @@ const ProjectDetails = () => {
   const { user } = useUserContext();
   const { data: author } = useGetAuthorById(project?.creatorId);
 
-  const handleDeleteProject = () => {};
+  const postId = id || '';
+  const mediaId = project?.mediaId[0];
+  const creatorId = project?.creatorId;
+
+
 
   const handleShare = () => {
     const urlToShare = window.location.href;
@@ -77,22 +82,27 @@ const ProjectDetails = () => {
                 </div>
               </Link>
               <div className="flex-center gap-5">
-                <Link
-                  to={`/update-project/${project?.$id}`}
+                <div
                   className={`pr-1 ${
                     user?.id !== project?.creatorId && 'hidden'
                   }`}
                 >
-                  <img src="/assets/icons/edit.svg" alt="edit" width={22} />
-                </Link>
-                <a
-                  onClick={handleDeleteProject}
+                  <Link to={`/update-project/${project?.$id}`}>
+                    <img src="/assets/icons/edit.svg" alt="edit" width={22} />
+                  </Link>
+                </div>
+
+                <div
                   className={`ghost_details-delete_btn ${
                     user?.id !== project?.creatorId && 'hidden'
                   }`}
                 >
-                  <img src="/assets/icons/delete.svg" alt="delete" width={22} />
-                </a>
+                  <DeleteProject
+                    postId={postId}
+                    mediaId={mediaId} 
+                    creatorId={creatorId}
+                  />
+                </div>
               </div>
             </div>
             <hr className="border w-full my-2 border-dark-4/80" />
@@ -103,8 +113,8 @@ const ProjectDetails = () => {
               </p>
               {project?.tags &&
                 Array.isArray(project?.tags) &&
-                project?.tags.filter((tag: string) => tag.trim() !== '').length >
-                  0 && (
+                project?.tags.filter((tag: string) => tag.trim() !== '')
+                  .length > 0 && (
                   <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
                     {project?.tags
                       .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
