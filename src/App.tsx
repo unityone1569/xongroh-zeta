@@ -24,6 +24,7 @@ import Portfolio from './_root/pages/Portfolio';
 import AddProject from './_root/pages/AddProject';
 import EditProject from './_root/pages/EditProject';
 import ProjectDetails from './_root/pages/ProjectDetails';
+import PageNotFound from './_root/pages/PageNotFound';
 
 const App = () => {
   return (
@@ -59,6 +60,7 @@ const App = () => {
           <Route path="/portfolio/:id/*" element={<Portfolio />} />
           <Route path="/projects/:id" element={<ProjectDetails />} />
         </Route>
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
 
       <Toaster />

@@ -1,7 +1,6 @@
-import { ID, Models, OAuthProvider, Query } from 'appwrite';
+import { ID, ImageGravity, Models, OAuthProvider, Query } from 'appwrite';
 import { INewUser, IUpdateUser } from '@/types';
-import { account, appwriteConfig, avatars, databases } from './config';
-import { deleteFile, getFilePreview, uploadFile } from './post';
+import { account, appwriteConfig, avatars, databases, storage } from './config';
 
 // ****************
 // ***** AUTH *****
@@ -520,5 +519,51 @@ export async function getUserProjects({
   } catch (error) {
     console.error('Error fetching projects:', error);
     throw error;
+  }
+}
+
+// FILE
+
+export async function uploadFile(file: File) {
+  try {
+    const uploadedFile = await storage.createFile(
+      appwriteConfig.userBucketId,
+      ID.unique(),
+      file
+    );
+    return uploadedFile;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export function getFilePreview(fileId: string) {
+  try {
+    const fileUrl = storage.getFilePreview(
+      appwriteConfig.userBucketId,
+      fileId,
+      0,
+      0,
+      ImageGravity.Center,
+      60
+    );
+
+    if (!fileUrl) throw Error;
+
+    // console.log(fileUrl);
+
+    return fileUrl;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteFile(fileId: string) {
+  try {
+    await storage.deleteFile(appwriteConfig.userBucketId, fileId);
+
+    return { status: 'ok' };
+  } catch (error) {
+    console.log(error);
   }
 }
