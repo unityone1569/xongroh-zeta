@@ -1,4 +1,5 @@
-import { getAccount, getCurrentUser } from '@/lib/appwrite/api';
+
+import { getAccount, getCurrentUser } from '@/lib/appwrite/user';
 import { IContextType, IUser } from '@/types';
 import {
   createContext,

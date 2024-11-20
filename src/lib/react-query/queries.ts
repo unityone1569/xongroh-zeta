@@ -19,36 +19,12 @@ import {
   addFeedbackReply,
   checkPostLike,
   checkPostSave,
-  createPost,
-  addProject,
-  createUserAccount,
-  createUserAccountWithGoogle,
-  deletePost,
-  getAuthorById,
   getCommentReplies,
   getComments,
-  getCurrentUser,
   getFeedbackReplies,
   getFeedbacks,
-  getInfinitePosts,
-  getPostById,
-  getRecentPosts,
-  getUserInfo,
-  getUserPosts,
-  likePost,
-  loginWithGoogle,
-  savePost,
-  searchPosts,
-  signInAccount,
-  signOutAccount,
   unlikePost,
   unsavePost,
-  updatePost,
-  updateProject,
-  getProjectById,
-  getUserProjects,
-  updateProfile,
-  getUserById,
   checkItemLike,
   likeItem,
   unlikeItem,
@@ -59,13 +35,14 @@ import {
   deleteCommentReply,
   deleteFeedback,
   deleteFeedbackReply,
-  deleteProject,
-  searchUsers,
-  getInfiniteUsers,
-} from '../appwrite/api';
+  likePost,
+  savePost,
+} from '../appwrite/interaction';
 import { QUERY_KEYS } from './queryKeys';
+import { createUserAccount, createUserAccountWithGoogle, getCurrentUser, getInfiniteUsers, getUserById, getUserInfo, getUserPosts, getUserProjects, loginWithGoogle, searchUsers, signInAccount, signOutAccount, updateProfile } from '../appwrite/user';
+import { addProject, createPost, deletePost, deleteProject, getAuthorById, getInfinitePosts, getPostById, getProjectById, getRecentPosts, searchPosts, updatePost, updateProject } from '../appwrite/post';
 
-// ***** AUTHENTICATION *****
+// ***** AUTH *****
 
 export const useCreateUserAccount = () => {
   const queryClient = useQueryClient();
@@ -395,7 +372,6 @@ export const useGetUsers = () => {
     },
   });
 };
-
 
 export const useSearchPosts = (searchTerm: string) => {
   return useQuery({

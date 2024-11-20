@@ -1,13 +1,15 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAccount } from '@/lib/appwrite/api';
+
 import { useCreateUserAccountWithGoogle } from '@/lib/react-query/queries';
 import Loader from '@/components/shared/Loader';
 import { useUserContext } from '@/context/AuthContext';
+import { getAccount } from '@/lib/appwrite/user';
 
 const OAuthCallback = () => {
   const navigate = useNavigate();
-  const { mutateAsync: createUserAccountWithGoogle } = useCreateUserAccountWithGoogle();
+  const { mutateAsync: createUserAccountWithGoogle } =
+    useCreateUserAccountWithGoogle();
   const { checkAuthUser } = useUserContext();
 
   useEffect(() => {

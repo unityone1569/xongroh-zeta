@@ -20,7 +20,7 @@ import {
   useGetUserInfo,
 } from '@/lib/react-query/queries';
 import { toast } from '@/components/ui/use-toast';
-import { getPostById } from '@/lib/appwrite/api';
+
 import Loader from './Loader';
 import { multiFormatDateString } from '@/lib/utils';
 import { Link } from 'react-router-dom';
@@ -28,6 +28,7 @@ import Replies from './Replies';
 import LikedItems from './LikedItems';
 import { Models } from 'appwrite';
 import { DeleteComment, DeleteFeedback } from './DeleteItems';
+import { getPostById } from '@/lib/appwrite/post';
 
 type PostCommentsProps = {
   postId: string;

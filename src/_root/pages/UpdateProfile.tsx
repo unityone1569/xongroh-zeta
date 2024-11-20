@@ -41,7 +41,7 @@ const UpdateProfile = () => {
               className="shad-button_dark_4"
               onClick={(e) => handleSignOut(e)}
             >
-              <p className="small-medium lg:base-medium ">Logout</p>
+              <p className="small-medium lg:base-medium ">Sign out</p>
             </Button>
           </div>
         </div>
