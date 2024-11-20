@@ -1,19 +1,21 @@
 import Loader from './Loader';
-import GridPostList from './GridPostList';
+import GridSearchList from './GridSearchList';
 
 type SearchResultsProps = {
   isSearchFetching: boolean;
-  searchedPosts: any;
+  searchedItems: any;
+  type: 'post' | 'user';
 };
 
 const SearchResult = ({
   isSearchFetching,
-  searchedPosts,
+  searchedItems,
+  type,
 }: SearchResultsProps) => {
   if (isSearchFetching) {
     return <Loader />;
-  } else if (searchedPosts && searchedPosts.documents.length > 0) {
-    return <GridPostList posts={searchedPosts.documents} />;
+  } else if (searchedItems && searchedItems.documents.length > 0) {
+    return <GridSearchList items={searchedItems.documents} type={type} />;
   } else {
     return (
       <p className="text-light-4 mt-10 text-center w-full">No results found</p>

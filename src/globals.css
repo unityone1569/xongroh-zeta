@@ -39,6 +39,9 @@
   .base-medium {
     @apply text-[16px] font-medium leading-[140%];
   }
+  .base-bold {
+    @apply text-[16px] font-bold leading-[140%];
+  }
 
   .base-regular {
     @apply text-[16px] font-normal leading-[140%];
@@ -66,6 +69,9 @@
 
   .subtle-comment {
     @apply text-[13px] font-normal leading-[140%];
+  }
+  .subtle-normal {
+    @apply text-[12px] font-normal leading-[140%];
   }
   .subtle-semibold {
     @apply text-[12px] font-semibold leading-[140%];
@@ -228,7 +234,7 @@
 
   /* Grid Post List */
   .grid-container {
-    @apply w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-7 max-w-5xl pb-6;
+    @apply w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2  gap-7 max-w-5xl pb-6;
   }
 
   .grid-post_link {
@@ -264,7 +270,7 @@
 
   /* User card */
   .user-card {
-    @apply flex-center flex-col gap-4 border border-dark-4 rounded-[20px] px-5 py-8;
+    @apply flex gap-4 border border-dark-4 rounded-[20px] px-3.5 py-3.5;
   }
 
   .post-comments-container {

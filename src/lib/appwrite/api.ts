@@ -934,7 +934,8 @@ export async function deleteAllPostLikes(postId: string) {
 
     // If no documents are found, throw an error
     if (postLikes.documents.length === 0) {
-      throw new Error(`No likes found for postId: ${postId}`);
+      // throw new Error(`No likes found for postId: ${postId}`);
+      return;
     }
 
     // Loop through each like and delete it
@@ -973,7 +974,8 @@ export async function deleteAllPostSaves(postId: string) {
 
     // If no document is found, throw an error
     if (postSaves.documents.length === 0) {
-      throw new Error(`No saves found for postId: ${postId}`);
+      // throw new Error(`No saves found for postId: ${postId}`);
+      return;
     }
 
     // Loop through each save and delete it
@@ -1230,6 +1232,7 @@ export async function deleteAllFeedbackReplies(feedbackId: string) {
   }
 }
 
+// Search-Post
 export async function searchPosts(searchTerm: string) {
   try {
     const { documents: posts } = await databases.listDocuments(
@@ -1238,9 +1241,17 @@ export async function searchPosts(searchTerm: string) {
       [Query.search('content', searchTerm)]
     );
 
-    if (!posts) throw Error;
+    if (!posts || posts.length === 0) {
+      // No posts found, return an empty response
+      return { documents: [] };
+    }
 
     const creatorIds = [...new Set(posts.map((post) => post.creatorId))];
+
+    // Handle case where creatorIds is empty
+    if (creatorIds.length === 0) {
+      return { documents: posts.map((post) => ({ ...post, author: null })) };
+    }
 
     const { documents: authors } = await databases.listDocuments(
       appwriteConfig.databaseId,
@@ -1257,7 +1268,29 @@ export async function searchPosts(searchTerm: string) {
 
     return { documents: postsWithAuthors };
   } catch (error) {
-    console.log(error);
+    console.error('Error fetching posts:', error);
+    throw error;
+  }
+}
+
+
+// Search-User
+export async function searchUsers(searchTerm: string) {
+  try {
+    const { documents: users } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.search('name', searchTerm)] // Adjust field as necessary
+    );
+
+    if (!users || users.length === 0) {
+      return { documents: [] }; // Return empty array if no users found
+    }
+
+    return { documents: users };
+  } catch (error) {
+    console.error('Error searching users:', error);
+    throw error;
   }
 }
 
@@ -1298,6 +1331,30 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
     throw error;
   }
 }
+
+export async function getInfiniteUsers({ pageParam }: { pageParam: number }) {
+  const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(9)];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
+  try {
+    const { documents: users } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      queries
+    );
+
+    if (!users || users.length === 0) return { documents: [] };
+
+    return { documents: users }; // Ensure consistent return format
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+}
+
 
 // User Posts
 export async function getUserPosts({
@@ -2016,6 +2073,7 @@ export async function getFeedbacks(postId: string) {
     throw error;
   }
 }
+
 export async function addFeedback(
   postId: string,
   userId: string,

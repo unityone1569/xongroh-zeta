@@ -60,6 +60,8 @@ import {
   deleteFeedback,
   deleteFeedbackReply,
   deleteProject,
+  searchUsers,
+  getInfiniteUsers,
 } from '../appwrite/api';
 import { QUERY_KEYS } from './queryKeys';
 
@@ -376,11 +378,49 @@ export const useGetPosts = () => {
   });
 };
 
+export const useGetUsers = () => {
+  return useInfiniteQuery({
+    initialPageParam: null,
+    queryKey: [QUERY_KEYS.GET_INFINITE_USERS],
+    queryFn: getInfiniteUsers as any,
+    getNextPageParam: (lastPage: any) => {
+      // If there's no data, there are no more pages.
+      if (lastPage && lastPage.documents.length === 0) {
+        return null;
+      }
+
+      // Use the $id of the last document as the cursor.
+      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
+      return lastId;
+    },
+  });
+};
+
+
 export const useSearchPosts = (searchTerm: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
-    queryFn: () => searchPosts(searchTerm),
-    enabled: !!searchTerm,
+    queryFn: async () => {
+      if (!searchTerm.trim()) {
+        // Return an empty result if the search term is blank
+        return { documents: [] };
+      }
+      return searchPosts(searchTerm);
+    },
+    enabled: !!searchTerm, // Fetch only when a search term exists
+  });
+};
+
+export const useSearchUsers = (searchTerm: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.SEARCH_USERS, searchTerm],
+    queryFn: async () => {
+      if (!searchTerm.trim()) {
+        return { documents: [] }; // Return empty result for blank search term
+      }
+      return searchUsers(searchTerm);
+    },
+    enabled: !!searchTerm, // Fetch only when a search term exists
   });
 };
 
@@ -394,7 +434,6 @@ export const useGetUserPosts = (userId: string) => {
         return null; // No more pages if no data
       }
 
-      // Use the $id of the last document as the cursor for the next page
       const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
       return lastId;
     },

@@ -20,7 +20,6 @@ interface ProfileCardItemProps {
   userId: string;
   hometown: string;
   profession: string;
-
 }
 
 const ProfileCardItem = ({
@@ -199,7 +198,7 @@ const ProfileFeed = ({ userId }: { userId: string }) => {
             className={`p-2 px-3 font-semibold ${
               activeTab === tab.name
                 ? 'underline text-primary-500 underline-offset-8'
-                : ''
+                : 'hover:text-primary-500'
             }`}
           >
             {tab.label}
