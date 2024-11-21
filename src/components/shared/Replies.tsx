@@ -19,7 +19,7 @@ import {
   useGetUserInfo,
 } from '@/lib/react-query/queries';
 import Loader from './Loader';
-import { toast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { multiFormatDateString } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { Models } from 'appwrite';
@@ -27,6 +27,7 @@ import LikedItems from './LikedItems';
 import { DeleteCommentReply, DeleteFeedbackReply } from './DeleteItems';
 
 interface RepliesSectionProps {
+  authorId: string;
   parentId: string;
   userId: string;
   isFeedback: boolean;
@@ -51,12 +52,14 @@ const Textarea = React.forwardRef<
 Textarea.displayName = 'Textarea';
 
 const Replies = ({
+  authorId,
   parentId,
   userId,
   isFeedback,
   showReplyForm,
   toggleReplyForm,
 }: RepliesSectionProps) => {
+  const { toast } = useToast();
   const { data: replies, isLoading: isRepliesLoading } = isFeedback
     ? useGetFeedbackReplies(parentId)
     : useGetCommentReplies(parentId);
@@ -72,12 +75,20 @@ const Replies = ({
 
   const onSubmitReply = useCallback(
     async ({ reply }: ReplyFormValues) => {
-      await addReply({ parentId, userId, content: reply });
-      replyForm.reset();
-      toast({ title: 'Reply added successfully!' });
-      toggleReplyForm();
+      try {
+        await addReply({ parentId, userId, content: reply });
+        replyForm.reset();
+        toast({
+          description: 'Reply added successfully!',
+        });
+        toggleReplyForm();
+      } catch (error) {
+        toast({
+          description: 'Failed to add reply. Please try again.',
+        });
+      }
     },
-    [addReply, parentId, userId, replyForm, toggleReplyForm]
+    [addReply, parentId, userId, replyForm, toast, toggleReplyForm]
   );
 
   return (
@@ -88,6 +99,7 @@ const Replies = ({
         ) : (
           replies?.map((reply) => (
             <ReplyItem
+              authorId={authorId}
               key={reply.$id}
               content={reply.content}
               creatorId={reply.creatorId}
@@ -136,6 +148,7 @@ type ReplyItemProps = {
   content: string;
   createdAt: string;
   creatorId: string;
+  authorId: string;
   item: Models.Document;
   toggleReplyForm: () => void;
   isFeedback: boolean; // Add isFeedback
@@ -147,6 +160,7 @@ const ReplyItem = React.memo(
     content,
     createdAt,
     creatorId,
+    authorId,
     item,
     toggleReplyForm,
     isFeedback,
@@ -185,7 +199,11 @@ const ReplyItem = React.memo(
         </p>
         <div className="flex justify-start gap-3.5 items-center ml-1">
           <LikedItems item={item} userId={user.id} />
-          <div className={`${user?.id !== creatorId && 'hidden'}`}>
+          <div
+            className={`${
+              user?.id !== creatorId && user?.id !== authorId && 'hidden'
+            }`}
+          >
             {isFeedback ? (
               <DeleteFeedbackReply
                 feedbackReplyId={item.$id}

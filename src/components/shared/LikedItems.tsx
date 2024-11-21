@@ -5,7 +5,7 @@ import {
 } from '@/lib/react-query/queries';
 import { Models } from 'appwrite';
 import { useEffect, useState } from 'react';
-import { toast } from '../ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 type LikedItemsProps = {
   item: Models.Document;
@@ -13,6 +13,7 @@ type LikedItemsProps = {
 };
 
 const LikedItems = ({ item, userId }: LikedItemsProps) => {
+  const { toast } = useToast();
   const { $id: itemId, itemType, likesCount } = item;
 
   const { data: isLikedData, isLoading: isLikeLoading } = useCheckItemLike(
@@ -45,13 +46,13 @@ const LikedItems = ({ item, userId }: LikedItemsProps) => {
         likeItemMutation(
           { itemId, userId, itemType },
           {
-            onSuccess: (itemType) => {
-              toast({ title: `${itemType}' liked!'` });
+            onSuccess: (_, { itemType }) => {
+              toast({ title: `${itemType} liked!` });
             },
             onError: () => {
               setIsLikedState(false);
               setInitialLikesCount((prevCount) => prevCount - 1); // Revert the count change
-              toast({ title: 'Failed to like the post.' });
+              toast({ title: `Failed to like the ${itemType}` });
             },
           }
         );
@@ -60,13 +61,13 @@ const LikedItems = ({ item, userId }: LikedItemsProps) => {
         unlikeItemMutation(
           { itemId, userId, itemType },
           {
-            onSuccess: (itemType) => {
-              toast({ title: `${itemType}' unliked!'` });
+            onSuccess: (_, { itemType }) => {
+              toast({ title: `${itemType} unliked!` });
             },
             onError: () => {
               setIsLikedState(true);
               setInitialLikesCount((prevCount) => prevCount + 1); // Revert the count change
-              toast({ title: 'Failed to unlike the post.' });
+              toast({ title: `Failed to unlike the ${itemType}` });
             },
           }
         );

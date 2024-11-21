@@ -6,7 +6,7 @@ const Topbar = () => {
   const { user } = useUserContext();
 
   return (
-    <section className="topbar">
+    <section className="topbar ">
       <div className="flex-between py-4 px-5">
         <Link to="/" className="flex gap-3 items-center">
           <img src="/assets/icons/logo.svg" alt="logo" width={36} />

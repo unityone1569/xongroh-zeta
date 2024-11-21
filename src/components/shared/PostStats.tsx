@@ -11,7 +11,7 @@ import {
 
 import { Models } from 'appwrite';
 import { useLocation } from 'react-router-dom';
-import { toast } from '../ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { QUERY_KEYS } from '@/lib/react-query/queryKeys';
 import Loader from './Loader';
 
@@ -21,6 +21,7 @@ type PostStatsProps = {
 };
 
 const PostStats = ({ post, userId }: PostStatsProps) => {
+  const { toast } = useToast();
   const { $id: postId, postType, likesCount } = post;
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -96,7 +97,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
               queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId, postType],
               });
-              toast({ title: 'Post liked!' });
+              toast({ title: 'Creation liked!' });
             },
             onError: () => {
               setIsLikedState(false);
@@ -114,12 +115,12 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
               queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId, postType],
               });
-              toast({ title: 'Post unliked!' });
+              toast({ title: 'Creation unliked!' });
             },
             onError: () => {
               setIsLikedState(true);
               setInitialLikesCount((prevCount) => prevCount + 1); // Revert the count change
-              toast({ title: 'Failed to unlike the post.' });
+              toast({ title: 'Failed to unlike the creation.' });
             },
           }
         );
@@ -142,11 +143,11 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
             queryClient.invalidateQueries({
               queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId, postType],
             });
-            toast({ title: 'Post saved!' });
+            toast({ title: 'Creation saved!' });
           },
           onError: () => {
             setIsSavedState(false);
-            toast({ title: 'Failed to save the post.' });
+            toast({ title: 'Failed to save the creation.' });
           },
         }
       );
@@ -159,11 +160,11 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
             queryClient.invalidateQueries({
               queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId, postType],
             });
-            toast({ title: 'Post unsaved!' });
+            toast({ title: 'Creation unsaved!' });
           },
           onError: () => {
             setIsSavedState(true);
-            toast({ title: 'Failed to unsave the post.' });
+            toast({ title: 'Failed to unsave the creation.' });
           },
         }
       );

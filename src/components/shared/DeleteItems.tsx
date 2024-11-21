@@ -18,7 +18,7 @@ import {
   useDeletePost,
   useDeleteProject,
 } from '@/lib/react-query/queries';
-import { toast } from '../ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import Loader from './Loader';
 
@@ -68,8 +68,10 @@ const DeleteCreation = ({
   mediaId: string | '';
   creatorId: string;
 }) => {
+  const { toast } = useToast();
   const deletePostMutation = useDeletePost();
   const navigate = useNavigate();
+
   const handleDelete = () => {
     deletePostMutation.mutate(
       { postId, mediaId, creatorId },
@@ -112,8 +114,10 @@ const DeleteProject = ({
   mediaId: string | '';
   creatorId: string;
 }) => {
+  const { toast } = useToast();
   const deletePostMutation = useDeleteProject();
   const navigate = useNavigate();
+
   const handleDelete = () => {
     deletePostMutation.mutate(
       { postId, mediaId, creatorId },
@@ -154,6 +158,7 @@ const DeleteComment = ({
   commentId: string;
   postId: string;
 }) => {
+  const { toast } = useToast();
   const deleteCommentMutation = useDeleteComment();
 
   const handleDelete = () => {
@@ -195,6 +200,7 @@ const DeleteFeedback = ({
   feedbackId: string;
   postId: string;
 }) => {
+  const { toast } = useToast();
   const deleteFeedbackMutation = useDeleteFeedback();
 
   const handleDelete = () => {
@@ -228,6 +234,7 @@ const DeleteCommentReply = ({
   commentReplyId: string;
   commentId: string;
 }) => {
+  const { toast } = useToast();
   const deleteCommentReplyMutation = useDeleteCommentReply();
 
   const handleDelete = () => {
@@ -268,6 +275,7 @@ const DeleteFeedbackReply = ({
   feedbackReplyId: string;
   feedbackId: string;
 }) => {
+  const { toast } = useToast();
   const deleteFeedbackReplyMutation = useDeleteFeedbackReply();
 
   const handleDelete = () => {

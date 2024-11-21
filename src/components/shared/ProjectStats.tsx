@@ -5,7 +5,7 @@ import {
 } from '@/lib/react-query/queries';
 import { QUERY_KEYS } from '@/lib/react-query/queryKeys';
 import { Models } from 'appwrite';
-import { toast } from '../ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -15,6 +15,7 @@ type ProjectStatsProps = {
 };
 
 const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
+  const { toast } = useToast();
   const { $id: projectId, postType, likesCount } = project;
 
   const queryClient = useQueryClient();
@@ -53,12 +54,12 @@ const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
               queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID, projectId, postType],
               });
-              toast({ title: 'Post liked!' });
+              toast({ title: 'Project liked!' });
             },
             onError: () => {
               setIsLikedState(false);
               setInitialLikesCount((prevCount) => prevCount - 1); // Revert the count change
-              toast({ title: 'Failed to like the post.' });
+              toast({ title: 'Failed to like the project.' });
             },
           }
         );
@@ -71,12 +72,12 @@ const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
               queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID, projectId, postType],
               });
-              toast({ title: 'Post unliked!' });
+              toast({ title: 'Project unliked!' });
             },
             onError: () => {
               setIsLikedState(true);
               setInitialLikesCount((prevCount) => prevCount + 1); // Revert the count change
-              toast({ title: 'Failed to unlike the post.' });
+              toast({ title: 'Failed to unlike the project.' });
             },
           }
         );

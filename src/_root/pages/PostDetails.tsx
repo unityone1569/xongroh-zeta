@@ -17,7 +17,6 @@ const PostDetails = () => {
   const mediaId = post?.mediaId[0];
   const creatorId = post?.creatorId;
 
-
   return (
     <div className="post_details-container">
       {isPending ? (
@@ -94,7 +93,11 @@ const PostDetails = () => {
                 post={post ?? ({} as Models.Document)}
                 userId={user?.id}
               />
-              <PostComments postId={post?.$id ?? ''} userId={user.id} />
+              <PostComments
+                postId={post?.$id ?? ''}
+                userId={user.id}
+                authorId={creatorId}
+              />
             </div>
           </div>
         </div>

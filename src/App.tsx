@@ -8,23 +8,23 @@ import {
   EditPost,
   Explore,
   Home,
+  Community,
+  Marketplace,
+  AddProject,
+  EditProject,
+  Portfolio,
   PostDetails,
   Profile,
   UpdateProfile,
+  PageNotFound,
+  SavedPosts,
+  ProjectDetails,
 } from './_root/pages';
 
 import './globals.css';
 import { Route, Routes } from 'react-router-dom';
 import OAuthCallback from './_auth/OAuthCallback';
 import { Toaster } from './components/ui/toaster';
-import SavedPosts from './_root/pages/SavedPosts';
-import Community from './_root/pages/Community';
-import Marketplace from './_root/pages/Marketplace';
-import Portfolio from './_root/pages/Portfolio';
-import AddProject from './_root/pages/AddProject';
-import EditProject from './_root/pages/EditProject';
-import ProjectDetails from './_root/pages/ProjectDetails';
-import PageNotFound from './_root/pages/PageNotFound';
 
 const App = () => {
   return (
@@ -60,6 +60,8 @@ const App = () => {
           <Route path="/portfolio/:id/*" element={<Portfolio />} />
           <Route path="/projects/:id" element={<ProjectDetails />} />
         </Route>
+
+        {/* PAGE-NOT-FOUND */}
         <Route path="*" element={<PageNotFound />} />
       </Routes>
 

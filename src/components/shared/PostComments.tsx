@@ -19,7 +19,7 @@ import {
   useAddFeedback,
   useGetUserInfo,
 } from '@/lib/react-query/queries';
-import { toast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 import Loader from './Loader';
 import { multiFormatDateString } from '@/lib/utils';
@@ -33,6 +33,7 @@ import { getPostById } from '@/lib/appwrite/post';
 type PostCommentsProps = {
   postId: string;
   userId: string;
+  authorId: string;
 };
 
 interface CommentFormValues {
@@ -59,7 +60,8 @@ const Textarea = React.forwardRef<
 >((props, ref) => <BaseTextarea {...props} ref={ref} />);
 Textarea.displayName = 'Textarea';
 
-const PostComments = ({ postId, userId }: PostCommentsProps) => {
+const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
+  const { toast } = useToast();
   const [isAuthor, setIsAuthor] = useState(false);
   const [activeTab, setActiveTab] = useState<'comments' | 'feedbacks'>(
     'comments'
@@ -138,6 +140,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
           commentId={comment.$id}
           postId={postId}
           userId={userId}
+          authorId={authorId}
           item={comment}
         />
       ));
@@ -151,6 +154,7 @@ const PostComments = ({ postId, userId }: PostCommentsProps) => {
         feedbackId={feedback.$id}
         postId={postId}
         userId={userId}
+        authorId={authorId}
         item={feedback}
       />
     ));
@@ -251,6 +255,7 @@ type CommentProps = {
   commentId: string;
   postId: string;
   userId: string;
+  authorId: string;
   item: Models.Document;
 };
 
@@ -261,6 +266,7 @@ const CommentItem = React.memo(
     creatorId,
     commentId,
     userId,
+    authorId,
     item,
     postId,
   }: CommentProps) => {
@@ -302,7 +308,11 @@ const CommentItem = React.memo(
         <div className="flex justify-between items-center ml-1">
           <div className="flex justify-start gap-3.5">
             <LikedItems item={item} userId={user.id} />
-            <div className={`${user?.id !== creatorId && 'hidden'}`}>
+            <div
+              className={`${
+                user?.id !== creatorId && user?.id !== authorId && 'hidden'
+              }`}
+            >
               <DeleteComment commentId={commentId} postId={postId} />
             </div>
             <button
@@ -320,6 +330,7 @@ const CommentItem = React.memo(
             isFeedback={false}
             showReplyForm={showReplyForm}
             toggleReplyForm={toggleReplyForm}
+            authorId={authorId}
           />
         </div>
       </div>
@@ -336,6 +347,7 @@ type FeedbackProps = {
   feedbackId: string;
   postId: string;
   userId: string;
+  authorId: string;
   item: Models.Document;
 };
 
@@ -346,6 +358,7 @@ const FeedbackItem = React.memo(
     creatorId,
     feedbackId,
     userId,
+    authorId,
     item,
     postId,
   }: FeedbackProps) => {
@@ -387,7 +400,11 @@ const FeedbackItem = React.memo(
         <div className="flex justify-between items-center ml-1">
           <div className="flex justify-start gap-3.5">
             <LikedItems item={item} userId={user.id} />
-            <div className={`${user?.id !== creatorId && 'hidden'}`}>
+            <div
+              className={`${
+                user?.id !== creatorId && user?.id !== authorId && 'hidden'
+              }`}
+            >
               <DeleteFeedback feedbackId={feedbackId} postId={postId} />
             </div>
             <button
@@ -400,6 +417,7 @@ const FeedbackItem = React.memo(
         </div>
         <div>
           <Replies
+            authorId={authorId}
             parentId={feedbackId}
             userId={userId}
             isFeedback={true}

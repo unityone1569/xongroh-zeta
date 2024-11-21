@@ -1,7 +1,7 @@
 import { DeleteProject } from '@/components/shared/DeleteItems';
 import Loader from '@/components/shared/Loader';
 import ProjectStats from '@/components/shared/ProjectStats';
-import { toast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useUserContext } from '@/context/AuthContext';
 import { useGetAuthorById, useGetProjectById } from '@/lib/react-query/queries';
 import { formatDateString } from '@/lib/utils';
@@ -17,8 +17,7 @@ const ProjectDetails = () => {
   const postId = id || '';
   const mediaId = project?.mediaId[0];
   const creatorId = project?.creatorId;
-
-
+  const { toast } = useToast();
 
   const handleShare = () => {
     const urlToShare = window.location.href;
@@ -99,7 +98,7 @@ const ProjectDetails = () => {
                 >
                   <DeleteProject
                     postId={postId}
-                    mediaId={mediaId} 
+                    mediaId={mediaId}
                     creatorId={creatorId}
                   />
                 </div>

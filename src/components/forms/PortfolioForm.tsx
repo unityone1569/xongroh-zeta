@@ -12,11 +12,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '../ui/textarea';
-import {FileUploader} from '../shared/FileUploader';
+import { FileUploader } from '../shared/FileUploader';
 import { ProjectValidation } from '@/lib/validation';
 import { Models } from 'appwrite';
 import { useUserContext } from '@/context/AuthContext';
-import { useToast } from '../ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useAddProject, useUpdateProject } from '@/lib/react-query/queries';
 import Loader from '../shared/Loader';
@@ -59,6 +59,8 @@ const PortfolioForm = ({ project, action }: PortfolioFormProps) => {
       if (!updatedPost) {
         toast({ title: 'Please try again!' });
       }
+
+      toast({ title: 'Project added to portfolio successfully!' });
       return navigate(`/projects/${project.$id}`);
     }
 

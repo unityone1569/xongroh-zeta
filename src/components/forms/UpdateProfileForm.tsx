@@ -15,8 +15,7 @@ import { Textarea } from '../ui/textarea';
 import { SingleFileUploader } from '../shared/FileUploader';
 import { ProfileValidation } from '@/lib/validation'; // Define this validation schema
 import { Models } from 'appwrite';
-
-import { useToast } from '../ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useUpdateProfile } from '@/lib/react-query/queries'; // Custom hook for updating profile
 import Loader from '../shared/Loader';
@@ -62,6 +61,7 @@ const UpdateprofileForm = ({ user }: ProfileFormProps) => {
 
       if (updatedUser) {
         navigate(`/profile/${user?.$id}`);
+        toast({ title: 'Profile updated succesfully!' });
       } else {
         toast({ title: 'Update failed, please try again!' });
       }

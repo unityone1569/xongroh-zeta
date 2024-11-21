@@ -12,11 +12,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '../ui/textarea';
-import {FileUploader} from '../shared/FileUploader';
+import { FileUploader } from '../shared/FileUploader';
 import { PostValidation } from '@/lib/validation';
 import { Models } from 'appwrite';
 import { useUserContext } from '@/context/AuthContext';
-import { useToast } from '../ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useCreatePost, useUpdatePost } from '@/lib/react-query/queries';
 import Loader from '../shared/Loader';
@@ -58,6 +58,8 @@ const PostForm = ({ post, action }: PostFormProps) => {
       if (!updatedPost) {
         toast({ title: 'Please try again!' });
       }
+
+      toast({ title: 'Creation added successfully!' });
       return navigate(`/posts/${post.$id}`);
     }
 
