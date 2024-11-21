@@ -39,10 +39,40 @@ import {
   savePost,
 } from '../appwrite/interaction';
 import { QUERY_KEYS } from './queryKeys';
-import { createUserAccount, createUserAccountWithGoogle, getCurrentUser, getInfiniteUsers, getUserById, getUserInfo, getUserPosts, getUserProjects, loginWithGoogle, searchUsers, signInAccount, signOutAccount, updateProfile } from '../appwrite/user';
-import { addProject, createPost, deletePost, deleteProject, getAuthorById, getInfinitePosts, getPostById, getProjectById, getRecentPosts, searchPosts, updatePost, updateProject } from '../appwrite/post';
+import {
+  createUserAccount,
+  createUserAccountWithGoogle,
+  getCurrentUser,
+  getInfiniteUsers,
+  getUserById,
+  getUserInfo,
+  getUserPosts,
+  getUserProjects,
+  loginWithGoogle,
+  searchUsers,
+  signInAccount,
+  signOutAccount,
+  updateProfile,
+} from '../appwrite/user';
+import {
+  addProject,
+  createPost,
+  deletePost,
+  deleteProject,
+  getAuthorById,
+  getInfinitePosts,
+  getPostById,
+  getProjectById,
+  getRecentPosts,
+  searchPosts,
+  updatePost,
+  updateProject,
+} from '../appwrite/post';
 
 // ***** AUTH *****
+// ****************
+
+// SIGN-UP
 
 export const useCreateUserAccount = () => {
   const queryClient = useQueryClient();
@@ -65,15 +95,7 @@ export const useCreateUserAccountWithGoogle = () => {
   });
 };
 
-export const useLoginWithGoogle = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: loginWithGoogle,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
-    },
-  });
-};
+// SIGN-IN
 
 export const useSignInAccount = () => {
   const queryClient = useQueryClient();
@@ -85,6 +107,18 @@ export const useSignInAccount = () => {
     },
   });
 };
+
+export const useLoginWithGoogle = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: loginWithGoogle,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    },
+  });
+};
+
+// SIGN-OUT
 
 export const useSignOutAccount = () => {
   const queryClient = useQueryClient();
@@ -98,6 +132,8 @@ export const useSignOutAccount = () => {
     },
   });
 };
+
+// USER-DETAILS
 
 export const useGetUserInfo = (accountId: string) => {
   return useQuery({
@@ -138,25 +174,15 @@ export const useUpdateProfile = () => {
 };
 
 // ***** POSTS, PROJECTS & DISCUSSIONS *****
+// *****************************************
+
+// POST
 
 export const useCreatePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (post: INewPost) => createPost(post),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
-      });
-    },
-  });
-};
-
-export const useAddProject = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (project: INewProject) => addProject(project),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
@@ -180,22 +206,6 @@ export const useGetPostById = (postId: string) => {
   });
 };
 
-export const useGetProjectById = (projectId: string) => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.GET_PROJECT_BY_ID, projectId],
-    queryFn: () => getProjectById(projectId),
-    enabled: !!projectId,
-  });
-};
-
-export const useGetAuthorById = (creatorId: string) => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.GET_POST_BY_ID, creatorId],
-    queryFn: () => getAuthorById(creatorId),
-    enabled: !!creatorId,
-  });
-};
-
 export const useUpdatePost = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -208,19 +218,6 @@ export const useUpdatePost = () => {
   });
 };
 
-export const useUpdateProject = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (project: IUpdateProject) => updateProject(project),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_PROJECT_BY_ID, data?.$id],
-      });
-    },
-  });
-};
-
-// *** DELETE ****
 export const useDeletePost = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -239,6 +236,65 @@ export const useDeletePost = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_POSTS, creatorId],
+      });
+    },
+  });
+};
+
+export const useGetUserPosts = (userId: string) => {
+  return useInfiniteQuery({
+    initialPageParam: null,
+    queryKey: [QUERY_KEYS.GET_USER_POSTS, userId], // Unique key per user
+    queryFn: ({ pageParam }) => getUserPosts({ pageParam, userId }), // Pass userId to getUserPosts
+    getNextPageParam: (lastPage: any) => {
+      if (lastPage && lastPage.documents.length === 0) {
+        return null; // No more pages if no data
+      }
+
+      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
+      return lastId;
+    },
+  });
+};
+
+// PROJECT
+
+export const useAddProject = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (project: INewProject) => addProject(project),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+      });
+    },
+  });
+};
+
+export const useGetProjectById = (projectId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_PROJECT_BY_ID, projectId],
+    queryFn: () => getProjectById(projectId),
+    enabled: !!projectId,
+  });
+};
+
+export const useGetAuthorById = (creatorId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_POST_BY_ID, creatorId],
+    queryFn: () => getAuthorById(creatorId),
+    enabled: !!creatorId,
+  });
+};
+
+export const useUpdateProject = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (project: IUpdateProject) => updateProject(project),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_PROJECT_BY_ID, data?.$id],
       });
     },
   });
@@ -264,102 +320,29 @@ export const useDeleteProject = () => {
   });
 };
 
-export const useDeleteComment = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      commentId,
-      postId,
-    }: {
-      commentId: string;
-      postId: string;
-    }) => deleteComment(commentId, postId),
-
-    onSuccess: (_, { postId }) => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_POST_COMMENTS, postId],
-      });
-    },
-  });
-};
-
-export const useDeleteFeedback = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      feedbackId,
-      postId,
-    }: {
-      feedbackId: string;
-      postId: string;
-    }) => deleteFeedback(feedbackId, postId),
-    onSuccess: (_, { postId }) => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS, postId],
-      });
-    },
-  });
-};
-
-export const useDeleteCommentReply = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      commentReplyId,
-      commentId,
-    }: {
-      commentReplyId: string;
-      commentId: string;
-    }) => deleteCommentReply(commentReplyId, commentId),
-    onSuccess: (_, { commentId }) => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES, commentId],
-      });
-    },
-  });
-};
-
-export const useDeleteFeedbackReply = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      feedbackReplyId,
-      feedbackId,
-    }: {
-      feedbackReplyId: string;
-      feedbackId: string;
-    }) => deleteFeedbackReply(feedbackReplyId, feedbackId),
-    onSuccess: (_, { feedbackId }) => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, feedbackId],
-      });
-    },
-  });
-};
-
-export const useGetPosts = () => {
+export const useGetUserProjects = (userId: string) => {
   return useInfiniteQuery({
     initialPageParam: null,
-    queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-    queryFn: getInfinitePosts as any,
+    queryKey: [QUERY_KEYS.GET_USER_PROJECTS, userId],
+    queryFn: ({ pageParam }) => getUserProjects({ pageParam, userId }),
     getNextPageParam: (lastPage: any) => {
-      // If there's no data, there are no more pages.
       if (lastPage && lastPage.documents.length === 0) {
         return null;
       }
 
-      // Use the $id of the last document as the cursor.
       const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
       return lastId;
     },
   });
 };
 
-export const useGetUsers = () => {
+// SEARCH
+
+export const useGetPosts = () => {
   return useInfiniteQuery({
     initialPageParam: null,
-    queryKey: [QUERY_KEYS.GET_INFINITE_USERS],
-    queryFn: getInfiniteUsers as any,
+    queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
+    queryFn: getInfinitePosts as any,
     getNextPageParam: (lastPage: any) => {
       // If there's no data, there are no more pages.
       if (lastPage && lastPage.documents.length === 0) {
@@ -387,6 +370,24 @@ export const useSearchPosts = (searchTerm: string) => {
   });
 };
 
+export const useGetUsers = () => {
+  return useInfiniteQuery({
+    initialPageParam: null,
+    queryKey: [QUERY_KEYS.GET_INFINITE_USERS],
+    queryFn: getInfiniteUsers as any,
+    getNextPageParam: (lastPage: any) => {
+      // If there's no data, there are no more pages.
+      if (lastPage && lastPage.documents.length === 0) {
+        return null;
+      }
+
+      // Use the $id of the last document as the cursor.
+      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
+      return lastId;
+    },
+  });
+};
+
 export const useSearchUsers = (searchTerm: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.SEARCH_USERS, searchTerm],
@@ -400,39 +401,18 @@ export const useSearchUsers = (searchTerm: string) => {
   });
 };
 
-export const useGetUserPosts = (userId: string) => {
-  return useInfiniteQuery({
-    initialPageParam: null,
-    queryKey: [QUERY_KEYS.GET_USER_POSTS, userId], // Unique key per user
-    queryFn: ({ pageParam }) => getUserPosts({ pageParam, userId }), // Pass userId to getUserPosts
-    getNextPageParam: (lastPage: any) => {
-      if (lastPage && lastPage.documents.length === 0) {
-        return null; // No more pages if no data
-      }
+// ***** LIKE, SAVE & SUPPORT *****
+// ********************************
 
-      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
-      return lastId;
-    },
+// LIKE-POST
+
+export const useCheckPostLike = (postId: string, userId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.CHECK_POST_LIKE, postId, userId],
+    queryFn: () => checkPostLike(postId, userId),
   });
 };
 
-export const useGetUserProjects = (userId: string) => {
-  return useInfiniteQuery({
-    initialPageParam: null,
-    queryKey: [QUERY_KEYS.GET_USER_PROJECTS, userId],
-    queryFn: ({ pageParam }) => getUserProjects({ pageParam, userId }),
-    getNextPageParam: (lastPage: any) => {
-      if (lastPage && lastPage.documents.length === 0) {
-        return null;
-      }
-
-      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
-      return lastId;
-    },
-  });
-};
-
-// ***** LIKE & SAVE *****
 export const useLikePost = () => {
   const queryClient = useQueryClient();
 
@@ -487,6 +467,15 @@ export const useUnlikePost = () => {
   });
 };
 
+// LIKE-ITEM
+
+export const useCheckItemLike = (itemId: string, userId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.CHECK_ITEM_LIKE, itemId, userId],
+    queryFn: () => checkItemLike(itemId, userId),
+  });
+};
+
 export const useLikeItem = () => {
   const queryClient = useQueryClient();
 
@@ -507,6 +496,7 @@ export const useLikeItem = () => {
     },
   });
 };
+
 export const useUnlikeItem = () => {
   const queryClient = useQueryClient();
 
@@ -525,6 +515,15 @@ export const useUnlikeItem = () => {
         queryKey: [QUERY_KEYS.CHECK_ITEM_LIKE, itemId, userId],
       });
     },
+  });
+};
+
+// SAVE-POST
+
+export const useCheckPostSave = (postId: string, userId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.CHECK_POST_SAVE, postId, userId],
+    queryFn: () => checkPostSave(postId, userId),
   });
 };
 
@@ -582,6 +581,18 @@ export const useUnsavePost = () => {
   });
 };
 
+// SUPPORT
+
+export const useCheckSupportingUser = (
+  creatorId: string,
+  supportingId: string
+) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.CHECK_SUPPORTING_USER, creatorId, supportingId],
+    queryFn: () => checkSupportingUser(creatorId, supportingId),
+  });
+};
+
 export const useSupport = () => {
   const queryClient = useQueryClient();
 
@@ -626,38 +637,10 @@ export const useUnSupport = () => {
   });
 };
 
-export const useCheckPostLike = (postId: string, userId: string) => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.CHECK_POST_LIKE, postId, userId],
-    queryFn: () => checkPostLike(postId, userId),
-  });
-};
-
-export const useCheckItemLike = (itemId: string, userId: string) => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.CHECK_ITEM_LIKE, itemId, userId],
-    queryFn: () => checkItemLike(itemId, userId),
-  });
-};
-
-export const useCheckPostSave = (postId: string, userId: string) => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.CHECK_POST_SAVE, postId, userId],
-    queryFn: () => checkPostSave(postId, userId),
-  });
-};
-
-export const useCheckSupportingUser = (
-  creatorId: string,
-  supportingId: string
-) => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.CHECK_SUPPORTING_USER, creatorId, supportingId],
-    queryFn: () => checkSupportingUser(creatorId, supportingId),
-  });
-};
-
 // ***** COMMENT, FEEDBACK & REPLIES *****
+// ***************************************
+
+// COMMENT
 
 export const useGetComments = (postId: string) => {
   return useQuery({
@@ -666,6 +649,7 @@ export const useGetComments = (postId: string) => {
     enabled: !!postId,
   });
 };
+
 export const useAddComment = () => {
   const queryClient = useQueryClient();
 
@@ -690,6 +674,27 @@ export const useAddComment = () => {
   });
 };
 
+export const useDeleteComment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      commentId,
+      postId,
+    }: {
+      commentId: string;
+      postId: string;
+    }) => deleteComment(commentId, postId),
+
+    onSuccess: (_, { postId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_COMMENTS, postId],
+      });
+    },
+  });
+};
+
+// FEEDBACK
+
 export const useGetFeedbacks = (postId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS, postId],
@@ -697,6 +702,7 @@ export const useGetFeedbacks = (postId: string) => {
     enabled: !!postId,
   });
 };
+
 export const useAddFeedback = () => {
   const queryClient = useQueryClient();
 
@@ -720,6 +726,26 @@ export const useAddFeedback = () => {
     },
   });
 };
+
+export const useDeleteFeedback = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      feedbackId,
+      postId,
+    }: {
+      feedbackId: string;
+      postId: string;
+    }) => deleteFeedback(feedbackId, postId),
+    onSuccess: (_, { postId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS, postId],
+      });
+    },
+  });
+};
+
+// COMMENT-REPLY
 
 export const useGetCommentReplies = (commentId: string) => {
   return useQuery({
@@ -753,6 +779,26 @@ export const useAddCommentReply = () => {
   });
 };
 
+export const useDeleteCommentReply = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      commentReplyId,
+      commentId,
+    }: {
+      commentReplyId: string;
+      commentId: string;
+    }) => deleteCommentReply(commentReplyId, commentId),
+    onSuccess: (_, { commentId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES, commentId],
+      });
+    },
+  });
+};
+
+// FEEDBACK-REPLY
+
 export const useGetFeedbackReplies = (feedbackId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, feedbackId],
@@ -760,6 +806,7 @@ export const useGetFeedbackReplies = (feedbackId: string) => {
     enabled: !!feedbackId,
   });
 };
+
 export const useAddFeedbackReply = () => {
   const queryClient = useQueryClient();
 
@@ -779,6 +826,24 @@ export const useAddFeedbackReply = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_INFO],
+      });
+    },
+  });
+};
+
+export const useDeleteFeedbackReply = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      feedbackReplyId,
+      feedbackId,
+    }: {
+      feedbackReplyId: string;
+      feedbackId: string;
+    }) => deleteFeedbackReply(feedbackReplyId, feedbackId),
+    onSuccess: (_, { feedbackId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, feedbackId],
       });
     },
   });
