@@ -1,12 +1,11 @@
 import Loader from '@/components/shared/Loader';
 import PostCard from '@/components/shared/PostCard';
-import { useToast } from '@/hooks/use-toast';
 import { useGetRecentPosts } from '@/lib/react-query/queries';
 import { Models } from 'appwrite';
 
 const Home = () => {
   const { data: posts, isPending: isPostLoading } = useGetRecentPosts();
-  const { toast } = useToast();
+
   return (
     <div className="home-container">
       <div className="home-posts">
@@ -20,19 +19,6 @@ const Home = () => {
             ))}
           </ul>
         )}
-
-        <div>
-          <button
-            onClick={() =>
-              toast({
-                title: 'Hello!',
-                description: 'Toast is working fine!',
-              })
-            }
-          >
-            Trigger Toast
-          </button>
-        </div>
       </div>
     </div>
   );

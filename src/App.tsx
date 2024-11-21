@@ -29,6 +29,7 @@ import { Toaster } from './components/ui/toaster';
 const App = () => {
   return (
     <main className="flex h-screen">
+      <Toaster />
       <Routes>
         {/* PUBLIC */}
         <Route element={<AuthLayout />}>
@@ -64,8 +65,6 @@ const App = () => {
         {/* PAGE-NOT-FOUND */}
         <Route path="*" element={<PageNotFound />} />
       </Routes>
-
-      <Toaster />
     </main>
   );
 };
