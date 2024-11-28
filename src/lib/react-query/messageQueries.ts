@@ -20,10 +20,21 @@ import {
 } from '../appwrite/message';
 import { Conversation, Message } from '@/types';
 
-export const useGetConversations = (userId: string | null) => {
-  return useQuery({
+export const useGetConversations = (userId: string) => {
+  return useInfiniteQuery({
+    initialPageParam: null,
     queryKey: [QUERY_KEYS.GET_CONVERSATIONS, userId],
-    queryFn: () => (userId ? getConversations(userId) : Promise.resolve([])),
+    queryFn: ({ pageParam }) => getConversations({ pageParam, userId }),
+    getNextPageParam: (lastPage: any) => {
+      // Stop pagination if no more conversations
+      if (lastPage && lastPage.documents.length === 0) {
+        return null;
+      }
+
+      // Use the $id of the last conversation as cursor
+      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
+      return lastId;
+    },
     enabled: Boolean(userId),
   });
 };

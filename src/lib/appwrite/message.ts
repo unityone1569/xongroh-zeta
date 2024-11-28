@@ -46,14 +46,36 @@ export async function createConversation(conversation: Conversation) {
 }
 
 /** Fetch conversations for a specific user */
-export async function getConversations(userId: string) {
+export async function getConversations({
+  pageParam,
+  userId,
+}: {
+  pageParam: string | null;
+  userId: string;
+}) {
+  const accountId1 = await getUserAccountId(userId);
+  const queries: any[] = [
+    Query.orderDesc('$updatedAt'),
+    Query.equal('participants', accountId1),
+    Query.limit(11),
+  ];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
   try {
-    const { documents } = await databases.listDocuments(
+    const { documents: conversations } = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.conversationCollectionId,
-      [Query.equal('participants', userId)]
+      queries
     );
-    return documents;
+
+    if (!conversations || conversations.length === 0) {
+      return { documents: [] };
+    }
+
+    return { documents: conversations };
   } catch (error) {
     console.error('Error fetching conversations:', error);
     throw error;
