@@ -24,6 +24,7 @@ import { Textarea } from '@/components/ui/textarea';
 import React from 'react';
 import { Models } from 'appwrite';
 import { useInView } from 'react-intersection-observer';
+import {client, appwriteConfig } from '@/lib/appwrite/config'; 
 
 const MessageSchema = z.object({
   message: z
@@ -126,6 +127,7 @@ const ChatPage = () => {
     isLoading: isMessagesLoading,
     fetchNextPage,
     hasNextPage,
+    refetch: refetchMessages
   } = useGetMessages(convId);
 
   const { mutateAsync: createMessage } = useCreateMessage();
@@ -150,6 +152,44 @@ const ChatPage = () => {
     }
   }, [messagesData?.pages[0]]);
 
+  // Add subscription for real-time updates
+  useEffect(() => {
+    if (!convId) return;
+
+    // Subscribe to messages collection
+    const unsubscribe = client.subscribe(
+      `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`,
+      response => {
+        if (response.events.includes("databases.*.collections.*.documents.*.create")) {
+          // Check if the message belongs to this conversation
+          const payload = response.payload as { conversationId: string };
+          if (payload.conversationId === convId) {
+            refetchMessages();
+          }
+        }
+
+        if (response.events.includes("databases.*.collections.*.documents.*.delete")) {
+          const payload = response.payload as { conversationId: string };
+          if (payload.conversationId === convId) {
+            refetchMessages();
+          }
+        }
+
+        if (response.events.includes("databases.*.collections.*.documents.*.update")) {
+          const payload = response.payload as { conversationId: string };
+          if (payload.conversationId === convId) {
+            refetchMessages();
+          }
+        }
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => {
+      unsubscribe();
+    };
+  }, [convId, refetchMessages]);
+
   const onSubmit = async (data: z.infer<typeof MessageSchema>) => {
     if (!receiverId || !convId || !data.message.trim()) return;
 
@@ -166,6 +206,8 @@ const ChatPage = () => {
         },
       });
       form.reset();
+      
+      // No need to manually update messages as subscription will handle it
     } finally {
       setIsSending(false);
     }
