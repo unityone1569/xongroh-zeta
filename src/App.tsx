@@ -19,6 +19,8 @@ import {
   PageNotFound,
   SavedPosts,
   ProjectDetails,
+  ChatPage,
+  Messages,
 } from './_root/pages';
 
 import './globals.css';
@@ -60,6 +62,10 @@ const App = () => {
           <Route path="/update-project/:id" element={<EditProject />} />
           <Route path="/portfolio/:id/*" element={<Portfolio />} />
           <Route path="/projects/:id" element={<ProjectDetails />} />
+
+          {/* Messages */}
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/chat/:id" element={<ChatPage />} />
         </Route>
 
         {/* PAGE-NOT-FOUND */}

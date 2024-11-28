@@ -1,0 +1,256 @@
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useRef, useCallback, useState } from 'react';
+import { useUserContext } from '@/context/AuthContext';
+import {
+  useCreateMessage,
+  useGetMessages,
+  useGetConversation,
+} from '@/lib/react-query/messageQueries';
+import Loader from '@/components/shared/Loader';
+import { Link, useParams } from 'react-router-dom';
+import { multiFormatDateString } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { useGetUserInfo } from '@/lib/react-query/queries';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import React from 'react';
+import { Models } from 'appwrite';
+import { useInView } from 'react-intersection-observer';
+
+const MessageSchema = z.object({
+  message: z
+    .string()
+    .min(1, 'Message cannot be empty')
+    .max(4096, 'Message too big'),
+});
+
+interface MessagesListProps {
+  messages: {
+    pages: {
+      documents: Models.Document[];
+    }[];
+  };
+  senderId: string;
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+}
+
+const MessagesList: React.FC<MessagesListProps> = React.memo(
+  ({ messages, senderId, fetchNextPage, hasNextPage }) => {
+    const { ref, inView } = useInView();
+
+    useEffect(() => {
+      if (inView && hasNextPage) {
+        fetchNextPage();
+      }
+    }, [inView, hasNextPage, fetchNextPage]);
+
+    return (
+      <div className="flex flex-col-reverse w-full">
+        {messages.pages.map((page, pageIndex) => (
+          <div key={pageIndex} className="flex flex-col-reverse">
+            {page.documents
+              .filter((message) => message?.content)
+              .map((message) => (
+                <div
+                  key={message.$id}
+                  className={`flex ${
+                    message.senderId === senderId
+                      ? 'justify-end mt-3.5'
+                      : 'justify-start mt-3.5'
+                  }`}
+                >
+                  <div
+                    className={`max-w-[290px] md:max-w-md p-3 rounded-lg ${
+                      message.senderId === senderId
+                        ? 'bg-purple-950 text-white'
+                        : 'bg-dark-4'
+                    }`}
+                  >
+                    <p className="break-words">{message.content}</p>
+                    <span className="text-xs opacity-50">
+                      {multiFormatDateString(message.$createdAt)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+          </div>
+        ))}
+
+        {hasNextPage && (
+          <div ref={ref} className="flex justify-center py-2">
+            <Loader />
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+const ChatPage = () => {
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const { id } = useParams<{ id: string }>();
+  const convId = id || '';
+  const { user } = useUserContext();
+  const senderId = user?.id || '';
+  const [isSending, setIsSending] = useState(false);
+
+  const form = useForm<z.infer<typeof MessageSchema>>({
+    resolver: zodResolver(MessageSchema),
+    defaultValues: {
+      message: '',
+    },
+  });
+
+  const { data: conversationData, isLoading: isConversationLoading } =
+    useGetConversation(convId);
+
+  const participantsKey =
+    conversationData?.documents?.[0]?.participantsKey || '';
+  const participants = participantsKey.split('_');
+  const receiverId = participants.find((id: string) => id !== senderId) || '';
+
+  const { data: receiverData, isLoading: isReceiverLoading } =
+    useGetUserInfo(receiverId);
+
+  const {
+    data: messagesData,
+    isLoading: isMessagesLoading,
+    fetchNextPage,
+    hasNextPage,
+  } = useGetMessages(convId);
+
+  const { mutateAsync: createMessage } = useCreateMessage();
+
+  const handleTextareaInput = useCallback(
+    (e: React.FormEvent<HTMLTextAreaElement>) => {
+      const target = e.target as HTMLTextAreaElement;
+      const minHeight = 44;
+      if (target.scrollHeight > minHeight) {
+        target.style.height = 'auto';
+        target.style.height = `${target.scrollHeight}px`;
+      }
+    },
+    []
+  );
+
+  // Scroll to bottom for new messages
+  useEffect(() => {
+    if (messagesContainerRef.current && messagesData?.pages[0]) {
+      const container = messagesContainerRef.current;
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messagesData?.pages[0]]);
+
+  const onSubmit = async (data: z.infer<typeof MessageSchema>) => {
+    if (!receiverId || !convId || !data.message.trim()) return;
+
+    setIsSending(true);
+    try {
+      await createMessage({
+        message: {
+          content: data.message.trim(),
+          senderId: senderId,
+          receiverId: receiverId,
+          conversationId: convId,
+          isDeleted: [],
+          isRead: false,
+        },
+      });
+      form.reset();
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  if (!convId || !receiverId || isConversationLoading || isReceiverLoading) {
+    return <Loader />;
+  }
+
+  return (
+    <div className="common-msg-container flex flex-col ">
+      <div className="mb-4 w-full max-w-3xl px-3">
+        <Link
+          to={`/profile/${receiverId}`}
+          className="flex items-center gap-3.5"
+        >
+          <img
+            src={receiverData?.dp || '/default-avatar.png'}
+            alt={`${receiverData?.name}'s avatar`}
+            className="w-11 h-11 lg:h-14 lg:w-14 object-cover rounded-full"
+          />
+          <div className="flex flex-col">
+            <h2 className="text-xl font-semibold">{receiverData?.name}</h2>
+            <p className="subtle-normal text-light-3">
+              {receiverData?.profession || 'No profession'}
+            </p>
+          </div>
+        </Link>
+      </div>
+
+      <div
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto mb-4 w-full rounded-lg custom-scrollbar pl-4 pr-3 max-w-3xl h-[600px]"
+      >
+        {isMessagesLoading ? (
+          <Loader />
+        ) : messagesData?.pages.every((page) => page.documents.length === 0) ? (
+          <div className="flex-center w-full h-full">
+            <p className="text-light-3">No messages yet</p>
+          </div>
+        ) : (
+          <MessagesList
+            messages={messagesData || { pages: [] }}
+            senderId={senderId}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage ?? false}
+          />
+        )}
+      </div>
+
+      <div className="w-full max-w-3xl px-3">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex items-end justify-between gap-3 w-full"
+          >
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem className="grow">
+                  <FormMessage className="shad-form_message pl-1.5 w-full" />
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      className="shad-msg-textarea"
+                      placeholder="Type your message..."
+                      onInput={handleTextareaInput}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              className="shad-button_primary whitespace-nowrap grow-0"
+              disabled={isSending}
+            >
+              {isSending ? 'Sending...' : 'Send'}
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </div>
+  );
+};
+
+export default ChatPage;

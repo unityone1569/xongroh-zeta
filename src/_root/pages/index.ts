@@ -14,4 +14,7 @@ export { default as ProjectDetails } from './ProjectDetails';
 export { default as LikedPosts } from './LikedPosts';
 export { default as SavedPosts } from './SavedPosts';
 export { default as AllUsers } from './AllUsers';
+export { default as Messages } from './Messages';
+export { default as ChatPage } from './ChatPage';
+
 export { default as PageNotFound } from './PageNotFound';

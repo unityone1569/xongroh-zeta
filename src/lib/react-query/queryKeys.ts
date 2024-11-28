@@ -30,7 +30,14 @@ export enum QUERY_KEYS {
   GET_COMMENT_REPLIES = 'getCommentReplies',
   GET_FEEDBACK_REPLIES = 'getFeedbackReplies',
 
-  //  SEARCH KEYS
+  // SEARCH KEYS
   SEARCH_POSTS = 'getSearchPosts',
   SEARCH_USERS = 'searchUsers',
+
+  // MESSAGE KEYS
+  GET_MESSAGES = 'getMessages',
+  GET_CONVERSATION = 'getConversationById',
+  GET_CONVERSATIONS = 'getConversations',
+  SEARCH_MESSAGES = 'searchMessages',
+  GET_SENDER_INFO = 'getSenderInfo',
 }

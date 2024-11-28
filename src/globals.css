@@ -128,7 +128,10 @@
   }
 
   .common-container {
-    @apply flex flex-col flex-1 items-center gap-10 overflow-scroll pb-32 pt-24 md:py-10 px-5 md:px-8 lg:p-14 custom-scrollbar;
+    @apply flex flex-col flex-1 items-center gap-6 overflow-scroll pt-24 pb-28 md:py-14 px-5 md:px-8  custom-scrollbar;
+  }
+  .common-msg-container {
+    @apply flex flex-col flex-1 items-center gap-6 overflow-scroll pt-24 pb-28 md:py-14 px-0 md:px-8  custom-scrollbar;
   }
 
   /* All Users */
@@ -299,6 +302,9 @@
 
   .shad-textarea {
     @apply h-72 lg:h-96 bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+  }
+  .shad-msg-textarea {
+    @apply max-h-56 min-h-10 resize-none custom-scrollbar bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
   }
 
   .shad-comment {

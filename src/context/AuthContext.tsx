@@ -1,4 +1,3 @@
-
 import { getAccount, getCurrentUser } from '@/lib/appwrite/user';
 import { IContextType, IUser } from '@/types';
 import {
@@ -12,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const INITIAL_USER: IUser = {
   id: '',
+  accountId: '',
   name: '',
   profession: '',
   hometown: '',
@@ -48,6 +48,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (currentAccount) {
         setUser({
           id: currentAccount.$id,
+          accountId: currentAccount.accountId,
           name: currentAccount.name || '',
           profession: currentAccount.profession || '',
           hometown: currentAccount.hometown || '',

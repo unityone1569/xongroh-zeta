@@ -1,25 +1,26 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import { useGetUserInfo, useGetUserPosts } from '@/lib/react-query/queries';
 import Loader from '@/components/shared/Loader';
 import PostCard from '@/components/shared/PostCard';
 import { useUserContext } from '@/context/AuthContext';
 import UserSupport from '@/components/shared/UserSupport';
+import { useCreateConversation } from '@/lib/react-query/messageQueries';
 
 interface ProfileCardItemProps {
   creatorId: string;
   name: string;
   cover: string;
   dp: string;
-  creationsCount: string;
   supportingCount: number;
   bio: string;
-  isCurrentUser: boolean;
-  userId: string;
   hometown: string;
   profession: string;
+  creationsCount: string;
+  isCurrentUser: boolean;
+  userId: string;
 }
 
 const ProfileCardItem = ({
@@ -35,6 +36,28 @@ const ProfileCardItem = ({
   isCurrentUser,
   userId,
 }: ProfileCardItemProps) => {
+  const navigate = useNavigate();
+  const { user } = useUserContext();
+  const {
+    mutateAsync: createConversation,
+    isPending: createConversationPending,
+  } = useCreateConversation();
+
+  const { id } = useParams();
+  const profileId: string = id || '';
+  const handleMessageClick = async () => {
+    const participants = [user.id, profileId];
+
+    try {
+      const conversation = await createConversation(participants);
+
+      // Navigate to the chat page with the conversation ID
+      navigate(`/chat/${conversation.$id}`);
+    } catch (error) {
+      console.error('Error initiating conversation:', error);
+    }
+  };
+
   return (
     <div className="overflow-hidden">
       <div className="pb-4 pt-10 md:pt-0 shadow-lg">
@@ -98,7 +121,7 @@ const ProfileCardItem = ({
                 </div>
               )}
             </div>
-            <div className="flex w-full justify-start gap-6 pt-9 lg:pt-12">
+            <div className="flex w-full justify-start gap-3.5 lg:gap-6 pt-9 lg:pt-12">
               {isCurrentUser ? (
                 <Link to={`/update-profile/${userId}`}>
                   <Button className="font-semibold shad-button_dark_4">
@@ -106,13 +129,30 @@ const ProfileCardItem = ({
                   </Button>
                 </Link>
               ) : (
-                <UserSupport creatorId={creatorId} supportingId={userId} />
+                <>
+                  <UserSupport creatorId={creatorId} supportingId={userId} />
+                </>
               )}
               <Link to={`/portfolio/${userId}`}>
                 <Button className="font-semibold shad-button_dark_4">
                   Portfolio
                 </Button>
               </Link>
+
+              {isCurrentUser ? null : (
+                <Button
+                  className="font-semibold shad-button_dark_4"
+                  onClick={handleMessageClick}
+                >
+                  {createConversationPending ? (
+                    <>
+                      <Loader />
+                    </>
+                  ) : (
+                    'Chat'
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         </div>

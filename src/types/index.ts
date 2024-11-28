@@ -49,6 +49,7 @@ export type IUpdateProject = {
 
 export type IUser = {
   id: string;
+  accountId: string;
   name: string;
   hometown: string;
   profession: string;
@@ -82,3 +83,19 @@ export type IUpdateUser = {
   coverFile?: File;
 };
 
+export interface Conversation {
+  participants: string[];
+  participantsKey: string;
+  lastMessage?: string;
+  lastUpdated?: Date | null;
+  isDeleted: string[];
+}
+
+export interface Message {
+  senderId: string;
+  receiverId: string;
+  content: string;
+  conversationId: string;
+  isDeleted: string[];
+  isRead: boolean;
+}

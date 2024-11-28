@@ -247,6 +247,28 @@ export async function getCurrentUser(): Promise<Models.Document> {
   }
 }
 
+export async function getUserAccountId(userId: string): Promise<string> {
+  try {
+    const userDocument = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId
+    );
+
+    // Assuming userDocument has an 'accountId' field
+    const accountId = userDocument.accountId;
+
+    if (!accountId) {
+      throw new Error(`Account ID not found for user ID ${userId}`);
+    }
+
+    return accountId;
+  } catch (error) {
+    console.error('Error fetching user account ID:', error);
+    throw error;
+  }
+}
+
 export async function getUserInfo(accountId: string) {
   try {
     const user = await databases.getDocument(
@@ -446,7 +468,7 @@ export async function getUserPosts({
     const userFetchPromises = posts.map((post) =>
       databases.getDocument(
         appwriteConfig.databaseId,
-        appwriteConfig.userCollectionId, // Replace with actual user collection ID
+        appwriteConfig.userCollectionId,
         post.creatorId
       )
     );
