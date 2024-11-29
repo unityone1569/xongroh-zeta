@@ -58,6 +58,9 @@
   .small-semibold {
     @apply text-[14px] font-semibold leading-[140%] tracking-tighter;
   }
+  .small-bold {
+    @apply text-[14px] font-bold leading-[140%] tracking-tighter;
+  }
 
   .small-medium {
     @apply text-[14px] font-medium leading-[140%];
@@ -217,11 +220,6 @@
     @apply flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:p-14 custom-scrollbar;
   }
 
-  /* Bottom bar */
-  .bottom-bar {
-    @apply z-50 flex-between w-full fixed bottom-0 bg-dark-2 px-6 py-4 md:hidden;
-  }
-
   /* File uploader */
   .file_uploader-img {
     @apply h-64 lg:h-[480px] w-full rounded-[24px]  object-center object-contain;
@@ -248,13 +246,36 @@
     @apply absolute bottom-0 p-5 flex-between w-full bg-gradient-to-t from-dark-3 to-transparent rounded-b-[24px] gap-2;
   }
 
+  /* Topbar */
+  .topbar {
+    @apply fixed top-0 z-50 lg:hidden bg-dark-2 w-full;
+  }
+
+  /* Bottom bar */
+  .bottom-bar {
+    @apply z-50 flex-between w-full fixed bottom-0 bg-dark-2 px-6 py-4 lg:hidden;
+  }
+
   /* Left sidebar */
   .leftsidebar {
-    @apply hidden md:flex px-6 py-10 flex-col justify-between min-w-[270px] bg-dark-2;
+    @apply hidden lg:flex px-6 py-10 flex-col justify-between min-w-[270px] bg-dark-2;
   }
 
   .leftsidebar-link {
     @apply rounded-lg base-medium hover:bg-gradient-to-r from-purple-500 to-purple-400 transition;
+  }
+
+  /* Right sidebar */
+  .rightsidebar {
+    @apply hidden lg:flex flex-col min-w-[300px] bg-dark-2 px-6 py-10 gap-10 overflow-scroll custom-scrollbar;
+  }
+
+   .rightsidebar-link {
+    @apply rounded-lg ;
+  }
+
+  .creator-card {
+    @apply flex px-3 py-4 rounded-xl bg-dark-3 hover:bg-dark-4 transition-all border border-dark-4;
   }
 
   /* Post Card */
@@ -264,11 +285,6 @@
 
   .post-card_img {
     @apply h-64 xs:h-[300px] overflow-hidden bg-dark-4 lg:h-[340px] w-full rounded-xl object-contain mb-7;
-  }
-
-  /* Topbar */
-  .topbar {
-    @apply fixed top-0 z-50 md:hidden bg-dark-2 w-full;
   }
 
   /* User card */

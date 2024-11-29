@@ -87,10 +87,12 @@ const Messages = () => {
         <h2 className="h3-bold md:h2-bold w-full mb-6">Messages</h2>
 
         <div className="flex flex-col gap-4">
-          {!conversations?.pages || conversations?.pages?.length === 0 ? (
-            <p className="text-light-4 text-center">No conversations yet</p>
+          {!conversations?.pages || 
+           conversations.pages.length === 0 ||
+           conversations.pages[0].documents.length === 0 ? (
+            <p className="text-light-4 text-start">No conversations yet</p>
           ) : (
-            conversations?.pages?.map((page, pageIndex) => (
+            conversations.pages.map((page, pageIndex) => (
               <React.Fragment key={pageIndex}>
                 {page?.documents
                   .filter(

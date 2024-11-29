@@ -589,3 +589,25 @@ export async function deleteFile(fileId: string) {
     console.log(error);
   }
 }
+
+// Top Creators
+
+export async function getTopCreators() {
+  try {
+    const creators = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [
+        Query.orderDesc('creationsCount'),
+        Query.limit(10)
+      ]
+    );
+
+    if (!creators) throw Error;
+
+    return creators;
+  } catch (error) {
+    console.error("Error fetching top creators:", error);
+    throw error;
+  }
+}

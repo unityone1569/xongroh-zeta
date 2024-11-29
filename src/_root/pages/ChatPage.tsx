@@ -232,7 +232,7 @@ const ChatPage = () => {
           <div className="flex flex-col">
             <h2 className="text-xl font-semibold">{receiverData?.name}</h2>
             <p className="subtle-normal text-light-3">
-              {receiverData?.profession || 'No profession'}
+              {receiverData?.profession || 'Creator'}
             </p>
           </div>
         </Link>

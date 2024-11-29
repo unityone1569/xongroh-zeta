@@ -8,6 +8,7 @@ export enum QUERY_KEYS {
   GET_USER_BY_ID = 'getUserById',
   GET_USER_INFO = 'getUserInfo',
   GET_INFINITE_USERS = 'getInfiniteUsers',
+  GET_TOP_CREATORS = 'getTopCreators',
 
   // POST KEYS
   GET_POSTS = 'getPosts',

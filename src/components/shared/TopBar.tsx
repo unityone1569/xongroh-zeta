@@ -18,7 +18,7 @@ const Topbar = () => {
               <img
                 src={'/assets/icons/message.svg'}
                 alt="profile"
-                className="h-10 w-10"
+                className="h-7 w-7"
               />
             </Link>
           </div>

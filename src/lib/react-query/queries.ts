@@ -44,6 +44,7 @@ import {
   createUserAccountWithGoogle,
   getCurrentUser,
   getInfiniteUsers,
+  getTopCreators,
   getUserById,
   getUserInfo,
   getUserPosts,
@@ -172,6 +173,15 @@ export const useUpdateProfile = () => {
     },
   });
 };
+
+export const useGetTopCreators = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_TOP_CREATORS],
+    queryFn: () => getTopCreators(),
+  });
+};
+
+
 
 // ***** POSTS, PROJECTS & DISCUSSIONS *****
 // *****************************************

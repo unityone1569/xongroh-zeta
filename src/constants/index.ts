@@ -27,6 +27,15 @@ export const sidebarLinks = [
   },
 ];
 
+export const rightbarLinks = [
+  {
+    imgURL: '/assets/icons/message.svg',
+    route: '/messages',
+    label: 'Messages',
+  },
+  
+]
+
 export const bottombarLinks = [
   {
     imgURL: '/assets/icons/home.svg',
