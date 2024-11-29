@@ -134,7 +134,7 @@
     @apply flex flex-col flex-1 items-center gap-6 overflow-scroll pt-24 pb-28 md:py-14 px-5 md:px-8  custom-scrollbar;
   }
   .common-msg-container {
-    @apply flex flex-col flex-1 items-center gap-6 overflow-scroll pt-24 pb-28 md:py-14 px-0 md:px-8  custom-scrollbar;
+    @apply flex flex-col flex-1 items-center overflow-scroll pt-24 pb-28 md:py-14 px-0 md:px-8  custom-scrollbar;
   }
 
   /* All Users */

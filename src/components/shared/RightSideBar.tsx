@@ -57,13 +57,13 @@ const CreatorCard = ({ creator }: { creator: Models.Document }) => {
       <img
         src={creator.dpUrl || '/assets/icons/profile-placeholder.svg'}
         alt="creator"
-        className="w-16 h-16 rounded-full object-cover"
+        className="w-12 h-12 rounded-full object-cover"
       />
       <div className="mt-2 w-full">
         <p className="small-bold text-light-1 line-clamp-1">
           {creator.name}
         </p>
-        <p className="tiny-medium text-light-3 line-clamp-1">
+        <p className="subtle-normal text-light-3 pt-1 line-clamp-1">
           {creator.profession || 'Creator'}
         </p>
       </div>

@@ -24,7 +24,7 @@ import { Textarea } from '@/components/ui/textarea';
 import React from 'react';
 import { Models } from 'appwrite';
 import { useInView } from 'react-intersection-observer';
-import {client, appwriteConfig } from '@/lib/appwrite/config'; 
+import { client, appwriteConfig } from '@/lib/appwrite/config';
 
 const MessageSchema = z.object({
   message: z
@@ -127,7 +127,7 @@ const ChatPage = () => {
     isLoading: isMessagesLoading,
     fetchNextPage,
     hasNextPage,
-    refetch: refetchMessages
+    refetch: refetchMessages,
   } = useGetMessages(convId);
 
   const { mutateAsync: createMessage } = useCreateMessage();
@@ -159,8 +159,12 @@ const ChatPage = () => {
     // Subscribe to messages collection
     const unsubscribe = client.subscribe(
       `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`,
-      response => {
-        if (response.events.includes("databases.*.collections.*.documents.*.create")) {
+      (response) => {
+        if (
+          response.events.includes(
+            'databases.*.collections.*.documents.*.create'
+          )
+        ) {
           // Check if the message belongs to this conversation
           const payload = response.payload as { conversationId: string };
           if (payload.conversationId === convId) {
@@ -168,14 +172,22 @@ const ChatPage = () => {
           }
         }
 
-        if (response.events.includes("databases.*.collections.*.documents.*.delete")) {
+        if (
+          response.events.includes(
+            'databases.*.collections.*.documents.*.delete'
+          )
+        ) {
           const payload = response.payload as { conversationId: string };
           if (payload.conversationId === convId) {
             refetchMessages();
           }
         }
 
-        if (response.events.includes("databases.*.collections.*.documents.*.update")) {
+        if (
+          response.events.includes(
+            'databases.*.collections.*.documents.*.update'
+          )
+        ) {
           const payload = response.payload as { conversationId: string };
           if (payload.conversationId === convId) {
             refetchMessages();
@@ -206,7 +218,7 @@ const ChatPage = () => {
         },
       });
       form.reset();
-      
+
       // No need to manually update messages as subscription will handle it
     } finally {
       setIsSending(false);
@@ -219,7 +231,7 @@ const ChatPage = () => {
 
   return (
     <div className="common-msg-container flex flex-col ">
-      <div className="mb-4 w-full max-w-3xl px-3">
+      <div className=" w-full max-w-3xl p-3 border-b-2 border-dark-4 mb-3">
         <Link
           to={`/profile/${receiverId}`}
           className="flex items-center gap-3.5"
@@ -240,7 +252,7 @@ const ChatPage = () => {
 
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto mb-4 w-full rounded-lg custom-scrollbar pl-4 pr-3 max-w-3xl h-[600px]"
+        className="flex-1 overflow-y-auto mb-5 lg:mb-9 w-full rounded-lg custom-scrollbar pl-4 pr-3 max-w-3xl h-[600px] pb-3"
       >
         {isMessagesLoading ? (
           <Loader />
