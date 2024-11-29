@@ -59,6 +59,7 @@ const MessagesList: React.FC<MessagesListProps> = React.memo(
         {messages.pages.map((page, pageIndex) => (
           <div key={pageIndex} className="flex flex-col-reverse">
             {page.documents
+              .filter((message) => !message.isDeleted?.includes(senderId))
               .filter((message) => message?.content)
               .map((message) => (
                 <div

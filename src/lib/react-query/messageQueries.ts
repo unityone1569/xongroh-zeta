@@ -17,6 +17,7 @@ import {
   getConversations,
   getMessages,
   markMessageAsRead,
+  updateConversation,
 } from '../appwrite/message';
 import { Conversation, Message } from '@/types';
 
@@ -58,13 +59,20 @@ export const useCreateConversation = () => {
       );
 
       // Check if conversation exists
-
       const existingConversation = await getConversationByParticipantsKey(
         response.participantsKey
       );
+
       if (existingConversation) {
-        // Conversation exists, return it
-        return existingConversation;
+        // Update isDeleted array to []
+        await updateConversation(existingConversation.$id, { isDeleted: [] });
+
+        // Fetch the updated document and return it
+        const updatedConversation = await getConversationById(
+          existingConversation.$id
+        );
+
+        return updatedConversation.documents[0];
       } else {
         // Create new conversation
         const conversation: Conversation = {

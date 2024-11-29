@@ -21,6 +21,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import Loader from './Loader';
+import { useDeleteConversation } from '@/lib/react-query/messageQueries';
 
 interface DeleteDialogProps {
   title: string;
@@ -37,7 +38,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <img
-          className="items-center cursor-pointer"
+          className="items-center cursor-pointer hover:opacity-70"
           src="/assets/icons/delete.svg"
           alt="delete"
           width={22}
@@ -309,6 +310,47 @@ const DeleteFeedbackReply = ({
   );
 };
 
+const DeleteConversation = ({
+  conversationId,
+  userId,
+}: {
+  conversationId: string;
+  userId: string;
+}) => {
+  const { toast } = useToast();
+  const { mutate: deleteConversation, isPending } = useDeleteConversation();
+
+  const handleDelete = () => {
+    deleteConversation(
+      { conversationId, userId },
+      {
+        onSuccess: () => {
+          toast({ title: 'Conversation deleted successfully' });
+        },
+        onError: () => {
+          toast({ title: 'Error deleting conversation' });
+        },
+      }
+    );
+  };
+
+  if (isPending) {
+    return (
+      <div className="p-2">
+        <Loader />
+      </div>
+    );
+  }
+
+  return (
+    <DeleteDialog
+      title="Delete Conversation?"
+      description="This action will delete the conversation for you."
+      onDelete={handleDelete}
+    />
+  );
+};
+
 export {
   DeleteCreation,
   DeleteProject,
@@ -316,4 +358,5 @@ export {
   DeleteFeedback,
   DeleteCommentReply,
   DeleteFeedbackReply,
+  DeleteConversation,
 };

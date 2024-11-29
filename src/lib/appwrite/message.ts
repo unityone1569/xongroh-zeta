@@ -45,6 +45,19 @@ export async function createConversation(conversation: Conversation) {
   }
 }
 
+// Update a conversation document by its ID
+export const updateConversation = async (
+  conversationId: string,
+  updates: Partial<Conversation>
+) => {
+  return await databases.updateDocument(
+    appwriteConfig.databaseId,
+    appwriteConfig.conversationCollectionId,
+    conversationId,
+    updates
+  );
+};
+
 /** Fetch conversations for a specific user */
 export async function getConversations({
   pageParam,
