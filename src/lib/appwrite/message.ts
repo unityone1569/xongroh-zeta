@@ -143,17 +143,32 @@ export async function deleteConversation(
       conversationId
     );
 
-    const updatedIsDeleted = [...conversation.isDeleted, userId];
+    // Get all messages for this conversation
+    const messages = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.messageCollectionId,
+      [Query.equal('conversationId', conversationId)]
+    );
 
-    if (updatedIsDeleted.length === conversation.participants.length) {
-      // All participants deleted the conversation
-      const messages = await databases.listDocuments(
+    // Mark all messages as deleted for this user
+    const messageUpdatePromises = messages.documents.map((message) => {
+      const updatedMessageIsDeleted = [...(message.isDeleted || []), userId];
+      return databases.updateDocument(
         appwriteConfig.databaseId,
         appwriteConfig.messageCollectionId,
-        [Query.equal('conversationId', conversationId)]
+        message.$id,
+        { isDeleted: updatedMessageIsDeleted }
       );
+    });
 
-      const deletePromises = messages.documents.map((message) =>
+    // Update messages in parallel
+    await Promise.all(messageUpdatePromises);
+
+    const updatedIsDeleted = [...(conversation.isDeleted || []), userId];
+
+    if (updatedIsDeleted.length === conversation.participants.length) {
+      // All participants deleted the conversation - hard delete everything
+      const deleteMessagePromises = messages.documents.map((message) =>
         databases.deleteDocument(
           appwriteConfig.databaseId,
           appwriteConfig.messageCollectionId,
@@ -161,17 +176,14 @@ export async function deleteConversation(
         )
       );
 
-      await Promise.all(deletePromises); // Delete messages in parallel
-
-      await Promise.all([
-        databases.deleteDocument(
-          appwriteConfig.databaseId,
-          appwriteConfig.conversationCollectionId,
-          conversationId
-        ),
-      ]);
+      await Promise.all(deleteMessagePromises);
+      await databases.deleteDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.conversationCollectionId,
+        conversationId
+      );
     } else {
-      // Soft delete
+      // Soft delete conversation
       await databases.updateDocument(
         appwriteConfig.databaseId,
         appwriteConfig.conversationCollectionId,

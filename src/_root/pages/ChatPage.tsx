@@ -7,6 +7,7 @@ import {
   useCreateMessage,
   useGetMessages,
   useGetConversation,
+  useMarkMessageAsRead,
 } from '@/lib/react-query/messageQueries';
 import Loader from '@/components/shared/Loader';
 import { Link, useParams } from 'react-router-dom';
@@ -47,6 +48,22 @@ interface MessagesListProps {
 const MessagesList: React.FC<MessagesListProps> = React.memo(
   ({ messages, senderId, fetchNextPage, hasNextPage }) => {
     const { ref, inView } = useInView();
+    const { mutate: markAsRead } = useMarkMessageAsRead();
+
+    // Effect to mark messages as read
+    useEffect(() => {
+      messages.pages.forEach((page) => {
+        page.documents.forEach((message) => {
+          // Only mark messages from other user that are unread
+          if (message.senderId !== senderId && !message.isRead) {
+            markAsRead({
+              messageId: message.$id,
+              conversationId: message.conversationId,
+            });
+          }
+        });
+      });
+    }, [messages.pages, senderId, markAsRead]);
 
     useEffect(() => {
       if (inView && hasNextPage) {
@@ -78,8 +95,36 @@ const MessagesList: React.FC<MessagesListProps> = React.memo(
                     }`}
                   >
                     <p className="break-words">{message.content}</p>
-                    <span className="text-xs opacity-50">
+                    <span className="text-xs opacity-50 flex items-center">
                       {multiFormatDateString(message.$createdAt)}
+                      {message.senderId === senderId && (
+                        <span className="ml-2">
+                          {message.isRead ? (
+                            <div className="relative flex items-center">
+                              <div className="relative w-4 h-4">
+                                <img
+                                  src="/assets/icons/isRead.svg"
+                                  alt="Read"
+                                  className="absolute top-0 left-0 w-4 h-4"
+                                />
+                                <img
+                                  src="/assets/icons/isRead.svg"
+                                  alt="Read"
+                                  className="absolute left-[5px] w-4 h-4"
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <img
+                                src="/assets/icons/isRead.svg"
+                                alt="Delivered"
+                                className="w-4 h-4"
+                              />
+                            </div>
+                          )}
+                        </span>
+                      )}
                     </span>
                   </div>
                 </div>

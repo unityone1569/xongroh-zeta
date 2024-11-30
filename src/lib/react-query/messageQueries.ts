@@ -200,9 +200,12 @@ export const useDeleteConversation = () => {
       conversationId: string;
       userId: string;
     }) => deleteConversation(conversationId, userId),
-    onSuccess: () => {
+    onSuccess: (_, { conversationId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_CONVERSATIONS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_MESSAGES, conversationId],
       });
     },
   });
