@@ -270,8 +270,8 @@
     @apply hidden lg:flex flex-col min-w-[300px] bg-dark-2 px-6 py-10 gap-10 overflow-scroll custom-scrollbar;
   }
 
-   .rightsidebar-link {
-    @apply rounded-lg ;
+  .rightsidebar-link {
+    @apply rounded-lg;
   }
 
   .creator-card {

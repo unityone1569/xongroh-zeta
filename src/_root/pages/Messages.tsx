@@ -2,7 +2,10 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import { useUserContext } from '@/context/AuthContext';
-import { useGetConversations } from '@/lib/react-query/messageQueries';
+import {
+  useGetConversations,
+  useGetMessageById,
+} from '@/lib/react-query/messageQueries';
 import { useGetUserInfo } from '@/lib/react-query/queries';
 import { multiFormatDateString } from '@/lib/utils';
 import Loader from '@/components/shared/Loader';
@@ -10,7 +13,9 @@ import { Models } from 'appwrite';
 import { DeleteConversation } from '@/components/shared/DeleteItems';
 
 interface ConversationCardProps {
-  conversation: Models.Document;
+  conversation: Models.Document & {
+    unreadCount?: number;
+  };
   currentUserId: string;
 }
 
@@ -21,40 +26,94 @@ const ConversationCard = ({
   const otherParticipantId = conversation.participantsKey
     .split('_')
     .find((id: string) => id !== currentUserId);
+  const { data: message, isLoading: isLoadingMsg } = useGetMessageById(
+    conversation?.lastMsgId
+  );
 
   const { data: userData, isLoading } = useGetUserInfo(otherParticipantId);
+  const unreadCount = conversation.unreadCount || 0;
 
-  if (isLoading) return <Loader />;
+
+
+  const participantsKey = conversation?.participantsKey ?? '';
+  const participants = participantsKey.split('_');
+  const isLastMessageFromMe = participants.includes(currentUserId);
+  const isLastMessageRead = message?.isRead ?? false;
+
+
+
+  if (isLoading || isLoadingMsg) return <Loader />;
 
   return (
     <div className="block">
       <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-dark-2 border border-dark-4 hover:bg-dark-3 transition-colors">
-        <div className='w-3/4'>
+        <div className="w-3/4">
           <Link
             to={`/chat/${conversation?.$id}`}
             className="flex items-center gap-3.5"
           >
-            <img
-              src={userData?.dp || '/assets/icons/profile-placeholder.svg'}
-              alt={userData?.name || 'User'}
-              className="w-11 h-11 rounded-full object-cover"
-            />
+            <div className="relative">
+              <img
+                src={userData?.dp || '/assets/icons/profile-placeholder.svg'}
+                alt={userData?.name || 'User'}
+                className="w-11 h-11 rounded-full object-cover"
+              />
+              {unreadCount > 0 && (
+                <span className=" bg-gradient-to-r from-purple-500 to-purple-400 absolute -top-2 -right-2 text-white px-3 py-1.5 rounded-full text-xs">
+                  {unreadCount}
+                </span>
+              )}
+            </div>
             <div className="flex-1 flex flex-col gap-1">
-              <h3 className="small-semibold lg:base-bold text-light-1">
-                {userData?.name || 'Unknown User'}
-              </h3>
-              <p className="subtle-semibold text-light-3 lg:small-semibold line-clamp-1">
-                {conversation?.lastMessage || 'No messages yet'}
-              </p>
+              <div className="flex justify-between items-center">
+                <h3 className="small-semibold lg:base-bold text-light-1">
+                  {userData?.name || 'Unknown User'}
+                </h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="subtle-semibold text-light-3 lg:small-semibold line-clamp-1">
+                  {message?.content || 'No messages yet'}
+                </p>
+              </div>
             </div>
           </Link>
         </div>
-        <div className="flex items-center gap-3.5 whitespace-nowrap">
-          {conversation?.lastUpdated && (
-            <span className="subtle-normal text-light-3">
-              {multiFormatDateString(conversation?.lastUpdated)}
-            </span>
-          )}
+        <div className="flex items-center gap-5 whitespace-nowrap">
+          <div className="flex-center flex-col">
+            {isLastMessageFromMe && (
+              <span className="flex items-center">
+                {isLastMessageRead ? (
+                  <div className="relative flex items-center">
+                    <div className="relative w-5 h-5">
+                      <img
+                        src="/assets/icons/isRead.svg"
+                        alt="Read"
+                        className="absolute top-0 left-0 w-4 h-4"
+                      />
+                      <img
+                        src="/assets/icons/isRead.svg"
+                        alt="Read"
+                        className="absolute left-[4px] w-4 h-4"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <img
+                      src="/assets/icons/isRead.svg"
+                      alt="Delivered"
+                      className="w-4 h-4"
+                    />
+                  </div>
+                )}
+              </span>
+            )}
+            {message?.$createdAt && (
+              <span className="subtle-normal text-light-3">
+                {multiFormatDateString(conversation?.lastUpdated)}
+              </span>
+            )}
+          </div>
           <DeleteConversation
             conversationId={conversation.$id}
             userId={currentUserId}

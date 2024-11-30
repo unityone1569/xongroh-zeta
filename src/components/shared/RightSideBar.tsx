@@ -4,9 +4,13 @@ import { Models } from 'appwrite';
 import Loader from './Loader';
 import { rightbarLinks } from '@/constants';
 import { INavLink } from '@/types';
+import { useUserContext } from '@/context/AuthContext';
+import { useUnreadMessages } from '@/lib/react-query/messageQueries';
 
 const RightSideBar = () => {
   const { data: creators, isLoading } = useGetTopCreators();
+  const { user } = useUserContext();
+  const { hasUnreadMessages } = useUnreadMessages(user?.id);
 
   return (
     <div className="rightsidebar">
@@ -17,13 +21,18 @@ const RightSideBar = () => {
           <li key={link.label} className="rightsidebar-link group">
             <NavLink
               to={link.route}
-              className="flex gap-3 items-center pl-0 p-3"
+              className="flex gap-3 items-center pl-0 p-3 relative"
             >
-              <img
-                src={link.imgURL}
-                alt={link.label}
-                className="group-hover:invert-white w-7"
-              />
+              <div className="relative">
+                <img
+                  src={link.imgURL}
+                  alt={link.label}
+                  className="group-hover:invert-white w-7"
+                />
+                {link.label === 'Messages' && hasUnreadMessages && (
+                  <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-green-500 rounded-full" />
+                )}
+              </div>
               {link.label}
             </NavLink>
           </li>
@@ -60,9 +69,7 @@ const CreatorCard = ({ creator }: { creator: Models.Document }) => {
         className="w-12 h-12 rounded-full object-cover"
       />
       <div className="mt-2 w-full">
-        <p className="small-bold text-light-1 line-clamp-1">
-          {creator.name}
-        </p>
+        <p className="small-bold text-light-1 line-clamp-1">{creator.name}</p>
         <p className="subtle-normal text-light-3 pt-1 line-clamp-1">
           {creator.profession || 'Creator'}
         </p>

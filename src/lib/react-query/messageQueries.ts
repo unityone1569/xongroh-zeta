@@ -15,11 +15,14 @@ import {
   getConversationById,
   getConversationByParticipantsKey,
   getConversations,
+  getMessageById,
   getMessages,
   markMessageAsRead,
   updateConversation,
 } from '../appwrite/message';
 import { Conversation, Message } from '@/types';
+import { useEffect } from 'react';
+import { appwriteConfig, client } from '../appwrite/config';
 
 export const useGetConversations = (userId: string) => {
   return useInfiniteQuery({
@@ -78,8 +81,7 @@ export const useCreateConversation = () => {
         const conversation: Conversation = {
           participants: response.participants,
           participantsKey: response.participantsKey,
-          lastMessage: '',
-          lastUpdated: null,
+          lastMsgId: '',
           isDeleted: [],
         };
 
@@ -91,6 +93,14 @@ export const useCreateConversation = () => {
         queryKey: [QUERY_KEYS.GET_CONVERSATIONS],
       });
     },
+  });
+};
+
+export const useGetMessageById = (messageId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_MESSAGE, messageId],
+    queryFn: () => getMessageById(messageId),
+    enabled: Boolean(messageId),
   });
 };
 
@@ -209,4 +219,52 @@ export const useDeleteConversation = () => {
       });
     },
   });
+};
+
+// messageQueries.ts
+export const useUnreadMessages = (userId: string) => {
+  const queryClient = useQueryClient();
+  const { data: conversations } = useGetConversations(userId);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    // Subscribe to conversations collection
+    const unsubscribe = client.subscribe(
+      `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.conversationCollectionId}.documents`,
+      (response) => {
+        // When conversations are updated
+        if (
+          response.events.includes(
+            'databases.*.collections.*.documents.*.create'
+          ) ||
+          response.events.includes(
+            'databases.*.collections.*.documents.*.update'
+          ) ||
+          response.events.includes(
+            'databases.*.collections.*.documents.*.delete'
+          )
+        ) {
+          // Invalidate and refetch conversations query
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_CONVERSATIONS, userId],
+          });
+        }
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [userId, queryClient]);
+
+  const hasUnreadMessages = conversations?.pages?.some((page) =>
+    page.documents.some(
+      (conversation: { isDeleted?: string[]; unreadCount: number }) =>
+        !conversation?.isDeleted?.includes(userId) &&
+        (conversation?.unreadCount || 0) > 0
+    )
+  );
+
+  return { hasUnreadMessages };
 };

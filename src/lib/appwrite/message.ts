@@ -84,11 +84,30 @@ export async function getConversations({
       queries
     );
 
+    // Get unread message count for each conversation
+    const conversationsWithUnreadCount = await Promise.all(
+      conversations.map(async (conversation) => {
+        const messages = await databases.listDocuments(
+          appwriteConfig.databaseId,
+          appwriteConfig.messageCollectionId,
+          [
+            Query.equal('conversationId', conversation.$id),
+            Query.equal('receiverId', userId),
+            Query.equal('isRead', false),
+          ]
+        );
+        return {
+          ...conversation,
+          unreadCount: messages.total,
+        };
+      })
+    );
+
     if (!conversations || conversations.length === 0) {
       return { documents: [] };
     }
 
-    return { documents: conversations };
+    return { documents: conversationsWithUnreadCount };
   } catch (error) {
     console.error('Error fetching conversations:', error);
     throw error;
@@ -230,8 +249,7 @@ export async function createMessage(message: Message) {
       appwriteConfig.conversationCollectionId,
       message.conversationId,
       {
-        lastMessage: message.content,
-        lastUpdated: new Date().toISOString(),
+        lastMsgId: newMessage.$id,
       }
     );
 
@@ -250,6 +268,22 @@ export async function createMessage(message: Message) {
     return newMessage;
   } catch (error) {
     console.error('Error creating message:', error);
+    throw error;
+  }
+}
+
+/** Get a message by its ID */
+export async function getMessageById(messageId: string) {
+  try {
+    const message = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.messageCollectionId,
+      messageId
+    );
+    
+    return message;
+  } catch (error) {
+    console.error('Error fetching message:', error);
     throw error;
   }
 }

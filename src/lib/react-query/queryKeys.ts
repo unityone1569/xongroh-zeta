@@ -36,6 +36,7 @@ export enum QUERY_KEYS {
   SEARCH_USERS = 'searchUsers',
 
   // MESSAGE KEYS
+  GET_MESSAGE= 'getMessage',
   GET_MESSAGES = 'getMessages',
   GET_CONVERSATION = 'getConversationById',
   GET_CONVERSATIONS = 'getConversations',

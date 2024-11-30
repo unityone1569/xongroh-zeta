@@ -86,8 +86,7 @@ export type IUpdateUser = {
 export interface Conversation {
   participants: string[];
   participantsKey: string;
-  lastMessage?: string;
-  lastUpdated?: Date | null;
+  lastMsgId?: string;
   isDeleted: string[];
 }
 
