@@ -2,6 +2,7 @@ import { databases, appwriteConfig, client } from '@/lib/appwrite/config';
 import { Conversation, Message } from '@/types';
 import { Functions, ID, Permission, Query, Role } from 'appwrite';
 import { getUserAccountId } from './user';
+import { MessageEncryption } from '@/lib/utils/encryption';
 
 /** Create conversations */
 export async function createConversation(conversation: Conversation) {
@@ -220,6 +221,10 @@ export async function deleteConversation(
 export async function createMessage(message: Message) {
   try {
     const functions = new Functions(client);
+    const encryptedContent = await MessageEncryption.encrypt(
+      message.content,
+      appwriteConfig.messageEncryptionKey
+    );
 
     // Retrieve account IDs for sender and receiver
     const [senderAccountId, receiverAccountId] = await Promise.all([
@@ -239,7 +244,10 @@ export async function createMessage(message: Message) {
       appwriteConfig.databaseId,
       appwriteConfig.messageCollectionId,
       ID.unique(),
-      message,
+      {
+        ...message,
+        content: encryptedContent
+      },
       senderPermissions
     );
 

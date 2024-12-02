@@ -26,6 +26,7 @@ import React from 'react';
 import { Models } from 'appwrite';
 import { useInView } from 'react-intersection-observer';
 import { client, appwriteConfig } from '@/lib/appwrite/config';
+import { MessageEncryption } from '@/lib/utils/encryption';
 
 const MessageSchema = z.object({
   message: z
@@ -44,6 +45,38 @@ interface MessagesListProps {
   fetchNextPage: () => void;
   hasNextPage: boolean;
 }
+
+const DecryptedMessage = ({
+  encryptedContent,
+}: {
+  encryptedContent: string;
+}) => {
+  const [decryptedContent, setDecryptedContent] = useState<string>('');
+  const [error, setError] = useState<boolean>(false);
+
+  useEffect(() => {
+    const decryptMessage = async () => {
+      try {
+        const content = await MessageEncryption.decrypt(
+          encryptedContent,
+          appwriteConfig.messageEncryptionKey
+        );
+        setDecryptedContent(content);
+      } catch (err) {
+        console.error('Decryption failed:', err);
+        setError(true);
+      }
+    };
+
+    decryptMessage();
+  }, [encryptedContent]);
+
+  if (error)
+    return <span className="text-red-500">Failed to decrypt message</span>;
+  if (!decryptedContent) return <span>Decrypting...</span>;
+
+  return <span>{decryptedContent}</span>;
+};
 
 const MessagesList: React.FC<MessagesListProps> = React.memo(
   ({ messages, senderId, fetchNextPage, hasNextPage }) => {
@@ -94,8 +127,10 @@ const MessagesList: React.FC<MessagesListProps> = React.memo(
                         : 'bg-dark-4'
                     }`}
                   >
-                    <p className="break-words">{message.content}</p>
-                    <span className="text-xs opacity-50 flex items-center">
+                    <p className="break-words pb-2">
+                      <DecryptedMessage encryptedContent={message.content} />
+                    </p>
+                    <span className="text-xs opacity-45 flex items-center">
                       {multiFormatDateString(message.$createdAt)}
                       {message.senderId === senderId && (
                         <span className="ml-2">
@@ -178,6 +213,10 @@ const ChatPage = () => {
 
   const { mutateAsync: createMessage } = useCreateMessage();
 
+  // First, create a ref to store textarea element
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Update handleTextareaInput to store ref
   const handleTextareaInput = useCallback(
     (e: React.FormEvent<HTMLTextAreaElement>) => {
       const target = e.target as HTMLTextAreaElement;
@@ -248,6 +287,7 @@ const ChatPage = () => {
     };
   }, [convId, refetchMessages]);
 
+  // Modify onSubmit to reset height
   const onSubmit = async (data: z.infer<typeof MessageSchema>) => {
     if (!receiverId || !convId || !data.message.trim()) return;
 
@@ -264,8 +304,10 @@ const ChatPage = () => {
         },
       });
       form.reset();
-
-      // No need to manually update messages as subscription will handle it
+      // Reset textarea height
+      if (textareaRef.current) {
+        textareaRef.current.style.height = '44px';
+      }
     } finally {
       setIsSending(false);
     }
@@ -331,6 +373,7 @@ const ChatPage = () => {
                   <FormControl>
                     <Textarea
                       {...field}
+                      ref={textareaRef}
                       className="shad-msg-textarea"
                       placeholder="Type your message..."
                       onInput={handleTextareaInput}

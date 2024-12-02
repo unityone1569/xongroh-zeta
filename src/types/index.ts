@@ -98,3 +98,7 @@ export interface Message {
   isDeleted: string[];
   isRead: boolean;
 }
+
+export interface EncryptedMessage extends Message {
+  content: string; // Base64 encrypted content
+}

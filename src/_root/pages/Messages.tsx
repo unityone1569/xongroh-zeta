@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import { useUserContext } from '@/context/AuthContext';
@@ -11,6 +11,8 @@ import { multiFormatDateString } from '@/lib/utils/utils';
 import Loader from '@/components/shared/Loader';
 import { Models } from 'appwrite';
 import { DeleteConversation } from '@/components/shared/DeleteItems';
+import { MessageEncryption } from '@/lib/utils/encryption';
+import { appwriteConfig } from '@/lib/appwrite/config';
 
 interface ConversationCardProps {
   conversation: Models.Document & {
@@ -18,6 +20,38 @@ interface ConversationCardProps {
   };
   currentUserId: string;
 }
+
+const DecryptedMessage = ({
+  encryptedContent,
+}: {
+  encryptedContent: string;
+}) => {
+  const [decryptedContent, setDecryptedContent] = useState<string>('');
+  const [error, setError] = useState<boolean>(false);
+
+  useEffect(() => {
+    const decryptMessage = async () => {
+      try {
+        const content = await MessageEncryption.decrypt(
+          encryptedContent,
+          appwriteConfig.messageEncryptionKey
+        );
+        setDecryptedContent(content);
+      } catch (err) {
+        console.error('Decryption failed:', err);
+        setError(true);
+      }
+    };
+
+    decryptMessage();
+  }, [encryptedContent]);
+
+  if (error)
+    return <span className="text-red-500">Failed to decrypt message</span>;
+  if (!decryptedContent) return <span>Decrypting...</span>;
+
+  return <span>{decryptedContent}</span>;
+};
 
 const ConversationCard = ({
   conversation,
@@ -43,38 +77,41 @@ const ConversationCard = ({
   return (
     <div className="block">
       <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-dark-2 border border-dark-4 hover:bg-dark-3 transition-colors">
-        <div className="w-3/4">
-          <Link
-            to={`/chat/${conversation?.$id}`}
-            className="flex items-center gap-3.5"
-          >
-            <div className="relative">
-              <img
-                src={userData?.dp || '/assets/icons/profile-placeholder.svg'}
-                alt={userData?.name || 'User'}
-                className="w-11 h-11 rounded-full object-cover"
-              />
-              {unreadCount > 0 && (
-                <span className=" bg-gradient-to-r from-purple-500 to-purple-400 absolute -top-2 -right-2 text-white px-3 py-1.5 rounded-full text-xs">
-                  {unreadCount}
-                </span>
-              )}
+        <Link
+          to={`/chat/${conversation?.$id}`}
+          className="flex items-center gap-3.5 "
+        >
+          <div className="relative">
+            <img
+              src={userData?.dp || '/assets/icons/profile-placeholder.svg'}
+              alt={userData?.name || 'User'}
+              className="w-11 h-11 rounded-full object-cover"
+            />
+            {unreadCount > 0 && (
+              <span className=" bg-gradient-to-r from-purple-500 to-purple-400 absolute -top-2 -right-2 text-white px-2 py-1 rounded-full text-xs">
+                {unreadCount}
+              </span>
+            )}
+          </div>
+          <div className="flex-1 flex flex-col gap-1">
+            <div className="flex justify-between items-center">
+              <h3 className="small-semibold lg:base-bold text-light-1">
+                {userData?.name || 'Unknown User'}
+              </h3>
             </div>
-            <div className="flex-1 flex flex-col gap-1">
-              <div className="flex justify-between items-center">
-                <h3 className="small-semibold lg:base-bold text-light-1">
-                  {userData?.name || 'Unknown User'}
-                </h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <p className="subtle-semibold text-light-3 lg:small-semibold line-clamp-1">
-                  {message?.content || 'No messages yet'}
-                </p>
-              </div>
+            <div className="flex items-center gap-2">
+              <p className="subtle-semibold text-light-3 lg:small-semibold line-clamp-1">
+                {message?.content ? (
+                  <DecryptedMessage encryptedContent={message.content} />
+                ) : (
+                  'No messages yet'
+                )}
+              </p>
             </div>
-          </Link>
-        </div>
-        <div className="flex items-center gap-5 whitespace-nowrap">
+          </div>
+        </Link>
+
+        <div className="flex-center flex gap-5 max-w-1/3">
           <div className="flex-center flex-col">
             {isLastMessageFromMe && (
               <span className="flex items-center">
@@ -105,7 +142,7 @@ const ConversationCard = ({
               </span>
             )}
             {message?.$createdAt && (
-              <span className="subtle-normal text-light-3">
+              <span className="subtle-normal text-nowrap text-light-3">
                 {multiFormatDateString(conversation?.lastUpdated)}
               </span>
             )}
