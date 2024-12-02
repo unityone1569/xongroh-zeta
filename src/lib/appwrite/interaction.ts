@@ -529,7 +529,7 @@ export async function support(
     // Fetch user document to update supportingCount
     const user = await databases.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       creatorId
     );
 
@@ -539,7 +539,7 @@ export async function support(
 
     const updateUserPromise = databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       creatorId,
       { supportingCount: updatedSupportingCount }
     );
@@ -602,7 +602,7 @@ export async function unsupport(
     // Fetch user document to update supportingCount
     const user = await databases.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       creatorId
     );
 
@@ -612,7 +612,7 @@ export async function unsupport(
 
     const updateUserPromise = databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       creatorId,
       { supportingCount: updatedSupportingCount }
     );

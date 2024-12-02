@@ -2,9 +2,11 @@ export type IContextType = {
   user: IUser;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isVerified: boolean; // Added
   setUser: React.Dispatch<React.SetStateAction<IUser>>;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   checkAuthUser: () => Promise<boolean>;
+  checkEmailVerification: () => Promise<boolean>; // Added
 };
 
 export type INavLink = {

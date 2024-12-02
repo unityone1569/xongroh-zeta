@@ -59,6 +59,9 @@ export async function createUserAccount(
       username: username, // Add the generated username
     });
 
+    // Send verification email
+    await sendVerificationEmail();
+
     return newUser;
   } catch (error) {
     console.error('Error during account creation:', error);
@@ -155,7 +158,7 @@ export async function updateUserAccountId(
   try {
     const updatedUser = await databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       userId,
       { accountId: newAccountId }
     );
@@ -172,7 +175,7 @@ export async function checkUserExists(
   try {
     const users = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       [Query.equal('email', email)]
     );
 
@@ -196,7 +199,7 @@ async function saveUserToDB(user: {
     // Save the user to the database
     return await databases.createDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       ID.unique(),
       user
     );
@@ -231,7 +234,7 @@ export async function getCurrentUser(): Promise<Models.Document> {
 
     const currentUser = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       [Query.equal('accountId', currentAccount.$id)]
     );
 
@@ -251,7 +254,7 @@ export async function getUserAccountId(userId: string): Promise<string> {
   try {
     const userDocument = await databases.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       userId
     );
 
@@ -273,7 +276,7 @@ export async function getUserInfo(accountId: string) {
   try {
     const user = await databases.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       accountId
     );
     return {
@@ -298,7 +301,7 @@ export async function getUserById(userId: string) {
   try {
     const user = await databases.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       userId
     );
     return user;
@@ -352,7 +355,7 @@ export async function updateProfile(user: IUpdateUser) {
 
     const updatedUser = await databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       user.userId,
       {
         name: user.name,
@@ -399,7 +402,7 @@ export async function searchUsers(searchTerm: string) {
   try {
     const { documents: users } = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       [Query.search('name', searchTerm)] // Adjust field as necessary
     );
 
@@ -424,7 +427,7 @@ export async function getInfiniteUsers({ pageParam }: { pageParam: number }) {
   try {
     const { documents: users } = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       queries
     );
 
@@ -468,7 +471,7 @@ export async function getUserPosts({
     const userFetchPromises = posts.map((post) =>
       databases.getDocument(
         appwriteConfig.databaseId,
-        appwriteConfig.userCollectionId,
+        appwriteConfig.creatorCollectionId,
         post.creatorId
       )
     );
@@ -521,7 +524,7 @@ export async function getUserProjects({
     const userFetchPromises = projects.map((project) =>
       databases.getDocument(
         appwriteConfig.databaseId,
-        appwriteConfig.userCollectionId, // Replace with actual user collection ID
+        appwriteConfig.creatorCollectionId, // Replace with actual user collection ID
         project.creatorId
       )
     );
@@ -596,7 +599,7 @@ export async function getTopCreators() {
   try {
     const creators = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       [
         Query.orderDesc('creationsCount'),
         Query.limit(10)
@@ -609,5 +612,27 @@ export async function getTopCreators() {
   } catch (error) {
     console.error("Error fetching top creators:", error);
     throw error;
+  }
+}
+
+export async function sendVerificationEmail(): Promise<void> {
+  try {
+    // Update with your actual verification endpoint
+    await account.createVerification(
+      `${window.location.origin}/verify-success`
+    );
+  } catch (error) {
+    console.error('Error sending verification email:', error);
+    throw error;
+  }
+}
+
+export async function isEmailVerified(): Promise<boolean> {
+  try {
+    const session = await getAccount();
+    return session?.emailVerification || false;
+  } catch (error) {
+    console.error('Error checking email verification:', error);
+    return false;
   }
 }

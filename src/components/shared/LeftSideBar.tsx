@@ -1,13 +1,53 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { INavLink } from '@/types';
-import Loader from './Loader';
-
+import { INavLink, IUser } from '@/types';
+import { memo, useMemo } from 'react';
 import { useUserContext } from '@/context/AuthContext';
 import { sidebarLinks } from '@/constants';
 
+const ProfileSection = memo(
+  ({
+    user,
+    pathname,
+  }: {
+    user: IUser | null;
+
+    pathname: string;
+  }) => {
+    const profileClassName = useMemo(() => {
+      return `leftsidebar-link group ${
+        pathname === `/profile/${user?.id}`
+          ? 'bg-gradient-to-r from-violet-600 to-indigo-600'
+          : ''
+      }`;
+    }, [pathname, user?.id]);
+
+    if (!user) {
+      return <li className="h-14">User not found</li>;
+    }
+
+    return (
+      <li className={profileClassName}>
+        <NavLink
+          to={`/profile/${user.id}`}
+          className="flex gap-4 items-center p-3"
+        >
+          <img
+            src={user.dpUrl || '/assets/icons/profile-placeholder.svg'}
+            alt="profile"
+            className="w-7 h-7 object-cover rounded-full ml-0.5"
+          />
+          <div className="flex flex-col">
+            <p>Profile</p>
+          </div>
+        </NavLink>
+      </li>
+    );
+  }
+);
+
 const LeftSidebar = () => {
   const { pathname } = useLocation();
-  const { user, isLoading } = useUserContext();
+  const { user } = useUserContext();
 
   return (
     <nav className="leftsidebar">
@@ -45,33 +85,7 @@ const LeftSidebar = () => {
             );
           })}
 
-          {/* Profile Section inside UL with is-active status */}
-          {isLoading || !user.email ? (
-            <li className="h-14">
-              <Loader />
-            </li>
-          ) : (
-            <li
-              className={`leftsidebar-link group ${
-                pathname === `/profile/${user?.id}` &&
-                'bg-gradient-to-r from-violet-600 to-indigo-600'
-              }`}
-            >
-              <NavLink
-                to={`/profile/${user?.id}`}
-                className="flex gap-4 items-center p-3"
-              >
-                <img
-                  src={user?.dpUrl || '/assets/icons/profile-placeholder.svg'}
-                  alt="profile"
-                  className="w-7 h-7 object-cover rounded-full ml-0.5 "
-                />
-                <div className="flex flex-col">
-                  <p>Profile</p>
-                </div>
-              </NavLink>
-            </li>
-          )}
+          <ProfileSection user={user} pathname={pathname} />
         </ul>
       </div>
     </nav>

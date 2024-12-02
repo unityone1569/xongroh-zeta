@@ -28,7 +28,7 @@ export async function getRecentPosts() {
     const userFetchPromises = posts.map((post) =>
       databases.getDocument(
         appwriteConfig.databaseId,
-        appwriteConfig.userCollectionId, // Replace with actual user collection ID
+        appwriteConfig.creatorCollectionId, // Replace with actual user collection ID
         post.creatorId
       )
     );
@@ -220,7 +220,7 @@ async function incrementUsercreationsCount(userId: string) {
     // Retrieve the user document
     const userDoc = await databases.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       userId
     );
 
@@ -230,7 +230,7 @@ async function incrementUsercreationsCount(userId: string) {
     // Update the user document with the incremented projectsCount
     await databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       userId,
       { creationsCount: updatedCreationsCount }
     );
@@ -244,7 +244,7 @@ async function decrementUserCreationsCount(userId: string) {
     // Retrieve the user document
     const userDoc = await databases.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       userId
     );
 
@@ -257,7 +257,7 @@ async function decrementUserCreationsCount(userId: string) {
     // Update the user document with the decremented creationsCount
     await databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       userId,
       { creationsCount: updatedCreationsCount }
     );
@@ -290,7 +290,7 @@ export async function searchPosts(searchTerm: string) {
 
     const { documents: authors } = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       [Query.equal('$id', creatorIds)]
     );
 
@@ -328,7 +328,7 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
 
     const { documents: authors } = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       [Query.equal('$id', creatorIds)]
     );
 
@@ -458,7 +458,7 @@ async function incrementUserProjectsCount(userId: string) {
     // Retrieve the user document
     const userDoc = await databases.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       userId
     );
 
@@ -468,7 +468,7 @@ async function incrementUserProjectsCount(userId: string) {
     // Update the user document with the incremented projectsCount
     await databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       userId,
       { projectsCount: updatedProjectsCount }
     );
@@ -482,7 +482,7 @@ async function decrementUserProjectsCount(userId: string) {
     // Retrieve the user document
     const userDoc = await databases.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       userId
     );
 
@@ -492,7 +492,7 @@ async function decrementUserProjectsCount(userId: string) {
     // Update the user document with the decremented creationsCount
     await databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       userId,
       { projectsCount: updatedProjectCount }
     );
@@ -587,7 +587,7 @@ export async function getAuthorById(creatorId: string) {
   try {
     const post = await databases.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
+      appwriteConfig.creatorCollectionId,
       creatorId
     );
     return post;
