@@ -11,7 +11,7 @@ import {
 } from '@/lib/react-query/messageQueries';
 import Loader from '@/components/shared/Loader';
 import { Link, useParams } from 'react-router-dom';
-import { multiFormatDateString } from '@/lib/utils';
+import { multiFormatDateString } from '@/lib/utils/utils';
 import { Button } from '@/components/ui/button';
 import { useGetUserInfo } from '@/lib/react-query/queries';
 import {

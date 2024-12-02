@@ -20,7 +20,7 @@ import {
 } from '@/lib/react-query/queries';
 import Loader from './Loader';
 import { useToast } from '@/hooks/use-toast';
-import { multiFormatDateString } from '@/lib/utils';
+import { multiFormatDateString } from '@/lib/utils/utils';
 import { Link } from 'react-router-dom';
 import { Models } from 'appwrite';
 import LikedItems from './LikedItems';

@@ -4,7 +4,7 @@ import PostComments from '@/components/shared/PostComments';
 import PostStats from '@/components/shared/PostStats';
 import { useUserContext } from '@/context/AuthContext';
 import { useGetAuthorById, useGetPostById } from '@/lib/react-query/queries';
-import { formatDateString } from '@/lib/utils';
+import { formatDateString } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
 import { Link, useParams } from 'react-router-dom';
 

@@ -4,7 +4,7 @@ import ProjectStats from '@/components/shared/ProjectStats';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContext } from '@/context/AuthContext';
 import { useGetAuthorById, useGetProjectById } from '@/lib/react-query/queries';
-import { formatDateString } from '@/lib/utils';
+import { formatDateString } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
 import { Link, useParams } from 'react-router-dom';
 

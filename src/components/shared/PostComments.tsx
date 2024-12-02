@@ -22,7 +22,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 
 import Loader from './Loader';
-import { multiFormatDateString } from '@/lib/utils';
+import { multiFormatDateString } from '@/lib/utils/utils';
 import { Link } from 'react-router-dom';
 import Replies from './Replies';
 import LikedItems from './LikedItems';

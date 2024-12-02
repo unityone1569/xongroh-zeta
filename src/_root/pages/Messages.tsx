@@ -7,7 +7,7 @@ import {
   useGetMessageById,
 } from '@/lib/react-query/messageQueries';
 import { useGetUserInfo } from '@/lib/react-query/queries';
-import { multiFormatDateString } from '@/lib/utils';
+import { multiFormatDateString } from '@/lib/utils/utils';
 import Loader from '@/components/shared/Loader';
 import { Models } from 'appwrite';
 import { DeleteConversation } from '@/components/shared/DeleteItems';
@@ -33,14 +33,10 @@ const ConversationCard = ({
   const { data: userData, isLoading } = useGetUserInfo(otherParticipantId);
   const unreadCount = conversation.unreadCount || 0;
 
-
-
   const participantsKey = conversation?.participantsKey ?? '';
   const participants = participantsKey.split('_');
   const isLastMessageFromMe = participants.includes(currentUserId);
   const isLastMessageRead = message?.isRead ?? false;
-
-
 
   if (isLoading || isLoadingMsg) return <Loader />;
 
