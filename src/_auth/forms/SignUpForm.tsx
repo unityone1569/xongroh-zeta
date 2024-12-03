@@ -18,10 +18,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   useCreateUserAccount,
   useLoginWithGoogle,
-  useSignInAccount,
 } from '@/lib/react-query/queries';
-import { useUserContext } from '@/context/AuthContext';
 import { useState } from 'react';
+import { useUserContext } from '@/context/AuthContext';
 
 const SignUpForm = () => {
   const { toast } = useToast();
@@ -32,8 +31,8 @@ const SignUpForm = () => {
   const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateUserAccount();
   const { mutateAsync: loginWithGoogle } = useLoginWithGoogle();
-  const { mutateAsync: SignInAccount, isPending: isSigningInUser } =
-    useSignInAccount();
+  // const { mutateAsync: SignInAccount, isPending: isSigningInUser } =
+  //   useSignInAccount();
 
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     resolver: zodResolver(SignUpFormSchema),
@@ -41,8 +40,7 @@ const SignUpForm = () => {
   });
 
   const [isGoogleSignUp, setIsGoogleSignUp] = useState(false);
-  const formDisabled =
-    isGoogleSignUp || isCreatingAccount || isUserLoading || isSigningInUser;
+  const formDisabled = isGoogleSignUp || isCreatingAccount || isUserLoading;
 
   const handleSignupWithGoogle = async (
     event: React.MouseEvent<HTMLButtonElement>
@@ -73,17 +71,22 @@ const SignUpForm = () => {
       if (!newUser) throw new Error('Signup failed');
 
       // Sign in after signup
-      const session = await SignInAccount({
-        email: user.email,
-        password: user.password,
-      });
-      if (!session) throw new Error('Sign-in failed');
+      // const session = await SignInAccount({
+      //   email: user.email,
+      //   password: user.password,
+      // });
+      // if (!session) throw new Error('Sign-in failed');
+
+      // Navigate directly to verify-email without signing in
 
       const isLoggedIn = await checkAuthUser();
       if (isLoggedIn) {
+        toast({
+          title: 'Account created successfully!',
+          description: 'Please check your email to verify your account.',
+        });
         form.reset();
-        toast({ title: 'Signup successful!' });
-        navigate('/');
+        navigate('/verify-email', { replace: true });
       } else {
         throw new Error('Authentication failed after sign-up');
       }
@@ -190,7 +193,7 @@ const SignUpForm = () => {
             className="shad-button_primary mt-3"
             disabled={formDisabled}
           >
-            {isCreatingAccount || isSigningInUser || isUserLoading ? (
+            {isCreatingAccount || isUserLoading ? (
               <div className="flex-center gap-2">
                 <Loader />
               </div>

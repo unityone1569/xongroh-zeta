@@ -1,59 +1,105 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
-import { account } from '@/lib/appwrite/config';
+
+import { useUserContext } from '@/context/AuthContext';
+
 import Loader from '@/components/shared/Loader';
+import { verifyEmail } from '@/lib/appwrite/user';
 
 const VerifySuccess = () => {
+  const [verificationStatus, setVerificationStatus] = useState<
+    'loading' | 'success' | 'error'
+  >('loading');
+  const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  const { toast } = useToast();
-  const [isVerifying, setIsVerifying] = useState(true);
+  const { checkAuthUser } = useUserContext();
 
   useEffect(() => {
     const confirmVerification = async () => {
       try {
-        const urlParams = new URLSearchParams(location.search);
-        const userId = urlParams.get('userId');
-        const secret = urlParams.get('secret');
+        // Get URL parameters
+        const params = new URLSearchParams(location.search);
+        const userId = params.get('userId');
+        const secret = params.get('secret');
 
         if (!userId || !secret) {
           throw new Error('Invalid verification link');
         }
 
-        await account.updateVerification(userId, secret);
-        
-        toast({ 
-          title: "Email verified successfully!",
-          variant: "default"
+        // Verify email
+        const verified = await verifyEmail(userId, secret);
+
+        if (!verified) {
+          throw new Error('Verification failed');
+        }
+
+        // Update auth context
+        await checkAuthUser();
+
+        setVerificationStatus('success');
+        toast({
+          title: 'Email verified successfully!',
+          description: 'Redirecting to homepage...',
         });
-        
-        // Small delay before redirect
-        setTimeout(() => navigate('/'), 1500);
+
+        // Redirect to home after success
+        setTimeout(() => navigate('/'), 2000);
       } catch (error) {
         console.error('Verification error:', error);
-        toast({ 
-          title: "Verification failed",
-          description: "Please try again or request a new verification link",
-          variant: "destructive"
+        setVerificationStatus('error');
+        toast({
+          title: 'Verification failed',
+          description: 'Please try again or request a new verification link',
+          variant: 'destructive',
         });
-        navigate('/verify-email');
-      } finally {
-        setIsVerifying(false);
+
+        // Redirect to verify-email page after error
+        setTimeout(() => navigate('/verify-email'), 2000);
       }
     };
 
     confirmVerification();
-  }, [navigate, location, toast]);
+  }, [navigate, location, toast, checkAuthUser]);
+
+  const renderContent = () => {
+    switch (verificationStatus) {
+      case 'loading':
+        return (
+          <div className="text-center">
+            <Loader />
+            <p className="mt-4 text-light-2">Verifying your email...</p>
+          </div>
+        );
+      case 'success':
+        return (
+          <div className="text-center">
+            <div className="text-green-500 text-2xl mb-4">✓</div>
+            <h2 className="text-xl font-semibold text-light-2 mb-2">
+              Email Verified!
+            </h2>
+            <p className="text-light-3">Redirecting you to the homepage...</p>
+          </div>
+        );
+      case 'error':
+        return (
+          <div className="text-center">
+            <div className="text-red-500 text-2xl mb-4">⚠</div>
+            <h2 className="text-xl font-semibold text-light-2 mb-2">
+              Verification Failed
+            </h2>
+            <p className="text-light-3">Redirecting to verification page...</p>
+          </div>
+        );
+    }
+  };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      {isVerifying ? (
-        <div className="text-center">
-          <Loader />
-          <p className="mt-4">Verifying your email...</p>
-        </div>
-      ) : null}
+    <div className="flex items-center justify-center min-h-screen w-full p-5">
+      <div className="max-w-md w-full bg-dark-2 p-8 pb-10 rounded-xl border-[1.5px] border-dark-4 shadow-lg">
+        {renderContent()}
+      </div>
     </div>
   );
 };

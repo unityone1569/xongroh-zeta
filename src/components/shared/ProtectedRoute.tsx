@@ -1,33 +1,26 @@
-import { useEffect } from 'react'; // Removed useState
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useUserContext } from '@/context/AuthContext';
-import Loader from './Loader';
+import Loader from '@/components/shared/Loader';
 
 export const ProtectedRoute = () => {
-  const { isAuthenticated, isLoading, isVerified, checkEmailVerification } = useUserContext();
-  const navigate = useNavigate();
+  const { isAuthenticated, isLoading, isVerified } = useUserContext();
+  const location = useLocation();
 
-  useEffect(() => {
-    const init = async () => {
-      if (!isLoading && !isAuthenticated) {
-        navigate('/sign-in');
-        return;
-      }
+  // Handle loading state
+  if (isLoading) return <Loader />;
 
-      if (isAuthenticated && !isVerified) {
-        const verified = await checkEmailVerification();
-        if (!verified) {
-          navigate('/verify-email');
-        }
-      }
-    };
-
-    init();
-  }, [isAuthenticated, isLoading, isVerified, checkEmailVerification, navigate]);
-
-  if (isLoading && !isVerified) {
-    return <Loader />;
+  // If authenticated but not verified, only allow verify-email route
+  if (isAuthenticated && !isVerified) {
+    return location.pathname === '/verify-email' ? 
+      <Outlet /> : 
+      <Navigate to="/verify-email" replace />;
   }
 
+  // Not authenticated, redirect to sign-in
+  if (!isAuthenticated) {
+    return <Navigate to="/sign-in" replace />;
+  }
+
+  // User is authenticated and verified
   return <Outlet />;
 };

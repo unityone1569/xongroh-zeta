@@ -1,13 +1,13 @@
-export type IContextType = {
+export interface IContextType {
   user: IUser;
   isLoading: boolean;
   isAuthenticated: boolean;
-  isVerified: boolean; // Added
-  setUser: React.Dispatch<React.SetStateAction<IUser>>;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  isVerified: boolean;
   checkAuthUser: () => Promise<boolean>;
-  checkEmailVerification: () => Promise<boolean>; // Added
-};
+  checkEmailVerification: () => Promise<boolean>;
+  setUser: (user: IUser) => void;
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
+}
 
 export type INavLink = {
   imgURL: string;

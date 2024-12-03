@@ -25,6 +25,11 @@ export async function createUserAccount(
     if (!newAccount) {
       throw new Error('Account creation failed');
     }
+    // create a new session
+    await account.createEmailPasswordSession(user.email, user.password);
+
+    // Send verification email
+    await sendVerificationEmail();
 
     // Check if the user already exists in the database
     const existingUser = await checkUserExists(newAccount.email);
@@ -58,9 +63,6 @@ export async function createUserAccount(
       ),
       username: username, // Add the generated username
     });
-
-    // Send verification email
-    await sendVerificationEmail();
 
     return newUser;
   } catch (error) {
@@ -600,17 +602,14 @@ export async function getTopCreators() {
     const creators = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.creatorCollectionId,
-      [
-        Query.orderDesc('creationsCount'),
-        Query.limit(10)
-      ]
+      [Query.orderDesc('creationsCount'), Query.limit(10)]
     );
 
     if (!creators) throw Error;
 
     return creators;
   } catch (error) {
-    console.error("Error fetching top creators:", error);
+    console.error('Error fetching top creators:', error);
     throw error;
   }
 }
@@ -623,6 +622,20 @@ export async function sendVerificationEmail(): Promise<void> {
     );
   } catch (error) {
     console.error('Error sending verification email:', error);
+    throw error;
+  }
+}
+
+export async function verifyEmail(
+  userId: string,
+  secret: string
+): Promise<boolean> {
+  try {
+    const response = await account.updateVerification(userId, secret);
+    // Return true if verification was successful
+    return Boolean(response.$id);
+  } catch (error) {
+    console.error('Error verifying email:', error);
     throw error;
   }
 }

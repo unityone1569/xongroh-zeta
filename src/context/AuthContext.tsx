@@ -1,7 +1,13 @@
-import { getAccount, getCurrentUser, isEmailVerified } from '@/lib/appwrite/user';
+import { getCurrentUser, isEmailVerified } from '@/lib/appwrite/user';
 import { IContextType, IUser } from '@/types';
-import React, { createContext, useContext, useEffect, useCallback, useMemo, useReducer } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useCallback,
+  useMemo,
+  useReducer,
+} from 'react';
 
 // Action Types
 type AuthAction =
@@ -35,7 +41,7 @@ export const INITIAL_USER: IUser = {
 
 const initialState: AuthState = {
   user: INITIAL_USER,
-  isLoading: false,
+  isLoading: true, // Start with loading true
   isAuthenticated: false,
   isVerified: false,
 };
@@ -62,7 +68,6 @@ export const AuthContext = createContext<IContextType | null>(null);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
-  const navigate = useNavigate();
 
   const checkEmailVerification = useCallback(async () => {
     try {
@@ -76,96 +81,75 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const checkAuthUser = useCallback(async () => {
-    dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const currentAccount = await getCurrentUser();
-      const verified = await checkEmailVerification();
 
-      if (currentAccount && !verified) {
-        navigate('/verify-email');
+      if (!currentAccount) {
+        dispatch({ type: 'SET_AUTH', payload: false });
+        dispatch({ type: 'SET_LOADING', payload: false });
         return false;
       }
 
-      if (currentAccount && verified) {
-        dispatch({
-          type: 'SET_USER',
-          payload: {
-            id: currentAccount.$id,
-            accountId: currentAccount.accountId,
-            name: currentAccount.name || '',
-            profession: currentAccount.profession || '',
-            hometown: currentAccount.hometown || '',
-            username: currentAccount.username || '',
-            email: currentAccount.email || '',
-            dpUrl: currentAccount.dpUrl || '',
-            coverUrl: currentAccount.coverUrl || '',
-            bio: currentAccount.bio || '',
-          },
-        });
-        dispatch({ type: 'SET_AUTH', payload: true });
-        return true;
-      }
-    } catch (error) {
-      console.error('Error fetching current user:', error);
-    } finally {
+      const verified = await checkEmailVerification();
+
+      dispatch({
+        type: 'SET_USER',
+        payload: {
+          id: currentAccount.$id,
+          accountId: currentAccount.accountId,
+          name: currentAccount.name || '',
+          email: currentAccount.email || '',
+          profession: currentAccount.profession || '',
+          hometown: currentAccount.hometown || '',
+          username: currentAccount.username || '',
+          dpUrl: currentAccount.dpUrl || '',
+          coverUrl: currentAccount.coverUrl || '',
+          bio: currentAccount.bio || '',
+        },
+      });
+
+      dispatch({ type: 'SET_AUTH', payload: true });
+      dispatch({ type: 'SET_VERIFIED', payload: verified });
       dispatch({ type: 'SET_LOADING', payload: false });
+
+      return true;
+    } catch (error) {
+      console.error('Error checking auth:', error);
+      dispatch({ type: 'SET_AUTH', payload: false });
+      dispatch({ type: 'SET_LOADING', payload: false });
+
+      return false;
     }
-    return false;
-  }, [navigate, checkEmailVerification]);
+  }, [checkEmailVerification]);
 
+  // Check auth status on mount
   useEffect(() => {
-    let mounted = true;
+    checkAuthUser();
+  }, [checkAuthUser]);
 
-    const checkAuthStatus = async () => {
-      try {
-        const account = await getAccount();
-        if (!account && mounted) {
-          navigate('/sign-in');
-          return;
-        }
-        if (mounted) {
-          await checkAuthUser();
-        }
-      } catch (error) {
-        console.error('Error checking auth status:', error);
-        if (mounted) {
-          navigate('/sign-in');
-        }
-      }
-    };
+  const setUser = (user: IUser) => {
+    dispatch({ type: 'SET_USER', payload: user });
+  };
 
-    checkAuthStatus();
+  const setIsAuthenticated = (isAuthenticated: boolean) => {
+    dispatch({ type: 'SET_AUTH', payload: isAuthenticated });
+  };
 
-    return () => {
-      mounted = false;
-    };
-  }, [checkAuthUser, navigate]);
-
-  const contextValue: IContextType = useMemo(
+  const value = useMemo(
     () => ({
       user: state.user,
       isLoading: state.isLoading,
       isAuthenticated: state.isAuthenticated,
       isVerified: state.isVerified,
-      setUser: (value: React.SetStateAction<IUser>) => {
-        const newUser = typeof value === 'function' ? value(state.user) : value;
-        dispatch({ type: 'SET_USER', payload: newUser });
-      },
-      setIsAuthenticated: (value: React.SetStateAction<boolean>) => {
-        const newAuth = typeof value === 'function' ? value(state.isAuthenticated) : value;
-        dispatch({ type: 'SET_AUTH', payload: newAuth });
-      },
       checkAuthUser,
       checkEmailVerification,
+      setUser,
+      setIsAuthenticated,
     }),
     [state, checkAuthUser, checkEmailVerification]
   );
 
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

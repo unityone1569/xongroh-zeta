@@ -37,15 +37,16 @@ const App = () => {
       <Routes>
         {/* PUBLIC ROUTES */}
         <Route element={<AuthLayout />}>
-          <Route path="sign-in" element={<SignInForm />} />
-          <Route path="sign-up" element={<SignUpForm />} />
-          <Route path="verify-email" element={<VerifyEmail />} />
-          <Route path="verify-success" element={<VerifySuccess />} />
-          <Route path="/oauth/callback" element={<OAuthCallback />} />
+          <Route path="/sign-in" element={<SignInForm />} />
+          <Route path="/sign-up" element={<SignUpForm />} />
         </Route>
 
         {/* PROTECTED ROUTES */}
         <Route element={<ProtectedRoute />}>
+          {/* Verification Route */}
+          <Route path="/verify-email" element={<VerifyEmail />} />
+
+          {/* Main App Routes - require both auth and verification */}
           <Route element={<RootLayout />}>
             <Route index element={<Home />} />
             <Route path="/explore" element={<Explore />} />
@@ -73,7 +74,9 @@ const App = () => {
           </Route>
         </Route>
 
-        {/* PAGE-NOT-FOUND */}
+        {/* Special Routes */}
+        <Route path="/verify-success" element={<VerifySuccess />} />
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </main>
