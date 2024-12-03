@@ -143,7 +143,7 @@ const SignInForm = () => {
           />
           {/* forgot password (implementation pending) */}
           <Link
-            to="/forgot-password"
+            to="/reset-password"
             className="text-light-3 subtle-semibold ml-1"
           >
             Forgot password?

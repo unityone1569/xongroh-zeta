@@ -649,3 +649,28 @@ export async function isEmailVerified(): Promise<boolean> {
     return false;
   }
 }
+
+export async function resetPassword(email: string): Promise<void> {
+  try {
+    await account.createRecovery(
+      email,
+      `${window.location.origin}/new-password`
+    );
+  } catch (error) {
+    console.error('Error creating password reset:', error);
+    throw error;
+  }
+}
+
+export async function confirmPasswordReset(
+  userId: string,
+  secret: string,
+  newPassword: string
+): Promise<void> {
+  try {
+    await account.updateRecovery(userId, secret, newPassword);
+  } catch (error) {
+    console.error('Error updating password:', error);
+    throw error;
+  }
+}

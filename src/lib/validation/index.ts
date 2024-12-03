@@ -119,3 +119,14 @@ export const ProfileValidation = z.object({
     )
     .optional(),
 });
+
+
+export const ResetPasswordValidation = z.object({
+  email: z.string().email()
+});
+
+export const NewPasswordValidation = z.object({
+  password: z
+    .string()
+    .min(8, { message: 'Password must be at least 8 characters.' })
+});

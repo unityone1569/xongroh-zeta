@@ -29,6 +29,8 @@ import { Toaster } from './components/ui/toaster';
 import VerifyEmail from './_auth/forms/VerifyEmail';
 import VerifySuccess from './_auth/forms/VerifySuccess';
 import { ProtectedRoute } from './components/shared/ProtectedRoute';
+import NewPasswordForm from './_auth/forms/NewPasswordForm';
+import ResetPasswordForm from './_auth/forms/ResetPasswordForm';
 
 const App = () => {
   return (
@@ -39,6 +41,7 @@ const App = () => {
         <Route element={<AuthLayout />}>
           <Route path="/sign-in" element={<SignInForm />} />
           <Route path="/sign-up" element={<SignUpForm />} />
+        
         </Route>
 
         {/* PROTECTED ROUTES */}
@@ -75,6 +78,8 @@ const App = () => {
         </Route>
 
         {/* Special Routes */}
+        <Route path="/reset-password" element={<ResetPasswordForm />} />
+        <Route path="/new-password" element={<NewPasswordForm />} />
         <Route path="/verify-success" element={<VerifySuccess />} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route path="*" element={<PageNotFound />} />
