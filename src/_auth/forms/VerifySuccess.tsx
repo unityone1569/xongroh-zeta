@@ -79,17 +79,17 @@ const VerifySuccess = () => {
             <h2 className="text-xl font-semibold text-light-2 mb-2">
               Email Verified!
             </h2>
-            <p className="text-light-3">Redirecting you to the homepage...</p>
+            <p className="text-light-3">Redirecting you to the Homepage...</p>
           </div>
         );
       case 'error':
         return (
           <div className="text-center">
-            <div className="text-red-500 text-2xl mb-4">⚠</div>
+            <div className="text-red text-2xl mb-4">⚠</div>
             <h2 className="text-xl font-semibold text-light-2 mb-2">
               Verification Failed
             </h2>
-            <p className="text-light-3">Redirecting to verification page...</p>
+            <p className="text-light-3">Redirecting...</p>
           </div>
         );
     }

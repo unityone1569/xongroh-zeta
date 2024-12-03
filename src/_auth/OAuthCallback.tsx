@@ -40,8 +40,12 @@ const OAuthCallback = () => {
   }, [navigate, createUserAccountWithGoogle, checkAuthUser]);
 
   return (
-    <div>
-      <Loader />
+    <div className="flex items-center justify-center min-h-screen w-full p-5">
+      <div className="max-w-md w-full text-center bg-dark-2 p-8 pb-10 rounded-xl border-[1.5px] border-dark-4 shadow-lg">
+        <div className="text-green-500 text-2xl mb-4">Verified ✓</div>
+        <p className="text-light-3 pb-6">Redirecting you to the Homepage</p>
+        <Loader />
+      </div>
     </div>
   );
 };

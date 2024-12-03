@@ -77,8 +77,8 @@ export async function createUserAccountWithGoogle(
   // Check if the user already exists in the database
   const existingUser = await checkUserExists(session.email);
   if (existingUser) {
-    console.log('User data already exists in the database');
-    console.log(existingUser);
+    // console.log('User data already exists in the database');
+    // console.log(existingUser);
 
     // If the accountId doesn't match, update the accountId
     if (existingUser.accountId !== session.$id) {
