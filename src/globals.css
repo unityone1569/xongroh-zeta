@@ -299,6 +299,61 @@
   .tabs {
     @apply flex justify-start mb-5 gap-5;
   }
+
+  /* AudioPlayer.css */
+  :root {
+    --highlight-slider-color: #b794f4; /* Orange-500 to match focus ring */
+    --secondary-slider-color: #e5e7eb; /* Gray-200 */
+    --disabled-button-color: #9ca3af; /* Gray-400 */
+    --border-radius: 0.5rem;
+  }
+
+  .volume-slider {
+    @apply w-24 sm:w-32 h-[5px] bg-light-4 rounded-2xl appearance-none focus:outline-none focus:ring-[1px] focus:ring-purple-400;
+  }
+
+  .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 1.5rem;
+    width: 1.5rem;
+    border: none;
+    border-radius: 50%;
+    background: var(--highlight-slider-color);
+    margin-top: -0.6rem;
+    cursor: pointer;
+  }
+
+  .volume-slider::-moz-range-thumb {
+    height: 1.5rem;
+    width: 1.5rem;
+    border: none;
+    border-radius: 50%;
+    background: var(--highlight-slider-color);
+    cursor: pointer;
+  }
+
+  .volume-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 0.25rem;
+    background-color: var(--secondary-slider-colorr);
+    border-radius: var(--border-radius);
+  }
+
+  .volume-slider[disabled] {
+    cursor: not-allowed;
+  }
+
+  .volume-slider[disabled]::-webkit-slider-thumb {
+    background-color: var(--disabled-button-color);
+  }
+
+  .volume-slider[disabled]::-moz-range-thumb {
+    background-color: var(--disabled-button-color);
+  }
+
+  .volume-slider[disabled]::-webkit-slider-runnable-track {
+    background-color: var(--disabled-button-color);
+  }
 }
 
 @layer components {

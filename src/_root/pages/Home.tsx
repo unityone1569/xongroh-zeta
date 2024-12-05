@@ -1,3 +1,4 @@
+import AudioPlayer from '@/components/shared/AudioPlayer';
 import Loader from '@/components/shared/Loader';
 import PostCard from '@/components/shared/PostCard';
 import { useGetRecentPosts } from '@/lib/react-query/queries';
@@ -19,6 +20,10 @@ const Home = () => {
             ))}
           </ul>
         )}
+      </div>
+
+      <div className="max-w-2xl w-full">
+        <AudioPlayer audioUrl="https://www2.cs.uic.edu/~i101/SoundFiles/StarWars60.wav" />
       </div>
     </div>
   );
