@@ -309,23 +309,23 @@
   }
 
   .volume-slider {
-    @apply w-24 sm:w-32 h-[5px] bg-light-4 rounded-2xl appearance-none focus:outline-none focus:ring-[1px] focus:ring-purple-400;
+    @apply w-24 sm:w-32 h-[3px] bg-light-4 rounded-2xl appearance-none ;
   }
 
-  .volume-slider::-webkit-slider-thumb {
+   .volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    height: 1.5rem;
-    width: 1.5rem;
+    height: 1rem; /* Reduced from 1.5rem */
+    width: 1rem; /* Reduced from 1.5rem */
     border: none;
     border-radius: 50%;
     background: var(--highlight-slider-color);
-    margin-top: -0.6rem;
+    margin-top: -0.4rem; /* Adjusted from -0.6rem */
     cursor: pointer;
   }
-
+  
   .volume-slider::-moz-range-thumb {
-    height: 1.5rem;
-    width: 1.5rem;
+    height: 1rem; /* Reduced from 1.5rem */
+    width: 1rem; /* Reduced from 1.5rem */
     border: none;
     border-radius: 50%;
     background: var(--highlight-slider-color);
@@ -353,6 +353,66 @@
 
   .volume-slider[disabled]::-webkit-slider-runnable-track {
     background-color: var(--disabled-button-color);
+  }
+
+    /* Video.js Theme */
+  .video-player-wrapper {
+    @apply relative w-full h-full;
+  }
+  
+  .video-js {
+    @apply w-full h-full text-purple-400;
+  }
+  
+  /* Video element */
+  .video-js video {
+    @apply object-contain w-full h-full;
+  }
+  
+  /* Controls */
+  .video-js .vjs-control-bar,
+  .video-js .vjs-big-play-button,
+  .video-js .vjs-menu-button .vjs-menu-content {
+    @apply bg-dark-4 bg-opacity-70;
+  }
+  
+  .video-js .vjs-control {
+    @apply text-purple-300;
+  }
+  
+  /* Big play button */
+  .video-js .vjs-big-play-button {
+    @apply border-purple-400 rounded-md;
+  }
+  
+  .video-js:hover .vjs-big-play-button,
+  .video-js .vjs-big-play-button:focus {
+    @apply bg-dark-4 bg-opacity-70 border-purple-400;
+  }
+  
+  /* Progress and volume sliders */
+  .video-js .vjs-slider {
+    @apply bg-dark-3 bg-opacity-50;
+  }
+  
+  .video-js .vjs-volume-level,
+  .video-js .vjs-play-progress,
+  .video-js .vjs-slider-bar {
+    @apply bg-purple-400;
+  }
+  
+  .video-js .vjs-load-progress {
+    @apply bg-dark-2 bg-opacity-50;
+  }
+  
+  .video-js .vjs-load-progress div {
+    @apply bg-dark-2 bg-opacity-75;
+  }
+  
+  /* Portrait mode fix */
+  .video-js.vjs-fluid:not(.vjs-audio-only-mode) {
+    @apply h-full;
+    padding-top: 0 !important;
   }
 }
 

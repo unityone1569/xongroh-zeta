@@ -67,7 +67,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-dark-3 rounded-xl shadow-lg p-2 sm:p-4 overflow-x-auto custom-scrollbar">
+    <div className="w-full max-w-4xl mx-auto bg-dark-3 rounded-lg shadow-lg p-2 sm:p-4 overflow-x-auto custom-scrollbar">
       <div className="flex flex-row items-center gap-2 xs:gap-4 min-w-[300px]">
         {/* Play/Pause Button */}
         <Button className="flex p-1 m-1.5  items-center justify-center sm:w-1/6 sm:h-auto">
@@ -97,7 +97,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
             <div className="flex items-center gap-2">
               <img
                 id="volumeIcon"
-                className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer"
+                className="w-4 h-4 sm:w-5 sm:h-5 cursor-pointer"
                 src={
                   wavesurfer?.getMuted()
                     ? '/assets/icons/mute.svg'
@@ -108,7 +108,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
               />
               <input
                 id="volumeSlider"
-                className="volume-slider"
+                className="volume-slider hidden xs:block"
                 type="range"
                 min="0"
                 max="100"
