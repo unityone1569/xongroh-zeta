@@ -205,7 +205,8 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
           {savePostPending || unsavePostPending ? (
             <Loader />
           ) : (
-            postType !== 'portfolioPost' && (
+            // Hide save button if post type is portfolioPost OR if user is the creator
+            postType !== 'portfolioPost' && userId !== post?.creatorId && (
               <img
                 src={
                   isSavedState

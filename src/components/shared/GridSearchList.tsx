@@ -1,9 +1,67 @@
 import { Models } from 'appwrite';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
+import AudioPlayer from '@/components/shared/AudioPlayer';
+import VideoPlayer from '@/components/shared/VideoPlayer';
+import Loader from '@/components/shared/Loader';
 
 type GridSearchListProps = {
   items: Models.Document[];
   type: 'post' | 'user';
+};
+
+const GridPostMedia = ({ post }: { post: Models.Document }) => {
+  const [mediaType, setMediaType] = useState<string>('unknown');
+  const [isMediaLoading, setIsMediaLoading] = useState(true);
+
+  useEffect(() => {
+    if (post?.mediaUrl) {
+      setIsMediaLoading(true);
+      getMediaTypeFromUrl(post.mediaUrl)
+        .then(setMediaType)
+        .finally(() => setIsMediaLoading(false));
+    }
+  }, [post?.mediaUrl]);
+
+  if (isMediaLoading) {
+    return (
+      <div className="h-full w-full flex-center">
+        <Loader />
+      </div>
+    );
+  }
+
+  switch (mediaType) {
+    case 'image':
+      return (
+        <img
+          src={post?.mediaUrl}
+          alt="post"
+          className="h-full w-full object-cover"
+        />
+      );
+    case 'audio':
+      return (
+        <div className="h-full w-full flex-center">
+          <AudioPlayer audioUrl={post?.mediaUrl} />
+        </div>
+      );
+    case 'video':
+      return (
+        <div className="h-full w-full flex-center">
+          <VideoPlayer videoUrl={post?.mediaUrl[0]} />
+        </div>
+      );
+    default:
+      return (
+        <div className="p-5 pt-6">
+          <p className="pl-0.5 whitespace-pre-line small-regular line-clamp-[11] text-pretty">
+            {post?.content}
+          </p>
+        </div>
+      );
+  }
 };
 
 const GridSearchList = ({ items, type }: GridSearchListProps) => {
@@ -14,11 +72,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
           <li key={post.$id} className="relative min-w-80 h-80">
             <Link to={`/posts/${post.$id}`} className="grid-post_link">
               {post?.mediaUrl?.length > 0 ? (
-                <img
-                  src={post?.mediaUrl}
-                  alt="post"
-                  className="h-full w-full object-cover"
-                />
+                <GridPostMedia post={post} />
               ) : (
                 <div className="p-5 pt-6">
                   <p className="pl-0.5 whitespace-pre-line small-regular line-clamp-[11] text-pretty">
@@ -26,7 +80,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                   </p>
                 </div>
               )}
-            </Link>
+           
             <div className="grid-post_user">
               <div className="flex items-center gap-2">
                 <img
@@ -42,6 +96,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                 </p>
               </div>
             </div>
+            </Link>
           </li>
         ))}
       </ul>
