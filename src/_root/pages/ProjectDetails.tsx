@@ -122,7 +122,7 @@ const ProjectDetails = () => {
                 <img
                   src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
                   alt="creator"
-                  className="rounded-full w-10 h-10 lg:w-14 lg:h-14"
+                  className="rounded-full w-10 h-10 lg:w-14 object-cover lg:h-14"
                 />
 
                 <div className="flex flex-col">

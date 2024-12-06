@@ -346,6 +346,62 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
   }
 }
 
+export async function getSavedPosts(userId: string) {
+  try {
+    const savedPosts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.savesCollectionId,
+      [Query.equal('creatorId', userId)]
+    );
+
+    if (!savedPosts) return [];
+
+    return savedPosts.documents;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getPostsByIds(postIds: string[]) {
+  if (!postIds.length) return [];
+  
+  try {
+    const { documents: posts } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.creationPostCollectionId,
+      [Query.equal('$id', [...postIds])]
+    );
+
+    if (!posts || posts.length === 0) return [];
+
+    // Fetch creator details
+    const userFetchPromises = posts.map((post) =>
+      databases.getDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.creatorCollectionId,
+        post.creatorId
+      )
+    );
+
+    const users = await Promise.all(userFetchPromises);
+
+    // Combine posts with creator details
+    const postsWithUserDetails = posts.map((post, index) => ({
+      ...post,
+      creator: {
+        name: users[index]?.name || '',
+        dpUrl: users[index]?.dpUrl || null,
+      },
+    }));
+
+    return postsWithUserDetails;
+  } catch (error) {
+    console.error('Error fetching posts or creator data:', error);
+    return [];
+  }
+}
+
 // *******************
 // ***** PROJECT *****
 
@@ -638,3 +694,5 @@ export async function deleteFile(fileId: string) {
     console.log(error);
   }
 }
+
+

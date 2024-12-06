@@ -103,7 +103,7 @@ const ProfileCardItem = ({
                   <img
                     src="/assets/icons/profession.svg"
                     alt="profession"
-                    className="w-5 h-5 md:w-6 md:h-6"
+                    className="w-5 h-5 md:w-6 md:h-6 opacity-65"
                   />
                   <p className="text-sm lg:text-base font-light">
                     {profession}
@@ -115,7 +115,7 @@ const ProfileCardItem = ({
                   <img
                     src="/assets/icons/hometown.svg"
                     alt="hometown"
-                    className="w-5 h-5 md:w-6 md:h-6"
+                    className="w-5 h-5 md:w-6 md:h-6 opacity-65"
                   />
                   <p className="text-sm lg:text-base font-light">{hometown}</p>
                 </div>

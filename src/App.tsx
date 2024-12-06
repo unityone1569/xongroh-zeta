@@ -16,7 +16,6 @@ import {
   Profile,
   UpdateProfile,
   PageNotFound,
-  SavedPosts,
   ProjectDetails,
   ChatPage,
   Messages,
@@ -41,7 +40,6 @@ const App = () => {
         <Route element={<AuthLayout />}>
           <Route path="/sign-in" element={<SignInForm />} />
           <Route path="/sign-up" element={<SignUpForm />} />
-        
         </Route>
 
         {/* PROTECTED ROUTES */}
@@ -55,7 +53,6 @@ const App = () => {
             <Route path="/explore" element={<Explore />} />
             <Route path="/community" element={<Community />} />
             <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/saved" element={<SavedPosts />} />
 
             <Route path="/profile/:id/*" element={<Profile />} />
             <Route path="/update-profile/:id" element={<UpdateProfile />} />

@@ -31,7 +31,7 @@ const PortfolioCardItem = ({
     >
       <img
         src={dp}
-        className="h-20 w-20 lg:h-32 lg:w-32 rounded-full"
+        className="h-20 w-20 lg:h-32 lg:w-32 object-cover rounded-full"
         alt="Profile"
       />
       <div>

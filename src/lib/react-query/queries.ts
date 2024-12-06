@@ -63,8 +63,10 @@ import {
   getAuthorById,
   getInfinitePosts,
   getPostById,
+  getPostsByIds,
   getProjectById,
   getRecentPosts,
+  getSavedPosts,
   searchPosts,
   updatePost,
   updateProject,
@@ -181,8 +183,6 @@ export const useGetTopCreators = () => {
   });
 };
 
-
-
 // ***** POSTS, PROJECTS & DISCUSSIONS *****
 // *****************************************
 
@@ -265,6 +265,26 @@ export const useGetUserPosts = (userId: string) => {
       return lastId;
     },
   });
+};
+
+export const useGetSavedPosts = (userId: string) => {
+  const { data: savedPostIds, isLoading: isSavedIdsLoading } = useQuery({
+    queryKey: [QUERY_KEYS.GET_SAVED_POSTS, userId],
+    queryFn: () => getSavedPosts(userId),
+    enabled: !!userId,
+  });
+
+  const { data: posts, isLoading: isPostsLoading } = useQuery({
+    queryKey: [QUERY_KEYS.GET_SAVED_POST_DETAILS, savedPostIds],
+    queryFn: () =>
+      getPostsByIds(savedPostIds?.map((save) => save.postId) || []),
+    enabled: !!savedPostIds?.length,
+  });
+
+  return {
+    data: posts,
+    isLoading: isSavedIdsLoading || (!!savedPostIds?.length && isPostsLoading),
+  };
 };
 
 // PROJECT
@@ -550,7 +570,7 @@ export const useSavePost = () => {
       userId: string;
       postType: string;
     }) => savePost(postId, userId, postType),
-    onSuccess: (_, { postId, postType }) => {
+    onSuccess: (_, { postId, userId, postType }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId, postType],
       });
@@ -559,6 +579,12 @@ export const useSavePost = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.CHECK_POST_SAVE],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_SAVED_POSTS, userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_SAVED_POST_DETAILS, postId],
       });
     },
   });
@@ -577,7 +603,7 @@ export const useUnsavePost = () => {
       userId: string;
       postType: string;
     }) => unsavePost(postId, userId, postType),
-    onSuccess: (_, { postId, postType }) => {
+    onSuccess: (_, { postId, userId, postType }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId, postType],
       });
@@ -586,6 +612,12 @@ export const useUnsavePost = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.CHECK_POST_SAVE],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_SAVED_POSTS, userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_SAVED_POST_DETAILS, postId],
       });
     },
   });

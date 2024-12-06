@@ -17,6 +17,8 @@ export enum QUERY_KEYS {
   GET_POST_BY_ID = 'getPostById',
   GET_USER_POSTS = 'getUserPosts',
   GET_FILE_PREVIEW = 'getFilePreview',
+  GET_SAVED_POSTS = 'getSavedPosts',
+  GET_SAVED_POST_DETAILS = 'getPostsByIds',
 
   GET_PROJECT_BY_ID = 'getProjectById',
   GET_USER_PROJECTS = 'getUserProjects',
@@ -36,7 +38,7 @@ export enum QUERY_KEYS {
   SEARCH_USERS = 'searchUsers',
 
   // MESSAGE KEYS
-  GET_MESSAGE= 'getMessage',
+  GET_MESSAGE = 'getMessage',
   GET_MESSAGES = 'getMessages',
   GET_CONVERSATION = 'getConversationById',
   GET_CONVERSATIONS = 'getConversations',

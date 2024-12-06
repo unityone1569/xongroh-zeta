@@ -57,7 +57,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
                 '/assets/icons/profile-placeholder.svg'
               }
               alt="creator"
-              className="rounded-full w-9 h-9 lg:w-11 lg:h-11"
+              className="rounded-full w-9 h-9 object-cover lg:w-11 lg:h-11"
             />
           </Link>
           <div className="flex flex-col">
