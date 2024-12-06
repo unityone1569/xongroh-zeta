@@ -7,6 +7,10 @@ import { useGetAuthorById, useGetProjectById } from '@/lib/react-query/queries';
 import { formatDateString } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
+import AudioPlayer from '@/components/shared/AudioPlayer';
+import VideoPlayer from '@/components/shared/VideoPlayer';
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -43,6 +47,18 @@ const ProjectDetails = () => {
     }
   };
 
+  const [mediaType, setMediaType] = useState<string>('unknown');
+  const [isMediaLoading, setIsMediaLoading] = useState(true);
+  
+  useEffect(() => {
+    if (project?.mediaUrl) {
+      setIsMediaLoading(true);
+      getMediaTypeFromUrl(project.mediaUrl)
+        .then(setMediaType)
+        .finally(() => setIsMediaLoading(false));
+    }
+  }, [project?.mediaUrl]);
+
   return (
     <div className="post_details-container">
       {isPending ? (
@@ -51,7 +67,7 @@ const ProjectDetails = () => {
         <div className="post_details-card">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-1 p-2 mb-5 text-light-2 subtle-semibold"
+            className="flex items-center gap-1 p-2 mt-3 mb-5 text-light-2 subtle-semibold"
           >
             <img
               src="/assets/icons/back.svg"
@@ -60,12 +76,41 @@ const ProjectDetails = () => {
             />
             <p className="pt-1 lg:small-medium">Back</p>
           </button>
-          {project?.mediaUrl && project?.mediaUrl?.length > 0 && (
-            <img
-              src={project?.mediaUrl}
-              alt="post image"
-              className="post_details-img"
-            />
+          {project?.mediaUrl && (
+            <>
+              {isMediaLoading ? (
+                <div className="flex-center p-11">
+                  <Loader />
+                </div>
+              ) : (
+                (() => {
+                  switch (mediaType) {
+                    case 'image':
+                      return (
+                        <img
+                          src={project.mediaUrl}
+                          alt="project"
+                          className="post-card_img"
+                        />
+                      );
+                    case 'audio':
+                      return (
+                        <div className="post-card_audio">
+                          <AudioPlayer audioUrl={project.mediaUrl} />
+                        </div>
+                      );
+                    case 'video':
+                      return (
+                        <div className="post-card_video mb-2.5">
+                          <VideoPlayer videoUrl={project.mediaUrl[0]} />
+                        </div>
+                      );
+                    default:
+                      return null;
+                  }
+                })()
+              )}
+            </>
           )}
 
           <div className="post_details-info">

@@ -144,9 +144,7 @@ const SingleFileUploader = ({
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.png', '.jpeg', '.jpg', '.gif'],
-      'audio/*': ['.mp3', '.wav', '.aac'],
-      'video/*': ['.mp4', '.webm', '.mov'],
+      'image/*': ['.png', '.jpeg', '.jpg'],
     },
   });
   return (
@@ -175,7 +173,7 @@ const SingleFileUploader = ({
             Drag media here
           </h3>
           <p className="text-light-4 small-regular mb-6">
-            Images, Audio, Videos{' '}
+            Images
           </p>
 
           <Button type="button" className="shad-button_dark_4">

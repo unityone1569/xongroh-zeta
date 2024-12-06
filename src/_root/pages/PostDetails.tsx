@@ -41,7 +41,7 @@ const PostDetails = () => {
         <div className="post_details-card">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-1 p-2 mb-5 text-light-2 subtle-semibold"
+            className="flex items-center gap-1 p-2 mt-3 mb-5 text-light-2 subtle-semibold"
           >
             <img
               src="/assets/icons/back.svg"
