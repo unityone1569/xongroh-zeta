@@ -6,7 +6,7 @@ import { useUserContext } from '@/context/AuthContext';
 import { useGetAuthorById, useGetProjectById } from '@/lib/react-query/queries';
 import { formatDateString } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -18,7 +18,7 @@ const ProjectDetails = () => {
   const mediaId = project?.mediaId[0];
   const creatorId = project?.creatorId;
   const { toast } = useToast();
-
+  const navigate = useNavigate();
   const handleShare = () => {
     const urlToShare = window.location.href;
     const shareText = 'Check out this post from Xongroh!';
@@ -49,6 +49,17 @@ const ProjectDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-1 p-2 mb-5 text-light-2 subtle-semibold"
+          >
+            <img
+              src="/assets/icons/back.svg"
+              alt="back"
+              className="w-5 h-5 lg:w-6 lg:h-6"
+            />
+            <p className="pt-1 lg:small-medium">Back</p>
+          </button>
           {project?.mediaUrl && project?.mediaUrl?.length > 0 && (
             <img
               src={project?.mediaUrl}

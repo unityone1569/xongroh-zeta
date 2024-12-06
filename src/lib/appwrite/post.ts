@@ -1,4 +1,4 @@
-import { ID, ImageGravity, Query } from 'appwrite';
+import { ID, Query } from 'appwrite';
 import { INewPost, INewProject, IUpdatePost, IUpdateProject } from '@/types';
 import { appwriteConfig, databases, storage } from './config';
 import {
@@ -613,13 +613,10 @@ export async function uploadFile(file: File) {
 
 export function getFilePreview(fileId: string) {
   try {
-    const fileUrl = storage.getFilePreview(
+    const fileUrl = storage.getFileView(
       appwriteConfig.postBucketId,
       fileId,
-      0,
-      0,
-      ImageGravity.Center,
-      60
+    
     );
 
     if (!fileUrl) throw Error;

@@ -178,7 +178,7 @@
   }
 
   .post_details-card {
-    @apply bg-dark-2 w-full max-w-3xl rounded-[19px] flex-col flex border border-dark-4 xl:rounded-[25px];
+    @apply bg-dark-2 w-full max-w-3xl rounded-b-[19px] flex-col flex border border-dark-4 xl:rounded-b-[25px];
   }
 
   .post_details-img {
@@ -221,8 +221,10 @@
   }
 
   /* File uploader */
-  .file_uploader-img {
-    @apply h-64 lg:h-[480px] w-full rounded-[24px]  object-center object-contain;
+   .file_uploader-img, 
+  .file_uploader-video,
+  .file_uploader-audio {
+    @apply h-64 lg:h-[480px] w-full rounded-[24px] object-center object-contain;
   }
 
   .file_uploader-label {
@@ -284,7 +286,13 @@
   }
 
   .post-card_img {
-    @apply h-64 xs:h-[300px] overflow-hidden bg-dark-4 lg:h-[340px] w-full rounded-xl object-contain mb-7;
+    @apply h-64 xs:h-[300px] overflow-hidden bg-dark-4 lg:h-[340px] w-full object-contain ;
+  }
+  .post-card_video {
+    @apply h-48 xs:h-[280px] overflow-hidden bg-dark-4 lg:h-[300px] w-full object-contain;
+  }
+  .post-card_audio {
+    @apply overflow-hidden bg-dark-4  w-full object-contain ;
   }
 
   /* User card */

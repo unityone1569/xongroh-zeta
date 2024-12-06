@@ -24,7 +24,33 @@ export const SignInValidation = z.object({
 
 export const PostValidation = z.object({
   content: z.string().min(5).max(63206),
-  file: z.custom<File[]>(),
+  file: z.array(
+    z
+      .instanceof(File)
+      .refine(
+        (file) =>
+          [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+            'image/heif',
+            'video/mp4',
+            'video/mov',
+            'video/avi',
+            'video/wmv',
+            'video/webm',
+            'audio/mpeg',
+            'audio/mp3',
+            'audio/aac',
+            'audio/wav',
+            'audio/ogg',
+            'audio/m4a',
+          ].includes(file.type),
+        { message: 'File must be a valid image, audio, or video format' }
+      )
+  ),
   tags: z.string(),
 });
 
@@ -120,13 +146,12 @@ export const ProfileValidation = z.object({
     .optional(),
 });
 
-
 export const ResetPasswordValidation = z.object({
-  email: z.string().email()
+  email: z.string().email(),
 });
 
 export const NewPasswordValidation = z.object({
   password: z
     .string()
-    .min(8, { message: 'Password must be at least 8 characters.' })
+    .min(8, { message: 'Password must be at least 8 characters.' }),
 });

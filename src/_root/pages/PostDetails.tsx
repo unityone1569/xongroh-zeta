@@ -1,21 +1,37 @@
+import AudioPlayer from '@/components/shared/AudioPlayer';
 import { DeleteCreation } from '@/components/shared/DeleteItems';
 import Loader from '@/components/shared/Loader';
 import PostComments from '@/components/shared/PostComments';
 import PostStats from '@/components/shared/PostStats';
+import VideoPlayer from '@/components/shared/VideoPlayer';
 import { useUserContext } from '@/context/AuthContext';
 import { useGetAuthorById, useGetPostById } from '@/lib/react-query/queries';
 import { formatDateString } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
 
 const PostDetails = () => {
+  const [mediaType, setMediaType] = useState<string>('unknown');
+  const [isMediaLoading, setIsMediaLoading] = useState(true);
   const { id } = useParams();
   const { data: post, isPending } = useGetPostById(id || '');
+
+  useEffect(() => {
+    if (post?.mediaUrl) {
+      setIsMediaLoading(true);
+      getMediaTypeFromUrl(post.mediaUrl)
+        .then(setMediaType)
+        .finally(() => setIsMediaLoading(false));
+    }
+  }, [post?.mediaUrl]);
   const { user } = useUserContext();
   const { data: author } = useGetAuthorById(post?.creatorId);
   const postId = id || '';
   const mediaId = post?.mediaId[0];
   const creatorId = post?.creatorId;
+  const navigate = useNavigate();
 
   return (
     <div className="post_details-container">
@@ -23,8 +39,52 @@ const PostDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
-          {post?.mediaUrl && post?.mediaUrl.length > 0 && (
-            <img src={post?.mediaUrl} alt="post" className="post_details-img" />
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-1 p-2 mb-5 text-light-2 subtle-semibold"
+          >
+            <img
+              src="/assets/icons/back.svg"
+              alt="back"
+              className="w-5 h-5 lg:w-6 lg:h-6"
+            />
+            <p className="pt-1 lg:small-medium">Back</p>
+          </button>
+          {post?.mediaUrl && (
+            <>
+              {isMediaLoading ? (
+                <div className="flex-center p-11">
+                  <Loader />
+                </div>
+              ) : (
+                (() => {
+                  switch (mediaType) {
+                    case 'image':
+                      return (
+                        <img
+                          src={post.mediaUrl}
+                          alt="post"
+                          className="post-card_img"
+                        />
+                      );
+                    case 'audio':
+                      return (
+                        <div className="post-card_audio">
+                          <AudioPlayer audioUrl={post.mediaUrl} />
+                        </div>
+                      );
+                    case 'video':
+                      return (
+                        <div className="post-card_video">
+                          <VideoPlayer videoUrl={post.mediaUrl[0]} />
+                        </div>
+                      );
+                    default:
+                      return null;
+                  }
+                })()
+              )}
+            </>
           )}
           <div className="post_details-info mt-3">
             <div className="flex-between w-full">

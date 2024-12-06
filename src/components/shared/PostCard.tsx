@@ -3,6 +3,11 @@ import { multiFormatDateString } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
 import { Link } from 'react-router-dom';
 import PostStats from './PostStats';
+import AudioPlayer from './AudioPlayer';
+import VideoPlayer from './VideoPlayer';
+import { useState, useEffect } from 'react';
+import Loader from './Loader';
+import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
 
 type PostCardProps = {
   post: Models.Document;
@@ -10,6 +15,18 @@ type PostCardProps = {
 
 const PostCard = ({ post }: PostCardProps) => {
   const { user } = useUserContext();
+  const [mediaType, setMediaType] = useState<string>('unknown');
+  const [isMediaLoading, setIsMediaLoading] = useState(true);
+
+  useEffect(() => {
+    if (post?.mediaUrl) {
+      setIsMediaLoading(true);
+      getMediaTypeFromUrl(post.mediaUrl)
+        .then(setMediaType)
+        .finally(() => setIsMediaLoading(false));
+    }
+  }, [post?.mediaUrl]);
+
   if (!post.creatorId) return;
 
   return (
@@ -73,16 +90,49 @@ const PostCard = ({ post }: PostCardProps) => {
               </ul>
             )}
         </div>
-
-        {post?.mediaUrl?.length > 0 && (
-          <img
-            src={post?.mediaUrl}
-            alt="post image"
-            className="post-card_img"
-          />
-        )}
       </Link>
-      <PostStats post={post} userId={user.id} />
+      {post?.mediaUrl?.length > 0 && (
+        <>
+          {isMediaLoading ? (
+            <div className="post-card_img flex-center">
+              <Loader />
+            </div>
+          ) : (
+            (() => {
+              switch (mediaType) {
+                case 'image':
+                  return (
+                    <Link to={`/posts/${post?.$id}`}>
+                      <img
+                        src={post?.mediaUrl}
+                        alt="post image"
+                        className="post-card_img"
+                      />
+                    </Link>
+                  );
+                case 'audio':
+                  return (
+                    <div className="post-card_audio ">
+                      <AudioPlayer audioUrl={post?.mediaUrl} />
+                    </div>
+                  );
+                case 'video':
+                  return (
+                    <div className="post-card_video">
+                      <VideoPlayer videoUrl={post?.mediaUrl[0]} />
+                    </div>
+                  );
+                default:
+                  return null;
+              }
+            })()
+          )}
+        </>
+      )}
+
+      <div className="mt-6">
+        <PostStats post={post} userId={user.id} />
+      </div>
     </div>
   );
 };
