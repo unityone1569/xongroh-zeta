@@ -241,7 +241,7 @@
   }
 
   .grid-post_link {
-    @apply flex rounded-[24px] border border-dark-4 bg-dark-3 overflow-hidden cursor-pointer w-full h-full;
+    @apply flex rounded-[24px] border border-dark-4 bg-dark-4 overflow-hidden cursor-pointer w-full h-full;
   }
 
   .grid-post_user {
@@ -286,10 +286,10 @@
   }
 
   .post-card_img {
-    @apply h-64 xs:h-[300px] overflow-hidden bg-dark-4 lg:h-[340px] w-full object-contain ;
+    @apply h-[310px] xs:h-[360px] overflow-hidden bg-dark-4 lg:h-[450px] w-full object-contain ;
   }
   .post-card_video {
-    @apply h-[215px] xs:h-[350px] overflow-hidden bg-dark-4 lg:h-[430px] w-full object-contain;
+    @apply h-[260px] xs:h-[350px] overflow-hidden bg-dark-4 lg:h-[430px] w-full object-contain;
   }
   .post-card_audio {
     @apply overflow-hidden bg-dark-4  w-full object-contain ;

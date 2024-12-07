@@ -24,7 +24,12 @@ const Home = () => {
 
   const renderContent = () => {
     if (activeTab === 'creation') {
-      if (isPostLoading) return <Loader />;
+      if (isPostLoading)
+        return (
+          <div className="p-10">
+            <Loader />
+          </div>
+        );
 
       return (
         <ul className="flex flex-col flex-1 gap-9 w-full">
@@ -40,7 +45,12 @@ const Home = () => {
     }
 
     if (activeTab === 'saved') {
-      if (isSavedLoading) return <Loader />;
+      if (isSavedLoading)
+        return (
+          <div className="p-10">
+            <Loader />
+          </div>
+        );
 
       return (
         <ul className="flex flex-col flex-1 gap-9 w-full">
