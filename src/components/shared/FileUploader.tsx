@@ -26,19 +26,37 @@ type SingleFileUploaderProps = {
   docUrl: string;
 };
 
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_SINGLE_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
 const FileUploader = ({ fieldChange, docUrl }: FileUploaderProps) => {
   const [_file, setFile] = useState<File[]>([]);
   const [fileUrl, setFileUrl] = useState<string>(docUrl);
   const [mediaType, setMediaType] = useState<string>('unknown');
+  const [error, setError] = useState<string>(''); // Add this line
 
   const onDrop = useCallback(
     async (acceptedFiles: FileWithPath[]) => {
+      setError(''); // Clear any previous errors
+      // Check if there are any files
+      if (!acceptedFiles || acceptedFiles.length === 0) {
+        return;
+      }
+
+      const selectedFile = acceptedFiles[0];
+
+      // Check file size
+      if (selectedFile.size > MAX_FILE_SIZE) {
+        alert('File is too large. Maximum size is 50MB.');
+        return;
+      }
+
       setFile(acceptedFiles);
       fieldChange(acceptedFiles);
-      const url = convertFileToUrl(acceptedFiles[0]);
+      const url = convertFileToUrl(selectedFile);
       setFileUrl(url);
-      
-      const type = acceptedFiles[0].type;
+
+      const type = selectedFile.type;
       if (type.startsWith('image/')) setMediaType('image');
       if (type.startsWith('audio/')) setMediaType('audio');
       if (type.startsWith('video/')) setMediaType('video');
@@ -57,7 +75,16 @@ const FileUploader = ({ fieldChange, docUrl }: FileUploaderProps) => {
     accept: {
       'image/*': ['.png', '.jpeg', '.jpg', '.gif'],
       'audio/*': ['.mp3', '.wav', '.aac'],
-      'video/*': ['.mp4', '.webm', '.mov'],
+      'video/*': ['.mp4', '.mov'],
+    },
+    maxSize: MAX_FILE_SIZE,
+    onDropRejected: (fileRejections) => {
+      const rejection = fileRejections[0];
+      if (rejection.errors[0]?.code === 'file-too-large') {
+        setError('File is too large. Maximum size is 50MB.');
+      } else {
+        setError(rejection.errors[0]?.message || 'Invalid file type');
+      }
     },
   });
 
@@ -65,11 +92,7 @@ const FileUploader = ({ fieldChange, docUrl }: FileUploaderProps) => {
     switch (mediaType) {
       case 'image':
         return (
-          <img 
-            src={fileUrl} 
-            alt="preview" 
-            className="file_uploader-img" 
-          />
+          <img src={fileUrl} alt="preview" className="file_uploader-img" />
         );
       case 'audio':
         return (
@@ -100,6 +123,7 @@ const FileUploader = ({ fieldChange, docUrl }: FileUploaderProps) => {
           <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
             {renderPreview()}
           </div>
+          {error && <p className="text-red text-sm mb-4">{error}</p>}
           <p className="file_uploader-label">Click or drag media to replace</p>
         </>
       ) : (
@@ -115,6 +139,7 @@ const FileUploader = ({ fieldChange, docUrl }: FileUploaderProps) => {
           <p className="text-light-4 small-regular mb-6">
             Images, Audio, Videos
           </p>
+          {error && <p className="text-red text-sm mb-4">{error}</p>}
           <Button type="button" className="shad-button_dark_4">
             Select from files
           </Button>
@@ -128,12 +153,24 @@ const SingleFileUploader = ({
   fieldChange,
   docUrl,
 }: SingleFileUploaderProps) => {
-  const [_file, setFile] = useState<File | null>(null); // Store a single file
+  const [_file, setFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string>(docUrl);
+  const [error, setError] = useState<string>(''); // Add this line
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
-      const selectedFile = acceptedFiles[0]; // Only take the first file
+      setError('');
+      if (!acceptedFiles || acceptedFiles.length === 0) {
+        return;
+      }
+      const selectedFile = acceptedFiles[0];
+
+      // Check file size
+      if (selectedFile.size > MAX_SINGLE_FILE_SIZE) {
+        alert('File is too large. Maximum size is 10MB.');
+        return;
+      }
+
       setFile(selectedFile);
       fieldChange(selectedFile);
       setFileUrl(convertFileToUrl(selectedFile));
@@ -146,7 +183,18 @@ const SingleFileUploader = ({
     accept: {
       'image/*': ['.png', '.jpeg', '.jpg'],
     },
+    maxSize: MAX_SINGLE_FILE_SIZE, // Add maxSize option
+    onDropRejected: (fileRejections) => {
+      // Handle rejected files
+      const rejection = fileRejections[0];
+      if (rejection.errors[0]?.code === 'file-too-large') {
+        setError('File is too large. Maximum size is 10MB.');
+      } else {
+        setError(rejection.errors[0]?.message || 'Invalid file type');
+      }
+    },
   });
+
   return (
     <div
       {...getRootProps()}
@@ -159,6 +207,7 @@ const SingleFileUploader = ({
           <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
             <img src={fileUrl} alt="image" className="file_uploader-img" />
           </div>
+          {error && <p className="text-red text-sm mb-4">{error}</p>}
           <p className="file_uploader-label">Click or drag media to replace</p>
         </>
       ) : (
@@ -172,10 +221,8 @@ const SingleFileUploader = ({
           <h3 className="base-medium text-light-2 mb-2 mt-6">
             Drag media here
           </h3>
-          <p className="text-light-4 small-regular mb-6">
-            Images
-          </p>
-
+          <p className="text-light-4 small-regular mb-6">Images</p>
+          {error && <p className="text-red text-sm mb-4">{error}</p>}
           <Button type="button" className="shad-button_dark_4">
             Select from files
           </Button>
