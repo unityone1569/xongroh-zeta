@@ -40,6 +40,9 @@ export const appwriteConfig = {
   addMessageReceiverFunctionId: import.meta.env
     .VITE_APPWRITE_MESSAGE_FUNCTION_ID,
 
+  // Vote
+  voteCollectionId: import.meta.env.VITE_APPWRITE_VOTE_COLLECTION_ID,
+
   // BUCKETS
   userBucketId: import.meta.env.VITE_APPWRITE_USER_BUCKET_ID,
   postBucketId: import.meta.env.VITE_APPWRITE_POST_BUCKET_ID,

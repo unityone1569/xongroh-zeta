@@ -1,3 +1,6 @@
+import VoteButton from "@/components/shared/VoteButton";
+
+
 const Community = () => {
   return (
     <div className="flex-col flex-1 items-center overflow-scroll py-10 px-6 md:p-14 custom-scrollbar">
@@ -10,13 +13,18 @@ const Community = () => {
             alt="community"
             width={65}
             height={65}
-            className="opacity-15"
+            className="opacity-35"
           />
-          <p className="text-light-3 h3-bold pt-3">"Coming Soon..."</p>
+          <p className="text-light-2 h3-bold pt-3">"Coming Soon..."</p>
           <p className="text-light-4 base-regular text-center max-w-md">
             We're building a space for creators to connect, collaborate, and
             grow together.
           </p>
+          
+          {/* Add Like Button */}
+          <div className="mt-4">
+            <VoteButton featureId="community" />
+          </div>
         </div>
       </div>
     </div>

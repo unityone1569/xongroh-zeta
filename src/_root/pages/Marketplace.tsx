@@ -1,3 +1,5 @@
+import VoteButton from "@/components/shared/VoteButton";
+
 const Marketplace = () => {
   return (
     <div className="flex-col flex-1 items-center overflow-scroll py-10 px-6 md:p-14 custom-scrollbar">
@@ -12,10 +14,15 @@ const Marketplace = () => {
             height={65}
             className="opacity-15"    
           />
-          <p className="text-light-3 h3-bold pt-3">"Coming Soon..."</p>
+          <p className="text-light-2 h3-bold pt-3">"Coming Soon..."</p>
           <p className="text-light-4 base-regular text-center max-w-md">
             Our marketplace is under construction. Soon you'll be able to discover and trade creative assets.
           </p>
+
+           {/* Add Like Button */}
+           <div className="mt-4">
+            <VoteButton featureId="marketplace" />
+          </div>
         </div>
       </div>
     </div>
