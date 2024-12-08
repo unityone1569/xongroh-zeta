@@ -59,7 +59,7 @@ export async function createUserAccount(
       email: newAccount.email,
       dpUrl: avatarUrl,
       coverUrl: new URL(
-        'https://cloud.appwrite.io/v1/storage/buckets/66eb8c5f0005ac84ff73/files/67334e3c0020012b0960/view?project=66e2a98a00192795ca51&project=66e2a98a00192795ca51&mode=admin'
+        'https://cloud.appwrite.io/v1/storage/buckets/66eb8c4a0011e9c6e9eb/files/6755172200346cba28b0/view?project=66e2a98a00192795ca51&project=66e2a98a00192795ca51'
       ),
       username: username, // Add the generated username
     });
@@ -101,7 +101,7 @@ export async function createUserAccountWithGoogle(
       email: session.email,
       dpUrl: avatars.getInitials(session.name),
       coverUrl: new URL(
-        'https://cloud.appwrite.io/v1/storage/buckets/66eb8c5f0005ac84ff73/files/67334e3c0020012b0960/view?project=66e2a98a00192795ca51&project=66e2a98a00192795ca51&mode=admin'
+        'https://cloud.appwrite.io/v1/storage/buckets/66eb8c4a0011e9c6e9eb/files/6755172200346cba28b0/view?project=66e2a98a00192795ca51&project=66e2a98a00192795ca51'
       ),
       username: username,
     });
