@@ -73,7 +73,9 @@ const FileUploader = ({ fieldChange, docUrl }: FileUploaderProps) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.png', '.jpeg', '.jpg', '.gif'],
+      'image/png': ['.png'],
+      'image/jpeg': ['.jpeg', '.jpg'],
+      'image/gif': ['.gif'],
       'audio/*': ['.mp3', '.wav', '.aac'],
       'video/*': ['.mp4', '.mov'],
     },
@@ -181,7 +183,9 @@ const SingleFileUploader = ({
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.png', '.jpeg', '.jpg'],
+      'image/png': ['.png'],
+      'image/jpeg': ['.jpeg', '.jpg'],
+      'image/gif': ['.gif'],
     },
     maxSize: MAX_SINGLE_FILE_SIZE, // Add maxSize option
     onDropRejected: (fileRejections) => {

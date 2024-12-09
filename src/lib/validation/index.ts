@@ -24,50 +24,14 @@ export const SignInValidation = z.object({
 
 export const PostValidation = z.object({
   content: z.string().min(5).max(63206),
-  file: z.array(
-    z
-      .instanceof(File)
-      .refine(
-        (file) =>
-          [
-            'image/jpeg',
-            'image/jpg',
-            'image/png',
-            'image/gif',
-            'video/mp4',
-            'video/mov',
-            'audio/mp3',
-            'audio/aac',
-            'audio/wav',
-          ].includes(file.type),
-        { message: 'File must be a valid image, audio, or video format' }
-      )
-  ),
+  file: z.array(z.instanceof(File)),
   tags: z.string(),
 });
 
 export const ProjectValidation = z.object({
   title: z.string().min(5).max(250),
   description: z.string().min(5).max(9000),
-  file: z.array(
-    z
-      .instanceof(File)
-      .refine(
-        (file) =>
-          [
-            'image/jpeg',
-            'image/jpg',
-            'image/png',
-            'image/gif',
-            'video/mp4',
-            'video/mov',
-            'audio/mp3',
-            'audio/aac',
-            'audio/wav',
-          ].includes(file.type),
-        { message: 'File must be a valid image, audio, or video format' }
-      )
-  ),
+  file: z.array(z.instanceof(File)),
   links: z
     .string()
     .transform((str) => (str ? str.split(',').map((link) => link.trim()) : [])) // Convert non-empty input to array, otherwise empty array
