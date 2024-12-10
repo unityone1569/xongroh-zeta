@@ -12,15 +12,18 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState('00:00:00');
   const [totalDuration, setTotalDuration] = useState('00:00:00');
-  const [volume, setVolume] = useState(50);
+  const [volume, setVolume] = useState(35);
 
   useEffect(() => {
     // Initialize Wavesurfer instance
     const ws = WaveSurfer.create({
       container: waveformRef.current!,
       height: 65,
-      waveColor: '#B794F4',
-      progressColor: '#B871FF',
+      barWidth: 4,
+      barGap: 6,
+      barRadius: 16,
+      waveColor: '#D4AAFF',
+      progressColor: '#9C39FF',
     });
     ws.load(audioUrl);
     setWavesurfer(ws);
@@ -67,7 +70,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-dark-3 shadow-lg p-2 sm:p-4 overflow-x-auto custom-scrollbar">
+    <div className="w-full max-w-4xl mx-auto bg-dark-1 shadow-lg p-2 sm:p-4 overflow-x-auto custom-scrollbar">
       <div className="flex flex-row items-center gap-2 xs:gap-4 min-w-[300px]">
         {/* Play/Pause Button */}
         <Button className="flex p-1 m-1.5  items-center justify-center sm:w-1/6 sm:h-auto">
@@ -88,7 +91,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
           <div
             id="waveform"
             ref={waveformRef}
-            className="w-full mt-1 sm:mt-2 bg-dark-4 rounded-md"
+            className="w-full mt-1 sm:mt-2 bg-dark-3 rounded-md "
           ></div>
 
           {/* Controls */}

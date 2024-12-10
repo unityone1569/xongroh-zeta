@@ -58,9 +58,6 @@ export async function createUserAccount(
       hometown: user.hometown,
       email: newAccount.email,
       dpUrl: avatarUrl,
-      coverUrl: new URL(
-        'https://cloud.appwrite.io/v1/storage/buckets/66eb8c4a0011e9c6e9eb/files/6755172200346cba28b0/view?project=66e2a98a00192795ca51&project=66e2a98a00192795ca51'
-      ),
       username: username, // Add the generated username
     });
 
@@ -100,9 +97,6 @@ export async function createUserAccountWithGoogle(
       name: session.name,
       email: session.email,
       dpUrl: avatars.getInitials(session.name),
-      coverUrl: new URL(
-        'https://cloud.appwrite.io/v1/storage/buckets/66eb8c4a0011e9c6e9eb/files/6755172200346cba28b0/view?project=66e2a98a00192795ca51&project=66e2a98a00192795ca51'
-      ),
       username: username,
     });
 
@@ -195,7 +189,7 @@ async function saveUserToDB(user: {
   hometown?: string;
   email: string;
   dpUrl: URL;
-  coverUrl: URL;
+  
 }): Promise<Models.Document> {
   try {
     // Save the user to the database

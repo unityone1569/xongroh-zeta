@@ -2,7 +2,6 @@ import { Models } from 'appwrite';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
-import AudioPlayer from '@/components/shared/AudioPlayer';
 import VideoPlayer from '@/components/shared/VideoPlayer';
 import Loader from '@/components/shared/Loader';
 
@@ -35,16 +34,28 @@ const GridPostMedia = ({ post }: { post: Models.Document }) => {
   switch (mediaType) {
     case 'image':
       return (
-        <img
-          src={post?.mediaUrl}
-          alt="post"
-          className="h-full w-full object-cover"
-        />
+        <div className=" w-full h-full flex-center flex-col">
+          <img
+            src={post?.mediaUrl}
+            alt="post"
+            className=" w-full h-auto object-cover object-center"
+          />
+          <p className="w-full whitespace-pre-line px-5 text-center small-medium line-clamp-2 text-light-3 text-pretty">
+            {post?.content}
+          </p>
+        </div>
       );
     case 'audio':
       return (
-        <div className="h-full w-full flex-center">
-          <AudioPlayer audioUrl={post?.mediaUrl} />
+        <div className=" w-full h-full flex-center flex-col">
+          <img
+            src="/assets/icons/audio.svg"
+            alt="music"
+            className=" h-32 w-32 p-5"
+          />
+          <p className="w-full whitespace-pre-line px-3.5 text-center subtle-comment line-clamp-2 text-light-2 opacity-45 text-pretty">
+            {post?.content}
+          </p>
         </div>
       );
     case 'video':
@@ -55,8 +66,8 @@ const GridPostMedia = ({ post }: { post: Models.Document }) => {
       );
     default:
       return (
-        <div className="p-5 pt-6">
-          <p className="pl-0.5 whitespace-pre-line small-regular line-clamp-[11] text-pretty">
+        <div className="w-full h-full p-5 pt-6">
+          <p className="w-full whitespace-pre-line small-regular line-clamp-[11] text-pretty text-light-2">
             {post?.content}
           </p>
         </div>
@@ -67,39 +78,39 @@ const GridPostMedia = ({ post }: { post: Models.Document }) => {
 const GridSearchList = ({ items, type }: GridSearchListProps) => {
   if (type === 'post') {
     return (
-      <ul className="grid-container">
+      <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6 lg:gap-9">
         {items.map((post) => (
-          <li key={post.$id} className="relative min-w-80 h-80">
-            <Link to={`/posts/${post.$id}`} className="grid-post_link">
-              {post?.mediaUrl?.length > 0 ? (
+          <div
+            key={post?.$id}
+            className="rounded-xl border border-dark-4 overflow-hidden flex flex-col h-[320px]"
+          >
+            <Link
+              to={`/posts/${post?.$id}`}
+              className="flex flex-col flex-1 min-h-0"
+            >
+              <div className="flex-1 min-h-0">
                 <GridPostMedia post={post} />
-              ) : (
-                <div className="p-5 pt-6">
-                  <p className="pl-0.5 whitespace-pre-line small-regular line-clamp-[11] text-pretty">
-                    {post?.content}
+              </div>
+
+              <div className="p-3.5 mt-auto">
+                <div className="flex items-center gap-2">
+                  <img
+                    src={
+                      post?.author?.dpUrl ||
+                      '/assets/icons/profile-placeholder.svg'
+                    }
+                    alt={post?.author?.name || 'Creator'}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <p className="truncate small-medium">
+                    {post?.author?.name || 'Creator'}
                   </p>
                 </div>
-              )}
-           
-            <div className="grid-post_user">
-              <div className="flex items-center gap-2">
-                <img
-                  src={
-                    post?.author?.dpUrl ||
-                    '/assets/icons/profile-placeholder.svg'
-                  }
-                  alt={post?.author?.name || 'creator'}
-                  className="w-8 h-8 rounded-full"
-                />
-                <p className="line-clamp-1">
-                  {post?.author?.name || 'Unknown'}
-                </p>
               </div>
-            </div>
             </Link>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     );
   }
 

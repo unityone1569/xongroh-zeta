@@ -62,7 +62,7 @@ const ProfileCardItem = ({
     <div className="overflow-hidden">
       <div className="pb-4 pt-10 md:pt-0 shadow-lg">
         <img
-          src={cover}
+          src={cover || '/assets/icons/cover-placeholder.png'}
           className="lg:h-72 w-full h-52 object-cover rounded-t-xl"
           alt="Cover"
         />

@@ -227,7 +227,7 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
                       <Textarea
                         {...field}
                         className="shad-comment subtle-comment md:small-regular custom-scrollbar pl-3.5 pt-3.5 "
-                        placeholder="Send feedback to the creator..."
+                        placeholder="Feedbacks are private and not visible to others."
                       />
                     </FormControl>
                     <FormMessage className="shad-form_message" />
