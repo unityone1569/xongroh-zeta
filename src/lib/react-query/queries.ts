@@ -213,6 +213,10 @@ export const useGetPostById = (postId: string) => {
     queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
     queryFn: () => getPostById(postId),
     enabled: !!postId,
+
+    // Add caching configuration
+    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+    gcTime: 19 * 60 * 1000 // Cache retained for 30 minutes
   });
 };
 
@@ -396,7 +400,8 @@ export const useSearchPosts = (searchTerm: string) => {
       }
       return searchPosts(searchTerm);
     },
-    enabled: !!searchTerm, // Fetch only when a search term exists
+    enabled: searchTerm.length >= 2, // Only search with 3+ characters
+    staleTime: 2 * 60 * 1000, // Cache search results
   });
 };
 

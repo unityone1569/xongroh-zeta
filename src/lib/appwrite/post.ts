@@ -309,7 +309,18 @@ export async function searchPosts(searchTerm: string) {
 }
 
 export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
-  const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(6)];
+  const queries: any[] = [
+    Query.orderDesc('$updatedAt'),
+    Query.limit(6),
+    Query.select([
+      '$id',
+      'content',
+      'mediaUrl',
+      'creatorId',
+      'tags',
+      '$createdAt',
+    ]),
+  ];
 
   if (pageParam) {
     queries.push(Query.cursorAfter(pageParam.toString()));
@@ -365,12 +376,15 @@ export async function getSavedPosts(userId: string) {
 
 export async function getPostsByIds(postIds: string[]) {
   if (!postIds.length) return [];
-  
+
   try {
     const { documents: posts } = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.creationPostCollectionId,
-      [Query.equal('$id', [...postIds])]
+      [
+        Query.equal('$id', [...postIds]),
+        Query.orderDesc('$createdAt') // Add descending order by creation date
+      ]
     );
 
     if (!posts || posts.length === 0) return [];
@@ -669,11 +683,7 @@ export async function uploadFile(file: File) {
 
 export function getFilePreview(fileId: string) {
   try {
-    const fileUrl = storage.getFileView(
-      appwriteConfig.postBucketId,
-      fileId,
-    
-    );
+    const fileUrl = storage.getFileView(appwriteConfig.postBucketId, fileId);
 
     if (!fileUrl) throw Error;
 
@@ -694,5 +704,3 @@ export async function deleteFile(fileId: string) {
     console.log(error);
   }
 }
-
-

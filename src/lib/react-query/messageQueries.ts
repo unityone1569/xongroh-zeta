@@ -237,12 +237,6 @@ export const useUnreadMessages = (userId: string) => {
         if (
           response.events.includes(
             'databases.*.collections.*.documents.*.create'
-          ) ||
-          response.events.includes(
-            'databases.*.collections.*.documents.*.update'
-          ) ||
-          response.events.includes(
-            'databases.*.collections.*.documents.*.delete'
           )
         ) {
           // Invalidate and refetch conversations query

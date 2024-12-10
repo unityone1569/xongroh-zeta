@@ -52,7 +52,7 @@ const LeftSidebar = () => {
   return (
     <nav className="leftsidebar">
       <div className="flex flex-col gap-11">
-        <Link to="/" className="flex gap-3 items-center">
+        <Link to="/" className="flex gap-3 items-center pl-1.5">
           <img src="/assets/icons/logo.svg" alt="logo" width={48} />
           <h3 className="h3-bold md:h3-bold">xongroh</h3>
         </Link>
