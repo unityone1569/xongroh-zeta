@@ -62,33 +62,16 @@ const PostCard = ({ post }: PostCardProps) => {
       </div>
 
       <Link to={`/posts/${post?.$id}`}>
-        <div className="small-medium lg:base-medium pt-5 pb-4">
+        <div className="small-medium lg:base-medium ">
           {post?.mediaUrl?.length > 0 ? (
-            <p className="pl-0.5 whitespace-pre-line small-regular line-clamp-5 text-pretty">
+            <p className="pl-0.5 whitespace-pre-line pt-5 pb-4 small-regular line-clamp-5 text-pretty">
               {post?.content}
             </p>
           ) : (
-            <p className="pl-0.5 whitespace-pre-line small-regular line-clamp-[11] text-pretty">
+            <p className="pl-0.5 whitespace-pre-line small-regular pt-5 line-clamp-[11] text-pretty">
               {post?.content}
             </p>
           )}
-
-          {post?.tags &&
-            Array.isArray(post?.tags) &&
-            post?.tags.filter((tag: string) => tag.trim() !== '').length >
-              0 && (
-              <ul className="flex py-1.5 flex-wrap gap-3.5 mt-3 mb-0.5 overflow-x-hidden">
-                {post?.tags
-                  .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
-                  .map((tag: string, index: number) => (
-                    <li key={`${tag}${index}`}>
-                      <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
-                        {tag}
-                      </span>
-                    </li>
-                  ))}
-              </ul>
-            )}
         </div>
       </Link>
       {post?.mediaUrl?.length > 0 && (
@@ -129,8 +112,25 @@ const PostCard = ({ post }: PostCardProps) => {
           )}
         </>
       )}
+      {post?.tags &&
+        Array.isArray(post?.tags) &&
+        post?.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
+          <Link to={`/posts/${post?.$id}`}>
+            <ul className="flex py-1.5 flex-wrap gap-3.5 mt-3.5 mb-0.5 overflow-x-hidden">
+              {post?.tags
+                .filter((tag: string) => tag.trim() !== '') // Filter out empty tags
+                .map((tag: string, index: number) => (
+                  <li key={`${tag}${index}`}>
+                    <span className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs font-medium">
+                      {tag}
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          </Link>
+        )}
 
-      <div className="mt-6">
+      <div className="mt-5">
         <PostStats post={post} userId={user.id} />
       </div>
     </div>
