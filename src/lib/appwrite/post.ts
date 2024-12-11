@@ -11,32 +11,53 @@ import {
 // ****************
 // ***** POST *****
 
-export async function getRecentPosts() {
+export async function getRecentPosts({
+  pageParam,
+}: {
+  pageParam: number | null;
+}) {
   try {
-    // Fetch recent posts
+    const queries: any[] = [
+      Query.orderDesc('$createdAt'),
+      Query.limit(6),
+      Query.select([
+        '$id',
+        'content',
+        'mediaUrl',
+        'creatorId',
+        'tags',
+        '$createdAt',
+      ]),
+    ];
+
+    if (pageParam) {
+      queries.push(Query.cursorAfter(pageParam.toString()));
+    }
+
+    // Fetch recent posts with pagination
     const { documents: posts } = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.creationPostCollectionId,
-      [Query.orderDesc('$createdAt'), Query.limit(20)]
+      queries
     );
 
     if (!posts || posts.length === 0) {
-      return []; // Return an empty array if no posts are found
+      return { documents: [] };
     }
 
-    // Create an array of user fetch promises
+    // Create user fetch promises
     const userFetchPromises = posts.map((post) =>
       databases.getDocument(
         appwriteConfig.databaseId,
-        appwriteConfig.creatorCollectionId, // Replace with actual user collection ID
+        appwriteConfig.creatorCollectionId,
         post.creatorId
       )
     );
 
-    // Resolve all user fetch promises in parallel
+    // Fetch all users in parallel
     const users = await Promise.all(userFetchPromises);
 
-    // Combine posts with their corresponding user details
+    // Combine posts with user details
     const postsWithUserDetails = posts.map((post, index) => ({
       ...post,
       creator: {
@@ -45,10 +66,10 @@ export async function getRecentPosts() {
       },
     }));
 
-    return postsWithUserDetails;
+    return { documents: postsWithUserDetails };
   } catch (error) {
-    console.error('Error fetching posts or user data:', error);
-    return []; // Return an empty array if an error occurs
+    console.error('Error:', error);
+    return { documents: [] };
   }
 }
 
@@ -357,37 +378,46 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
   }
 }
 
-export async function getSavedPosts(userId: string) {
+export async function getSavedPosts({
+  pageParam,
+  userId,
+}: {
+  pageParam: number | null;
+  userId: string;
+}) {
   try {
+    const queries: any[] = [
+      Query.equal('creatorId', userId),
+      Query.orderDesc('$createdAt'),
+      Query.limit(5),
+      Query.select(['$id', 'postId']),
+    ];
+
+    // Only add cursor if pageParam exists
+    if (pageParam) {
+      queries.push(Query.cursorAfter(pageParam.toString()));
+    }
+
+    // Get saved posts documents
     const savedPosts = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.savesCollectionId,
-      [Query.equal('creatorId', userId)]
+      queries
     );
 
-    if (!savedPosts) return [];
+    if (!savedPosts?.documents.length) return { documents: [] };
 
-    return savedPosts.documents;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
+    // Extract post IDs from saved posts
+    const postIds = savedPosts.documents.map((save) => save.postId);
 
-export async function getPostsByIds(postIds: string[]) {
-  if (!postIds.length) return [];
-
-  try {
+    // Fetch actual posts
     const { documents: posts } = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.creationPostCollectionId,
-      [
-        Query.equal('$id', [...postIds]),
-        Query.orderDesc('$createdAt') // Add descending order by creation date
-      ]
+      [Query.equal('$id', postIds)]
     );
 
-    if (!posts || posts.length === 0) return [];
+    if (!posts?.length) return { documents: [] };
 
     // Fetch creator details
     const userFetchPromises = posts.map((post) =>
@@ -400,19 +430,21 @@ export async function getPostsByIds(postIds: string[]) {
 
     const users = await Promise.all(userFetchPromises);
 
-    // Combine posts with creator details
+    // Combine posts with user details
     const postsWithUserDetails = posts.map((post, index) => ({
       ...post,
       creator: {
         name: users[index]?.name || '',
         dpUrl: users[index]?.dpUrl || null,
       },
+      // Add the save document's $id for proper cursor pagination
+      saveId: savedPosts.documents[index].$id,
     }));
 
-    return postsWithUserDetails;
+    return { documents: postsWithUserDetails };
   } catch (error) {
-    console.error('Error fetching posts or creator data:', error);
-    return [];
+    console.error('Error fetching saved posts:', error);
+    return { documents: [] };
   }
 }
 

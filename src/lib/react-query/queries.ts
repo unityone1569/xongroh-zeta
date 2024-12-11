@@ -63,7 +63,6 @@ import {
   getAuthorById,
   getInfinitePosts,
   getPostById,
-  getPostsByIds,
   getProjectById,
   getRecentPosts,
   getSavedPosts,
@@ -202,9 +201,20 @@ export const useCreatePost = () => {
 };
 
 export const useGetRecentPosts = () => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
-    queryFn: getRecentPosts,
+    queryFn: getRecentPosts as any,
+    initialPageParam: null,
+    getNextPageParam: (lastPage: any) => {
+      // If there's no data or empty results, there are no more pages
+      if (!lastPage?.documents || lastPage.documents.length === 0) {
+        return null;
+      }
+
+      // Use the $id of the last document as the cursor
+      const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+      return lastId;
+    },
   });
 };
 
@@ -272,23 +282,20 @@ export const useGetUserPosts = (userId: string) => {
 };
 
 export const useGetSavedPosts = (userId: string) => {
-  const { data: savedPostIds, isLoading: isSavedIdsLoading } = useQuery({
+  return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_SAVED_POSTS, userId],
-    queryFn: () => getSavedPosts(userId),
+    queryFn: ({ pageParam }) => getSavedPosts({ pageParam, userId }),
+    initialPageParam: null,
+    getNextPageParam: (lastPage: any) => {
+      if (!lastPage?.documents || lastPage.documents.length === 0) {
+        return null;
+      }
+      // Use the saveId (saves collection document $id) for cursor
+      const lastSaveId = lastPage.documents[lastPage.documents.length - 1].saveId;
+      return lastSaveId;
+    },
     enabled: !!userId,
   });
-
-  const { data: posts, isLoading: isPostsLoading } = useQuery({
-    queryKey: [QUERY_KEYS.GET_SAVED_POST_DETAILS, savedPostIds],
-    queryFn: () =>
-      getPostsByIds(savedPostIds?.map((save) => save.postId) || []),
-    enabled: !!savedPostIds?.length,
-  });
-
-  return {
-    data: posts,
-    isLoading: isSavedIdsLoading || (!!savedPostIds?.length && isPostsLoading),
-  };
 };
 
 // PROJECT

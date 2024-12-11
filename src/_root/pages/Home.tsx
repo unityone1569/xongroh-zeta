@@ -1,65 +1,153 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import Loader from '@/components/shared/Loader';
 import PostCard from '@/components/shared/PostCard';
 import { useGetRecentPosts, useGetSavedPosts } from '@/lib/react-query/queries';
 import { Models } from 'appwrite';
 import { useUserContext } from '@/context/AuthContext';
 
+const tabs = [
+  { name: 'creation', label: 'Creations' },
+  { name: 'saved', label: 'Saved' }
+];
+
 const Home = () => {
   const { user } = useUserContext();
   const [activeTab, setActiveTab] = useState('creation');
+  const containerRef = useRef(null);
 
-  const tabs = useMemo(
-    () => [
-      { name: 'creation', label: 'Creations' },
-      { name: 'saved', label: 'Saved' },
-    ],
-    []
-  );
+  const {
+    data: postsPages,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isPostLoading
+  } = useGetRecentPosts();
 
-  const { data: posts, isPending: isPostLoading } = useGetRecentPosts();
-  const { data: savedPosts, isLoading: isSavedLoading } = useGetSavedPosts(
-    user.id
-  );
+  const {
+    data: savedPostsPages,
+    fetchNextPage: fetchNextSavedPage,
+    hasNextPage: hasNextSavedPage,
+    isFetchingNextPage: isFetchingNextSavedPage,
+    isLoading: isSavedLoading
+  } = useGetSavedPosts(user.id);
+
+  // Flatten posts from all pages
+  const posts = useMemo(() => {
+    return postsPages?.pages.flatMap(page => page.documents) || [];
+  }, [postsPages]);
+
+  // Flatten saved posts from all pages
+  const savedPosts = useMemo(() => {
+    return savedPostsPages?.pages.flatMap(page => page.documents) || [];
+  }, [savedPostsPages]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentContainer = containerRef.current;
+    if (currentContainer) {
+      observer.observe(currentContainer);
+    }
+
+    return () => {
+      if (currentContainer) {
+        observer.unobserve(currentContainer);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Add ref for saved posts infinite scroll
+  const savedPostsRef = useRef(null);
+
+  // Separate effect for saved posts infinite scroll
+  useEffect(() => {
+    if (activeTab !== 'saved') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextSavedPage && !isFetchingNextSavedPage) {
+          fetchNextSavedPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentContainer = savedPostsRef.current;
+    if (currentContainer) {
+      observer.observe(currentContainer);
+    }
+
+    return () => {
+      if (currentContainer) {
+        observer.unobserve(currentContainer);
+      }
+    };
+  }, [hasNextSavedPage, isFetchingNextSavedPage, fetchNextSavedPage, activeTab]);
 
   const renderContent = () => {
     if (activeTab === 'creation') {
-      if (isPostLoading)
+      if (isPostLoading) {
         return (
           <div className="p-10">
             <Loader />
           </div>
         );
+      }
 
       return (
         <ul className="flex flex-col flex-1 gap-9 w-full">
           {!posts || posts.length === 0 ? (
             <p className="text-light-4 pl-3.5">No creations available yet</p>
           ) : (
-            posts.map((post: Models.Document) => (
-              <PostCard post={post} key={post.$id} />
-            ))
+            <>
+              {posts.map((post: Models.Document) => (
+                <PostCard post={post} key={post.$id} />
+              ))}
+              <div ref={containerRef} className="h-10" />
+              {isFetchingNextPage && (
+                <div className="p-10">
+                  <Loader />
+                </div>
+              )}
+            </>
           )}
         </ul>
       );
     }
 
     if (activeTab === 'saved') {
-      if (isSavedLoading)
+      if (isSavedLoading) {
         return (
           <div className="p-10">
             <Loader />
           </div>
         );
+      }
 
       return (
         <ul className="flex flex-col flex-1 gap-9 w-full">
           {!savedPosts || savedPosts.length === 0 ? (
             <p className="text-light-4 pl-3.5">No saved posts yet</p>
           ) : (
-            savedPosts.map((post: Models.Document) => (
-              <PostCard post={post} key={post.$id} />
-            ))
+            <>
+              {savedPosts.map((post: Models.Document) => (
+                <PostCard post={post} key={post.$id} />
+              ))}
+              <div ref={savedPostsRef} className="h-10" />
+              {isFetchingNextSavedPage && (
+                <div className="p-10">
+                  <Loader />
+                </div>
+              )}
+            </>
           )}
         </ul>
       );

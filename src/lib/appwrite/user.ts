@@ -566,7 +566,7 @@ export function getFilePreview(fileId: string) {
       0,
       0,
       ImageGravity.Center,
-      60
+     50
     );
 
     if (!fileUrl) throw Error;
