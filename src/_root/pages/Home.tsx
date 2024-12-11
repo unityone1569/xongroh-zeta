@@ -43,54 +43,55 @@ const Home = () => {
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 }
-    );
+    let observer: IntersectionObserver | null = null;
 
-    const currentContainer = containerRef.current;
-    if (currentContainer) {
-      observer.observe(currentContainer);
+    if (activeTab === 'creation') {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        },
+        { threshold: 0.1 }
+      );
+
+      const currentContainer = containerRef.current;
+      if (currentContainer) {
+        observer.observe(currentContainer);
+      }
+    } else if (activeTab === 'saved') {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasNextSavedPage && !isFetchingNextSavedPage) {
+            fetchNextSavedPage();
+          }
+        },
+        { threshold: 0.1 }
+      );
+
+      const currentContainer = savedPostsRef.current;
+      if (currentContainer) {
+        observer.observe(currentContainer);
+      }
     }
 
     return () => {
-      if (currentContainer) {
-        observer.unobserve(currentContainer);
+      if (observer) {
+        observer.disconnect();
       }
     };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [
+    activeTab,
+    hasNextPage,
+    hasNextSavedPage,
+    isFetchingNextPage,
+    isFetchingNextSavedPage,
+    fetchNextPage,
+    fetchNextSavedPage
+  ]);
 
   // Add ref for saved posts infinite scroll
   const savedPostsRef = useRef(null);
-
-  // Separate effect for saved posts infinite scroll
-  useEffect(() => {
-    if (activeTab !== 'saved') return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextSavedPage && !isFetchingNextSavedPage) {
-          fetchNextSavedPage();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    const currentContainer = savedPostsRef.current;
-    if (currentContainer) {
-      observer.observe(currentContainer);
-    }
-
-    return () => {
-      if (currentContainer) {
-        observer.unobserve(currentContainer);
-      }
-    };
-  }, [hasNextSavedPage, isFetchingNextSavedPage, fetchNextSavedPage, activeTab]);
 
   const renderContent = () => {
     if (activeTab === 'creation') {
@@ -138,8 +139,8 @@ const Home = () => {
             <p className="text-light-4 pl-3.5">No saved posts yet</p>
           ) : (
             <>
-              {savedPosts.map((post: Models.Document) => (
-                <PostCard post={post} key={post.$id} />
+              {savedPosts.map((post) => (
+                <PostCard post={post as Models.Document} key={post.$id} />
               ))}
               <div ref={savedPostsRef} className="h-10" />
               {isFetchingNextSavedPage && (

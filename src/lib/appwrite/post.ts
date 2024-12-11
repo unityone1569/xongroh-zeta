@@ -386,14 +386,14 @@ export async function getSavedPosts({
   userId: string;
 }) {
   try {
+    // Query saved posts with descending order by creation date
     const queries: any[] = [
       Query.equal('creatorId', userId),
-      Query.orderDesc('$createdAt'),
+      Query.orderDesc('$createdAt'), // This ensures newest saves appear first
       Query.limit(5),
       Query.select(['$id', 'postId']),
     ];
 
-    // Only add cursor if pageParam exists
     if (pageParam) {
       queries.push(Query.cursorAfter(pageParam.toString()));
     }
@@ -401,16 +401,15 @@ export async function getSavedPosts({
     // Get saved posts documents
     const savedPosts = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.savesCollectionId,
+      appwriteConfig.savesCollectionId, 
       queries
     );
 
     if (!savedPosts?.documents.length) return { documents: [] };
 
-    // Extract post IDs from saved posts
     const postIds = savedPosts.documents.map((save) => save.postId);
 
-    // Fetch actual posts
+    // Fetch actual posts ordered by save date
     const { documents: posts } = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.creationPostCollectionId,
@@ -420,28 +419,32 @@ export async function getSavedPosts({
     if (!posts?.length) return { documents: [] };
 
     // Fetch creator details
-    const userFetchPromises = posts.map((post) =>
-      databases.getDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.creatorCollectionId,
-        post.creatorId
+    const creators = await Promise.all(
+      posts.map((post) =>
+        databases.getDocument(
+          appwriteConfig.databaseId,
+          appwriteConfig.creatorCollectionId,
+          post.creatorId
+        )
       )
     );
 
-    const users = await Promise.all(userFetchPromises);
+    // Map saved posts to maintain save order
+    const postsWithDetails = savedPosts.documents.map((savedPost) => {
+      const post = posts.find((p) => p.$id === savedPost.postId);
+      const creator = creators.find((c) => c.$id === post?.creatorId);
+      
+      return {
+        ...post,
+        creator: {
+          name: creator?.name || '',
+          dpUrl: creator?.dpUrl || null,
+        },
+        saveId: savedPost.$id,
+      };
+    });
 
-    // Combine posts with user details
-    const postsWithUserDetails = posts.map((post, index) => ({
-      ...post,
-      creator: {
-        name: users[index]?.name || '',
-        dpUrl: users[index]?.dpUrl || null,
-      },
-      // Add the save document's $id for proper cursor pagination
-      saveId: savedPosts.documents[index].$id,
-    }));
-
-    return { documents: postsWithUserDetails };
+    return { documents: postsWithDetails };
   } catch (error) {
     console.error('Error fetching saved posts:', error);
     return { documents: [] };
