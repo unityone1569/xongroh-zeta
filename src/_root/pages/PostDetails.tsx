@@ -11,6 +11,7 @@ import { Models } from 'appwrite';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
+import LazyImage from '@/components/shared/LazyImage';
 
 const PostDetails = () => {
   const [mediaType, setMediaType] = useState<string>('unknown');
@@ -61,7 +62,7 @@ const PostDetails = () => {
                   switch (mediaType) {
                     case 'image':
                       return (
-                        <img
+                        <LazyImage
                           src={post.mediaUrl}
                           alt="post"
                           className="post-card_img"
@@ -92,7 +93,7 @@ const PostDetails = () => {
                 to={`/profile/${post?.creatorId}`}
                 className="flex items-center gap-3"
               >
-                <img
+                <LazyImage
                   src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
                   alt="creator"
                   className="rounded-full object-cover w-10 h-10 lg:w-14 lg:h-14"

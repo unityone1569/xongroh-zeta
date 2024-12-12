@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
 import VideoPlayer from '@/components/shared/VideoPlayer';
 import Loader from '@/components/shared/Loader';
+import LazyImage from './LazyImage';
 
 type GridSearchListProps = {
   items: Models.Document[];
@@ -35,10 +36,11 @@ const GridPostMedia = ({ post }: { post: Models.Document }) => {
     case 'image':
       return (
         <div className=" w-full h-full flex-center flex-col">
-          <img
+          <LazyImage
             src={post?.mediaUrl}
             alt="post"
             className=" w-full h-auto object-cover object-center"
+            
           />
           <p className="w-full whitespace-pre-line px-5 text-center small-medium line-clamp-2 text-light-3 text-pretty">
             {post?.content}
@@ -48,10 +50,11 @@ const GridPostMedia = ({ post }: { post: Models.Document }) => {
     case 'audio':
       return (
         <div className=" w-full h-full flex-center flex-col">
-          <img
+          <LazyImage
             src="/assets/icons/audio.svg"
             alt="music"
             className=" h-32 w-32 p-5"
+             
           />
           <p className="w-full whitespace-pre-line px-3.5 text-center subtle-comment line-clamp-2 text-light-2 opacity-45 text-pretty">
             {post?.content}
@@ -94,7 +97,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
 
               <div className="p-3.5 mt-auto">
                 <div className="flex items-center gap-2">
-                  <img
+                  <LazyImage
                     src={
                       post?.author?.dpUrl ||
                       '/assets/icons/profile-placeholder.svg'
@@ -121,7 +124,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
           <li key={user.$id} className="user-card flex flex-start gap-4">
             <div className="w-28">
               <Link to={`/profile/${user.$id}`}>
-                <img
+                <LazyImage
                   src={user.dpUrl || '/assets/icons/profile-placeholder.svg'}
                   alt={user.name || 'User'}
                   className="w-20 h-20 object-cover rounded-full"
@@ -135,7 +138,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
 
               {user?.profession && (
                 <div className="flex gap-2 pt-2 justify-start items-center">
-                  <img
+                  <LazyImage
                     src="/assets/icons/profession.svg"
                     alt="profession"
                     className="w-4 h-4 "
@@ -147,7 +150,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
               )}
               {user?.hometown && (
                 <div className="flex gap-2 pt-1 justify-start items-center">
-                  <img
+                  <LazyImage
                     src="/assets/icons/hometown.svg"
                     alt="hometown"
                     className="w-4 h-4 "

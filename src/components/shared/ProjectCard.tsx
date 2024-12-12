@@ -2,6 +2,7 @@ import { Models } from 'appwrite';
 import { Link } from 'react-router-dom';
 import { useUserContext } from '@/context/AuthContext';
 import ProjectStats from './ProjectStats';
+import LazyImage from './LazyImage';
 
 type ProjectCardProps = {
   project: Models.Document;
@@ -51,7 +52,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       <div className="flex-between pt-6">
         <div className="flex items-center gap-3">
           <Link to={`/profile/${project?.creatorId}`}>
-            <img
+            <LazyImage
               src={
                 project?.creator?.dpUrl ||
                 '/assets/icons/profile-placeholder.svg'

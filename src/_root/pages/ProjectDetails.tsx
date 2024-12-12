@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react';
 import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
 import AudioPlayer from '@/components/shared/AudioPlayer';
 import VideoPlayer from '@/components/shared/VideoPlayer';
+import LazyImage from '@/components/shared/LazyImage';
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -87,7 +88,7 @@ const ProjectDetails = () => {
                   switch (mediaType) {
                     case 'image':
                       return (
-                        <img
+                        <LazyImage
                           src={project.mediaUrl}
                           alt="project"
                           className="post-card_img"
@@ -119,7 +120,7 @@ const ProjectDetails = () => {
                 to={`/profile/${project?.creatorId}`}
                 className="flex items-center gap-3"
               >
-                <img
+                <LazyImage
                   src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
                   alt="creator"
                   className="rounded-full w-10 h-10 lg:w-14 object-cover lg:h-14"

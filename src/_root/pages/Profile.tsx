@@ -8,6 +8,7 @@ import PostCard from '@/components/shared/PostCard';
 import { useUserContext } from '@/context/AuthContext';
 import UserSupport from '@/components/shared/UserSupport';
 import { useCreateConversation } from '@/lib/react-query/messageQueries';
+import LazyImage from '@/components/shared/LazyImage';
 
 interface ProfileCardItemProps {
   creatorId: string;
@@ -61,7 +62,7 @@ const ProfileCardItem = ({
   return (
     <div className="overflow-hidden">
       <div className="pb-4 pt-10 md:pt-0 shadow-lg">
-        <img
+        <LazyImage
           src={cover || '/assets/icons/cover-placeholder.png'}
           className="lg:h-72 w-full h-52 object-cover rounded-t-xl"
           alt="Cover"
@@ -69,7 +70,7 @@ const ProfileCardItem = ({
         <div className="flex flex-col justify-start items-start pb-6 px-3 sm:px-6 lg:pl-9">
           <div className="w-full">
             <div className="flex justify-between gap-10 ">
-              <img
+              <LazyImage
                 src={dp}
                 className="h-24 w-24 lg:h-32 lg:w-32 object-cover rounded-full bottom-9 lg:bottom-11 relative"
                 alt="Profile"

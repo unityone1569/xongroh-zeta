@@ -8,6 +8,7 @@ import VideoPlayer from './VideoPlayer';
 import { useState, useEffect } from 'react';
 import Loader from './Loader';
 import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
+import LazyImage from './LazyImage';
 
 type PostCardProps = {
   post: Models.Document;
@@ -34,12 +35,13 @@ const PostCard = ({ post }: PostCardProps) => {
       <div className="flex-between">
         <div className="flex items-center gap-3">
           <Link to={`/profile/${post?.creatorId}`}>
-            <img
+            <LazyImage
               src={
                 post?.creator?.dpUrl || '/assets/icons/profile-placeholder.svg'
               }
               alt="creator"
               className="rounded-full object-cover w-10 h-10 lg:w-14 lg:h-14"
+              
             />
           </Link>
           <div className="flex flex-col">
@@ -86,7 +88,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 case 'image':
                   return (
                     <Link to={`/posts/${post?.$id}`}>
-                      <img
+                      <LazyImage
                         src={post?.mediaUrl}
                         alt="post image"
                         className="post-card_img"

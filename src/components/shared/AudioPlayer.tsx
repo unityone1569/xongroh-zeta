@@ -8,41 +8,78 @@ interface AudioPlayerProps {
 
 const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
   const waveformRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [wavesurfer, setWavesurfer] = useState<WaveSurfer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState('00:00:00');
   const [totalDuration, setTotalDuration] = useState('00:00:00');
   const [volume, setVolume] = useState(35);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize Wavesurfer instance
-    const ws = WaveSurfer.create({
-      container: waveformRef.current!,
-      height: 65,
-      barWidth: 4,
-      barGap: 6,
-      barRadius: 16,
-      waveColor: '#D4AAFF',
-      progressColor: '#9C39FF',
-    });
-    ws.load(audioUrl);
-    setWavesurfer(ws);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
 
-    // Setup Wavesurfer events
-    ws.on('ready', () => {
-      setTotalDuration(formatTime(ws.getDuration()));
-    });
-    ws.on('audioprocess', () => {
-      setCurrentTime(formatTime(ws.getCurrentTime()));
-    });
-    ws.on('finish', () => {
-      setIsPlaying(false);
-    });
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
 
-    return () => {
-      ws.destroy();
-    };
-  }, [audioUrl]);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    // Wait for container to be ready
+    const container = waveformRef.current;
+    if (!container || !isVisible) return;
+
+    let ws: WaveSurfer | null = null;
+    
+    try {
+      // Create WaveSurfer instance
+      ws = WaveSurfer.create({
+        container,
+        height: 65,
+        barWidth: 4,
+        barGap: 6,
+        barRadius: 16,
+        waveColor: '#D4AAFF',
+        progressColor: '#9C39FF',
+        normalize: true,
+      });
+
+      setWavesurfer(ws);
+      setIsLoading(true);
+
+      // Load audio
+      ws.load(audioUrl);
+
+      // Event handlers
+      ws.on('ready', () => {
+        setIsLoading(false);
+        setTotalDuration(formatTime(ws!.getDuration()));
+      });
+
+      ws.on('error', () => {
+        console.error('WaveSurfer error');
+        setIsLoading(false);
+      });
+
+      ws.on('audioprocess', () => {
+        setCurrentTime(formatTime(ws!.getCurrentTime()));
+      });
+
+    } catch (error) {
+      console.error('WaveSurfer initialization failed:', error);
+      setIsLoading(false);
+    }
+
+    return () => ws?.destroy();
+  }, [audioUrl, isVisible]);
 
   const formatTime = (seconds: number) => {
     return new Date(seconds * 1000).toISOString().substr(11, 8);
@@ -70,10 +107,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-dark-1 shadow-lg p-2 sm:p-4 overflow-x-auto custom-scrollbar">
+    <div ref={containerRef} className="w-full max-w-4xl mx-auto bg-dark-1 shadow-lg p-2 sm:p-4 overflow-x-auto custom-scrollbar">
       <div className="flex flex-row items-center gap-2 xs:gap-4 min-w-[300px]">
-        {/* Play/Pause Button */}
-        <Button className="flex p-1 m-1.5  items-center justify-center sm:w-1/6 sm:h-auto">
+        <Button 
+          className="flex p-1 m-1.5 items-center justify-center sm:w-1/6 sm:h-auto"
+          disabled={isLoading}
+          onClick={togglePlayPause}  // Move onClick here
+        >
           <img
             id="playButtonIcon"
             className="w-[60px] h-[60px] sm:w-[55px] sm:h-[55px]"
@@ -81,22 +121,20 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
               isPlaying ? '/assets/icons/pause.svg' : '/assets/icons/play.svg'
             }
             alt="Play/Pause"
-            onClick={togglePlayPause}
           />
         </Button>
 
-        {/* Player Body */}
         <div className="flex flex-col w-full">
-          {/* Waveform */}
           <div
             id="waveform"
             ref={waveformRef}
-            className="w-full mt-1 sm:mt-2 bg-dark-3 rounded-md "
-          ></div>
+            className="w-full h-[65px] mt-1 sm:mt-2 bg-dark-3 rounded-md"
+          />
+          {isLoading && (
+            <div className="w-full h-[65px] bg-dark-3 rounded-md animate-pulse absolute top-0 left-0" />
+          )}
 
-          {/* Controls */}
           <div className="flex flex-row items-start justify-between mt-2 sm:mt-4 gap-2 sm:gap-0">
-            {/* Volume Control */}
             <div className="flex items-center gap-2">
               <img
                 id="volumeIcon"
@@ -120,7 +158,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
               />
             </div>
 
-            {/* Timecode */}
             <div className="flex items-center tiny-medium  gap-1 text-xs sm:text-sm text-light-3">
               <span id="currentTime">{currentTime}</span>
               <span>/</span>
