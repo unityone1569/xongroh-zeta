@@ -12,11 +12,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { confirmPasswordReset } from '@/lib/appwrite/user';
+
 import { NewPasswordValidation } from '@/lib/validation';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Loader from '@/components/shared/Loader';
 import { useState } from 'react';
+import { confirmPasswordReset } from '@/lib/appwrite-apis/users';
 
 const NewPasswordForm = () => {
   const { toast } = useToast();

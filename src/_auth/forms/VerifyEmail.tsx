@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Loader from '@/components/shared/Loader';
-import { sendVerificationEmail } from '@/lib/appwrite/user';
+
 import { useUserContext } from '@/context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
+import { sendVerificationEmail } from '@/lib/appwrite-apis/users';
 
 const VerifyEmail = () => {
   const { user, isLoading, isAuthenticated, isVerified } = useUserContext();

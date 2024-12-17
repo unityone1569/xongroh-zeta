@@ -1,20 +1,26 @@
+import { Models } from 'appwrite';
+import { useEffect, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 import {
   useCheckItemLike,
   useLikeItem,
   useUnlikeItem,
-} from '@/lib/react-query/queries';
-import { Models } from 'appwrite';
-import { useEffect, useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
+  useGetItemsLikesCount,
+} from '@/lib/tanstack-queries/interactionsQueries';
+import { getUserAccountId } from '@/lib/appwrite-apis/users';
 
 type LikedItemsProps = {
   item: Models.Document;
   userId: string;
+  authorId: string;
 };
 
-const LikedItems = ({ item, userId }: LikedItemsProps) => {
+const LikedItems = ({ item, userId, authorId }: LikedItemsProps) => {
   const { toast } = useToast();
-  const { $id: itemId, itemType, likesCount } = item;
+  const { $id: itemId } = item;
+
+  // Get likes count query
+  const { data: likesCountData } = useGetItemsLikesCount(itemId);
 
   const { data: isLikedData, isLoading: isLikeLoading } = useCheckItemLike(
     itemId,
@@ -27,47 +33,65 @@ const LikedItems = ({ item, userId }: LikedItemsProps) => {
     useUnlikeItem();
 
   const [isLikedState, setIsLikedState] = useState<boolean>(false);
+  const [localLikesCount, setLocalLikesCount] = useState<number>(0);
+  const [accountId, setAccountId] = useState<string>("");
 
-  const [initialLikesCount, setInitialLikesCount] =
-    useState<number>(likesCount);
-
+  // Update local states when data changes
   useEffect(() => {
     if (!isLikeLoading && isLikedData !== undefined) {
       setIsLikedState(isLikedData);
     }
-  }, [isLikedData, isLikeLoading]);
+    if (likesCountData !== undefined) {
+      setLocalLikesCount(likesCountData);
+    }
+  }, [isLikedData, isLikeLoading, likesCountData]);
+
+  useEffect(() => {
+    const fetchAccountId = async () => {
+      try {
+        const id = await getUserAccountId(authorId);
+        setAccountId(id);
+      } catch (error) {
+        console.error('Error fetching account ID:', error);
+      }
+    };
+    
+    fetchAccountId();
+  }, [authorId]);
 
   const handleLikeItem = () => {
+    if (likeItemPending || unlikeItemPending) return;
+
     const updateLikeCount = () => {
-      setInitialLikesCount((prevCount) => prevCount + (isLikedState ? -1 : 1));
+      setLocalLikesCount((prevCount) => prevCount + (isLikedState ? -1 : 1));
 
       if (!isLikedState) {
         setIsLikedState(true);
         likeItemMutation(
-          { itemId, userId, itemType },
+          { itemId, userId, authorId: accountId },
           {
-            onSuccess: (_, { itemType }) => {
-              toast({ title: `${itemType} liked!` });
+            onSuccess: () => {
+              toast({ title: 'Liked!' });
             },
             onError: () => {
               setIsLikedState(false);
-              setInitialLikesCount((prevCount) => prevCount - 1); // Revert the count change
-              toast({ title: `Failed to like the ${itemType}` });
+              setLocalLikesCount((prevCount) => prevCount - 1);
+              toast({ title: 'Oops, please try again!' });
             },
           }
         );
       } else {
         setIsLikedState(false);
         unlikeItemMutation(
-          { itemId, userId, itemType },
+          { itemId, userId },
           {
-            onSuccess: (_, { itemType }) => {
-              toast({ title: `${itemType} unliked!` });
+            onSuccess: () => {
+              toast({ title: 'Unliked!' });
             },
             onError: () => {
               setIsLikedState(true);
-              setInitialLikesCount((prevCount) => prevCount + 1); // Revert the count change
-              toast({ title: `Failed to unlike the ${itemType}` });
+              setLocalLikesCount((prevCount) => prevCount + 1);
+              toast({ title: 'Oops, please try again!' });
             },
           }
         );
@@ -93,9 +117,9 @@ const LikedItems = ({ item, userId }: LikedItemsProps) => {
               : ''
           }`}
         />
-        {initialLikesCount > 0 && (
+        {localLikesCount > 0 && (
           <p className="small-semibold lg:base-semibold text-light-3">
-            {initialLikesCount}
+            {localLikesCount}
           </p>
         )}
       </div>

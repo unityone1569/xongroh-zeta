@@ -18,8 +18,12 @@ import { Models } from 'appwrite';
 import { useUserContext } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { useCreatePost, useUpdatePost } from '@/lib/react-query/queries';
+
 import Loader from '../shared/Loader';
+import {
+  useAddCreation,
+  useUpdateCreation,
+} from '@/lib/tanstack-queries/postsQueries';
 
 type PostFormProps = {
   post?: Models.Document;
@@ -42,15 +46,15 @@ const PostForm = ({ post, action }: PostFormProps) => {
 
   // Query
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
-    useCreatePost();
+    useAddCreation();
   const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
-    useUpdatePost();
+    useUpdateCreation();
 
   async function onSubmit(values: z.infer<typeof PostValidation>) {
     if (post && action === 'Update') {
       const updatedPost = await updatePost({
         ...values,
-        postId: post.$id,
+        creationId: post.$id,
         mediaId: post?.mediaId,
         mediaUrl: post?.mediaUrl,
       });
@@ -65,7 +69,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
 
     const newPost = await createPost({
       ...values,
-      userId: user.id,
+      authorId: user.id,
     });
 
     if (!newPost) {

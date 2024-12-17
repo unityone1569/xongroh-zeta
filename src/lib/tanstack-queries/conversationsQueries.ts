@@ -4,8 +4,10 @@ import {
   useQueryClient,
   useInfiniteQuery,
 } from '@tanstack/react-query';
-
-import { QUERY_KEYS } from '@/lib/react-query/queryKeys';
+import { QUERY_KEYS } from '@/lib/tanstack-queries/queryKeys';
+import { Conversation, Message } from '@/types';
+import { useEffect } from 'react';
+import { appwriteConfig, client } from '../appwrite-apis/config';
 import {
   createConversation,
   createMessage,
@@ -19,11 +21,33 @@ import {
   getMessages,
   markMessageAsRead,
   updateConversation,
-} from '../appwrite/message';
-import { Conversation, Message } from '@/types';
-import { useEffect } from 'react';
-import { appwriteConfig, client } from '../appwrite/config';
+} from '../appwrite-apis/conversations';
 
+// *** APPWRITE ***
+
+// Database
+const db = {
+  conversationsId: appwriteConfig.databases.conversations.databaseId,
+};
+
+// Collections
+const cl = {
+  conversationId:
+    appwriteConfig.databases.conversations.collections.conversation,
+};
+
+// *** CONVERSATION QUERIES ***
+
+// Use-Get-conversation-By-Id
+export const useGetConversationById = (conversationId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_CONVERSATION, conversationId],
+    queryFn: () => getConversationById(conversationId),
+    enabled: Boolean(conversationId),
+  });
+};
+
+// Use-Get-conversations
 export const useGetConversations = (userId: string) => {
   return useInfiniteQuery({
     initialPageParam: null,
@@ -43,14 +67,7 @@ export const useGetConversations = (userId: string) => {
   });
 };
 
-export const useGetConversation = (conversationId: string) => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.GET_CONVERSATION, conversationId],
-    queryFn: () => getConversationById(conversationId),
-    enabled: Boolean(conversationId),
-  });
-};
-
+// Use-Create-Conversation
 export const useCreateConversation = () => {
   const queryClient = useQueryClient();
 
@@ -96,6 +113,31 @@ export const useCreateConversation = () => {
   });
 };
 
+// Use-Delete-Conversation
+export const useDeleteConversation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      conversationId,
+      userId,
+    }: {
+      conversationId: string;
+      userId: string;
+    }) => deleteConversation(conversationId, userId),
+    onSuccess: (_, { conversationId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CONVERSATIONS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_MESSAGES, conversationId],
+      });
+    },
+  });
+};
+
+// *** MESSAGE QUERIES ***
+
+// Use-Get-Message-By-Id
 export const useGetMessageById = (messageId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_MESSAGE, messageId],
@@ -104,6 +146,7 @@ export const useGetMessageById = (messageId: string) => {
   });
 };
 
+// Use-Get-Messages
 export const useGetMessages = (conversationId: string) => {
   return useInfiniteQuery({
     initialPageParam: null,
@@ -123,6 +166,7 @@ export const useGetMessages = (conversationId: string) => {
   });
 };
 
+// Use-Create-Message
 export const useCreateMessage = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -162,66 +206,7 @@ export const useCreateMessage = () => {
   });
 };
 
-export const useDeleteMessage = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      messageId,
-      conversationId,
-      userId,
-    }: {
-      messageId: string;
-      conversationId: string;
-      userId: string;
-    }) => deleteMessage(messageId, conversationId, userId),
-    onSuccess: ({ conversationId }: { conversationId: string }) => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_MESSAGES, conversationId],
-      });
-    },
-  });
-};
-
-export const useMarkMessageAsRead = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      messageId,
-      conversationId,
-    }: {
-      messageId: string;
-      conversationId: string;
-    }) => markMessageAsRead(messageId, conversationId),
-    onSuccess: ({ conversationId }: { conversationId: string }) => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_MESSAGES, conversationId],
-      });
-    },
-  });
-};
-
-export const useDeleteConversation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      conversationId,
-      userId,
-    }: {
-      conversationId: string;
-      userId: string;
-    }) => deleteConversation(conversationId, userId),
-    onSuccess: (_, { conversationId }) => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_CONVERSATIONS],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_MESSAGES, conversationId],
-      });
-    },
-  });
-};
-
-// messageQueries.ts
+// Use-Unread-Message
 export const useUnreadMessages = (userId: string) => {
   const queryClient = useQueryClient();
   const { data: conversations } = useGetConversations(userId);
@@ -231,7 +216,7 @@ export const useUnreadMessages = (userId: string) => {
 
     // Subscribe to conversations collection
     const unsubscribe = client.subscribe(
-      `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.conversationCollectionId}.documents`,
+      `databases.${db.conversationsId}.collections.${cl.conversationId}.documents`,
       (response) => {
         // When conversations are updated
         if (
@@ -261,4 +246,44 @@ export const useUnreadMessages = (userId: string) => {
   );
 
   return { hasUnreadMessages };
+};
+
+// Use-Mark-Message-As-Read
+export const useMarkMessageAsRead = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      messageId,
+      conversationId,
+    }: {
+      messageId: string;
+      conversationId: string;
+    }) => markMessageAsRead(messageId, conversationId),
+    onSuccess: ({ conversationId }: { conversationId: string }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_MESSAGES, conversationId],
+      });
+    },
+  });
+};
+
+// Use-Delete-Message
+export const useDeleteMessage = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      messageId,
+      conversationId,
+      userId,
+    }: {
+      messageId: string;
+      conversationId: string;
+      userId: string;
+    }) => deleteMessage(messageId, conversationId, userId),
+    onSuccess: ({ conversationId }: { conversationId: string }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_MESSAGES, conversationId],
+      });
+    },
+  });
 };

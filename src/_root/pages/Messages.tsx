@@ -2,17 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import { useUserContext } from '@/context/AuthContext';
-import {
-  useGetConversations,
-  useGetMessageById,
-} from '@/lib/react-query/messageQueries';
-import { useGetUserInfo } from '@/lib/react-query/queries';
+
 import { multiFormatDateString } from '@/lib/utils/utils';
 import Loader from '@/components/shared/Loader';
 import { Models } from 'appwrite';
 import { DeleteConversation } from '@/components/shared/DeleteItems';
 import { MessageEncryption } from '@/lib/utils/encryption';
-import { appwriteConfig } from '@/lib/appwrite/config';
+import { appwriteConfig } from '@/lib/appwrite-apis/config';
+import {
+  useGetConversations,
+  useGetMessageById,
+} from '@/lib/tanstack-queries/conversationsQueries';
+import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
+
+// *** APPWRITE ***
+
+// Encryption
+const encrypt = {
+  messageEncryption: appwriteConfig.encryption.messageEncryption,
+};
 
 interface ConversationCardProps {
   conversation: Models.Document & {
@@ -34,7 +42,7 @@ const DecryptedMessage = ({
       try {
         const content = await MessageEncryption.decrypt(
           encryptedContent,
-          appwriteConfig.messageEncryptionKey
+          encrypt.messageEncryption
         );
         setDecryptedContent(content);
       } catch (err) {

@@ -1,13 +1,14 @@
-import {
-  useCheckPostLike,
-  useLikePost,
-  useUnlikePost,
-} from '@/lib/react-query/queries';
-import { QUERY_KEYS } from '@/lib/react-query/queryKeys';
 import { Models } from 'appwrite';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import {
+  useCheckPostLike,
+  useLikePost,
+  useUnlikePost,
+} from '@/lib/tanstack-queries/interactionsQueries';
+import { QUERY_KEYS } from '@/lib/tanstack-queries/queryKeys';
+import { getUserAccountId } from '@/lib/appwrite-apis/users';
 
 type ProjectStatsProps = {
   project: Models.Document;
@@ -16,7 +17,7 @@ type ProjectStatsProps = {
 
 const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
   const { toast } = useToast();
-  const { $id: projectId, postType, likesCount } = project;
+  const { $id: projectId, likesCount, authorId } = project;
 
   const queryClient = useQueryClient();
 
@@ -35,11 +36,26 @@ const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
   const [initialLikesCount, setInitialLikesCount] =
     useState<number>(likesCount);
 
+  const [accountId, setAccountId] = useState<string>("");
+
   useEffect(() => {
     if (!isLikeLoading && isLikedData !== undefined) {
       setIsLikedState(isLikedData);
     }
   }, [isLikedData, isLikeLoading]);
+
+  useEffect(() => {
+    const fetchAccountId = async () => {
+      try {
+        const id = await getUserAccountId(authorId);
+        setAccountId(id);
+      } catch (error) {
+        console.error('Error fetching account ID:', error);
+      }
+    };
+    
+    fetchAccountId();
+  }, [authorId]);
 
   const handleLikeProject = () => {
     const updateLikeCount = () => {
@@ -48,11 +64,11 @@ const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
       if (!isLikedState) {
         setIsLikedState(true);
         likePostMutation(
-          { postId: projectId, userId, postType },
+          { postId: projectId, authorId: accountId, userId },
           {
             onSuccess: () => {
               queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POST_BY_ID, projectId, postType],
+                queryKey: [QUERY_KEYS.GET_PROJECT_BY_ID, projectId],
               });
               toast({ title: 'Project liked!' });
             },
@@ -66,11 +82,11 @@ const ProjectStats = ({ project, userId }: ProjectStatsProps) => {
       } else {
         setIsLikedState(false);
         unlikePostMutation(
-          { postId: projectId, userId, postType },
+          { postId: projectId, userId },
           {
             onSuccess: () => {
               queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POST_BY_ID, projectId, postType],
+                queryKey: [QUERY_KEYS.GET_PROJECT_BY_ID, projectId],
               });
               toast({ title: 'Project unliked!' });
             },

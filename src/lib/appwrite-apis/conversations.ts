@@ -1,65 +1,37 @@
-import { databases, appwriteConfig, client } from '@/lib/appwrite/config';
+import { ID, Permission, Query, Role } from 'appwrite';
 import { Conversation, Message } from '@/types';
-import { Functions, ID, Permission, Query, Role } from 'appwrite';
-import { getUserAccountId } from './user';
+import { appwriteConfig, databases, functions } from './config';
+import { getUserAccountId } from './users';
 import { MessageEncryption } from '@/lib/utils/encryption';
 
-/** Create conversations */
-export async function createConversation(conversation: Conversation) {
-  try {
-    const functions = new Functions(client);
+// *** APPWRITE ***
 
-    // Extract senderId and receiverId
-    const [senderId, receiverId] = conversation.participants;
-
-    // Create the conversation document with sender permissions
-    const senderPermissions = [
-      Permission.read(Role.user(senderId)),
-      Permission.update(Role.user(senderId)),
-      Permission.delete(Role.user(senderId)),
-    ];
-
-    const document = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.conversationCollectionId,
-      ID.unique(),
-      conversation,
-      senderPermissions
-    );
-
-    // Trigger the Appwrite Function to add receiver permissions
-    const payload = JSON.stringify({
-      conversationId: document.$id,
-      receiverId,
-    });
-
-    await functions.createExecution(
-      appwriteConfig.addConversationReceiverFunctionId,
-      payload,
-      true
-    );
-
-    return document;
-  } catch (error) {
-    console.error('Error creating conversation:', error);
-    throw error;
-  }
-}
-
-// Update a conversation document by its ID
-export const updateConversation = async (
-  conversationId: string,
-  updates: Partial<Conversation>
-) => {
-  return await databases.updateDocument(
-    appwriteConfig.databaseId,
-    appwriteConfig.conversationCollectionId,
-    conversationId,
-    updates
-  );
+// Database
+const db = {
+  conversationsId: appwriteConfig.databases.conversations.databaseId,
 };
 
-/** Fetch conversations for a specific user */
+// Collections
+const cl = {
+  conversationId:
+    appwriteConfig.databases.conversations.collections.conversation,
+  messageId: appwriteConfig.databases.conversations.collections.message,
+};
+
+// Functions
+const fn = {
+  conversationPermissionId: appwriteConfig.functions.conversationPermission,
+  messagePermissionId: appwriteConfig.functions.messagePermission,
+};
+
+// Encryption
+const encrypt = {
+  messageEncryption: appwriteConfig.encryption.messageEncryption,
+};
+
+// *** CONVERSATION ***
+
+// Get-Conversations
 export async function getConversations({
   pageParam,
   userId,
@@ -80,8 +52,8 @@ export async function getConversations({
 
   try {
     const { documents: conversations } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.conversationCollectionId,
+      db.conversationsId,
+      cl.conversationId,
       queries
     );
 
@@ -89,8 +61,8 @@ export async function getConversations({
     const conversationsWithUnreadCount = await Promise.all(
       conversations.map(async (conversation) => {
         const messages = await databases.listDocuments(
-          appwriteConfig.databaseId,
-          appwriteConfig.messageCollectionId,
+          db.conversationsId,
+          cl.messageId,
           [
             Query.equal('conversationId', conversation.$id),
             Query.equal('receiverId', userId),
@@ -115,14 +87,29 @@ export async function getConversations({
   }
 }
 
-/** Get a conversation by participantsKey */
+// Get-Conversation-By-Id
+export async function getConversationById(conversationId: string) {
+  try {
+    const document = await databases.listDocuments(
+      db.conversationsId,
+      cl.conversationId,
+      [Query.equal('$id', conversationId)]
+    );
+    return document;
+  } catch (error) {
+    console.error('Error fetching conversation:', error);
+    throw error;
+  }
+}
+
+// Get-Conversation-By-Participants-Key
 export async function getConversationByParticipantsKey(
   participantsKey: string
 ) {
   try {
     const response = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.conversationCollectionId,
+      db.conversationsId,
+      cl.conversationId,
       [Query.equal('participantsKey', participantsKey)]
     );
 
@@ -137,36 +124,71 @@ export async function getConversationByParticipantsKey(
   }
 }
 
-export async function getConversationById(conversationId: string) {
+// Create-Conversation
+export async function createConversation(conversation: Conversation) {
   try {
-    const document = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.conversationCollectionId,
-      [Query.equal('$id', conversationId)]
+    // Extract senderId and receiverId
+    const [senderId, receiverId] = conversation.participants;
+
+    // Create the conversation document with sender permissions
+    const senderPermissions = [
+      Permission.read(Role.user(senderId)),
+      Permission.update(Role.user(senderId)),
+      Permission.delete(Role.user(senderId)),
+    ];
+
+    const document = await databases.createDocument(
+      db.conversationsId,
+      cl.conversationId,
+      ID.unique(),
+      conversation,
+      senderPermissions
     );
+
+    // Trigger the Appwrite Function to add receiver permissions
+    const payload = JSON.stringify({
+      conversationId: document.$id,
+      receiverId,
+    });
+
+    await functions.createExecution(fn.conversationPermissionId, payload, true);
+
     return document;
   } catch (error) {
-    console.error('Error fetching conversation:', error);
+    console.error('Error creating conversation:', error);
     throw error;
   }
 }
 
-/** Delete a conversation for a user */
+// Update-Conversation
+export const updateConversation = async (
+  conversationId: string,
+  updates: Partial<Conversation>
+) => {
+  return await databases.updateDocument(
+    db.conversationsId,
+    cl.conversationId,
+    conversationId,
+    updates
+  );
+};
+
+// Delete-Conversation
 export async function deleteConversation(
   conversationId: string,
   userId: string
 ) {
   try {
     const conversation = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.conversationCollectionId,
+      db.conversationsId,
+      cl.conversationId,
       conversationId
     );
 
     // Get all messages for this conversation
     const messages = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.messageCollectionId,
+      db.conversationsId,
+      cl.messageId,
       [Query.equal('conversationId', conversationId)]
     );
 
@@ -174,8 +196,8 @@ export async function deleteConversation(
     const messageUpdatePromises = messages.documents.map((message) => {
       const updatedMessageIsDeleted = [...(message.isDeleted || []), userId];
       return databases.updateDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.messageCollectionId,
+        db.conversationsId,
+        cl.messageId,
         message.$id,
         { isDeleted: updatedMessageIsDeleted }
       );
@@ -189,24 +211,20 @@ export async function deleteConversation(
     if (updatedIsDeleted.length === conversation.participants.length) {
       // All participants deleted the conversation - hard delete everything
       const deleteMessagePromises = messages.documents.map((message) =>
-        databases.deleteDocument(
-          appwriteConfig.databaseId,
-          appwriteConfig.messageCollectionId,
-          message.$id
-        )
+        databases.deleteDocument(db.conversationsId, cl.messageId, message.$id)
       );
 
       await Promise.all(deleteMessagePromises);
       await databases.deleteDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.conversationCollectionId,
+        db.conversationsId,
+        cl.conversationId,
         conversationId
       );
     } else {
       // Soft delete conversation
       await databases.updateDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.conversationCollectionId,
+        db.conversationsId,
+        cl.conversationId,
         conversationId,
         { isDeleted: updatedIsDeleted }
       );
@@ -217,13 +235,14 @@ export async function deleteConversation(
   }
 }
 
-/** Create a new message in an existing conversation */
+// *** MESSAGE ***
+
+// Create-Message
 export async function createMessage(message: Message) {
   try {
-    const functions = new Functions(client);
     const encryptedContent = await MessageEncryption.encrypt(
       message.content,
-      appwriteConfig.messageEncryptionKey
+      encrypt.messageEncryption
     );
 
     // Retrieve account IDs for sender and receiver
@@ -241,20 +260,20 @@ export async function createMessage(message: Message) {
 
     // Create the message document with permissions
     const newMessage = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.messageCollectionId,
+      db.conversationsId,
+      cl.messageId,
       ID.unique(),
       {
         ...message,
-        content: encryptedContent
+        content: encryptedContent,
       },
       senderPermissions
     );
 
     // Update the conversation's last message and timestamp
     await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.conversationCollectionId,
+      db.conversationsId,
+      cl.conversationId,
       message.conversationId,
       {
         lastMsgId: newMessage.$id,
@@ -267,11 +286,7 @@ export async function createMessage(message: Message) {
       receiverAccountId,
     });
 
-    await functions.createExecution(
-      appwriteConfig.addMessageReceiverFunctionId,
-      payload,
-      true
-    );
+    await functions.createExecution(fn.messagePermissionId, payload, true);
 
     return newMessage;
   } catch (error) {
@@ -280,15 +295,15 @@ export async function createMessage(message: Message) {
   }
 }
 
-/** Get a message by its ID */
+// Get-Message-By-Id
 export async function getMessageById(messageId: string) {
   try {
     const message = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.messageCollectionId,
+      db.conversationsId,
+      cl.messageId,
       messageId
     );
-    
+
     return message;
   } catch (error) {
     console.error('Error fetching message:', error);
@@ -296,7 +311,7 @@ export async function getMessageById(messageId: string) {
   }
 }
 
-/** Fetch paginated messages for a conversation */
+// Get-Messages
 export async function getMessages({
   pageParam,
   conversationId,
@@ -316,8 +331,8 @@ export async function getMessages({
 
   try {
     const { documents: messages } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.messageCollectionId,
+      db.conversationsId,
+      cl.messageId,
       queries
     );
 
@@ -331,7 +346,8 @@ export async function getMessages({
     throw error;
   }
 }
-/** Soft delete or hard delete a message */
+
+// Delete-Message (Soft Delete and Hard Delete)
 export async function deleteMessage(
   messageId: string,
   userId: string,
@@ -339,8 +355,8 @@ export async function deleteMessage(
 ) {
   try {
     const message = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.messageCollectionId,
+      db.conversationsId,
+      cl.messageId,
       messageId
     );
 
@@ -351,8 +367,8 @@ export async function deleteMessage(
       updatedIsDeleted.includes(message.receiverId)
     ) {
       const messages = await databases.listDocuments(
-        appwriteConfig.databaseId,
-        appwriteConfig.messageCollectionId,
+        db.conversationsId,
+        cl.messageId,
         [Query.equal('conversationId', conversationId)]
       );
 
@@ -361,14 +377,14 @@ export async function deleteMessage(
       }
 
       await databases.deleteDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.messageCollectionId,
+        db.conversationsId,
+        cl.messageId,
         messageId
       );
     } else {
       await databases.updateDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.messageCollectionId,
+        db.conversationsId,
+        cl.messageId,
         messageId,
         { isDeleted: updatedIsDeleted }
       );
@@ -381,15 +397,15 @@ export async function deleteMessage(
   }
 }
 
-/** Mark a message as read */
+// Mark-Message-As-Read
 export async function markMessageAsRead(
   messageId: string,
   conversationId: string
 ) {
   try {
     await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.messageCollectionId,
+      db.conversationsId,
+      cl.messageId,
       messageId,
       { isRead: true }
     );
@@ -400,6 +416,9 @@ export async function markMessageAsRead(
   }
 }
 
+// *** UTILS ***
+
+// Generate-Participants-Key
 export async function generateParticipantsKey(
   userId1: string,
   userId2: string

@@ -1,11 +1,11 @@
+import { useEffect, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '../ui/button';
 import {
   useCheckSupportingUser,
   useSupport,
   useUnSupport,
-} from '@/lib/react-query/queries';
-import { useEffect, useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '../ui/button';
+} from '@/lib/tanstack-queries/usersQueries';
 
 type UserSupportProps = {
   creatorId: string;

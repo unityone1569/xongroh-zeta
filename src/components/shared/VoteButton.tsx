@@ -1,11 +1,21 @@
-// components/shared/LikeButton.tsx
 import { useState, useEffect } from 'react';
 import { useUserContext } from '@/context/AuthContext';
-import { appwriteConfig, databases } from '@/lib/appwrite/config';
 import { ID, Query } from 'appwrite';
 import { Button } from '../ui/button';
 import Loader from './Loader';
+import { appwriteConfig, databases } from '@/lib/appwrite-apis/config';
 
+// *** APPWRITE ***
+
+// Database
+const db = {
+  tempsId: appwriteConfig.databases.temps.databaseId,
+};
+
+// Collections
+const cl = {
+  voteId: appwriteConfig.databases.temps.collections.vote,
+};
 
 type VoteButtonProps = {
   featureId: string;
@@ -17,17 +27,15 @@ const VoteButton = ({ featureId }: VoteButtonProps) => {
   const [hasLiked, setHasLiked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
-  const [voteId, setVoteId] = useState<string>("");
+  const [voteId, setVoteId] = useState<string>('');
 
   useEffect(() => {
     const fetchLikes = async () => {
       setIsFetching(true);
       try {
-        const response = await databases.listDocuments(
-          appwriteConfig.databaseId,
-          appwriteConfig.voteCollectionId,
-          [Query.equal('featureId', featureId)]
-        );
+        const response = await databases.listDocuments(db.tempsId, cl.voteId, [
+          Query.equal('featureId', featureId),
+        ]);
         setLikes(response.documents.length);
 
         if (user.id) {
@@ -55,8 +63,8 @@ const VoteButton = ({ featureId }: VoteButtonProps) => {
       if (!hasLiked) {
         // Create vote
         const response = await databases.createDocument(
-          appwriteConfig.databaseId,
-          appwriteConfig.voteCollectionId,
+          db.tempsId,
+          cl.voteId,
           ID.unique(),
           {
             userId: user.id,
@@ -68,12 +76,8 @@ const VoteButton = ({ featureId }: VoteButtonProps) => {
         setHasLiked(true);
       } else {
         // Remove vote
-        await databases.deleteDocument(
-          appwriteConfig.databaseId,
-          appwriteConfig.voteCollectionId,
-          voteId
-        );
-        setVoteId("");
+        await databases.deleteDocument(db.tempsId, cl.voteId, voteId);
+        setVoteId('');
         setLikes((prev) => prev - 1);
         setHasLiked(false);
       }
@@ -86,14 +90,14 @@ const VoteButton = ({ featureId }: VoteButtonProps) => {
 
   return (
     <div className="flex items-center gap-1">
-      <h3 className='pr-5 text-light-3 h4-bold'>Upvote</h3>
+      <h3 className="pr-5 text-light-3 h4-bold">Upvote</h3>
       <Button
         onClick={handleVoteToggle}
         disabled={isLoading || !user.id}
         className="flex items-center gap-2 shad-button_dark_4"
       >
         {isFetching ? (
-          <Loader/>
+          <Loader />
         ) : (
           <>
             {hasLiked ? (

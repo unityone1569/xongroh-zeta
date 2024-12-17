@@ -15,14 +15,14 @@ export type INavLink = {
   label: string;
 };
 
-export type INewPost = {
-  userId: string;
+export type INewCreation = {
+  authorId: string;
   content: string;
   file: File[];
   tags?: string;
 };
 export type INewProject = {
-  userId: string;
+  authorId: string;
   title: string;
   description: string;
   file: File[];
@@ -30,14 +30,15 @@ export type INewProject = {
   tags?: string;
 };
 
-export type IUpdatePost = {
-  postId: string;
+export type IUpdateCreation = {
+  creationId: string;
   content: string;
   mediaId: string;
   mediaUrl: URL;
   file: File[];
   tags?: string;
 };
+
 export type IUpdateProject = {
   projectId: string;
   title: string;

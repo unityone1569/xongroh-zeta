@@ -14,9 +14,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { account } from '@/lib/appwrite/config'; // Import directly from config
+
 import Loader from '@/components/shared/Loader';
 import { useState } from 'react';
+import { account } from '@/lib/appwrite-apis/config';
 
 const FormSchema = z.object({
   email: z.string().email(),

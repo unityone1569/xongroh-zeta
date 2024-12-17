@@ -3,12 +3,9 @@ import Loader from '@/components/shared/Loader';
 import SearchResult from '@/components/shared/SearchResult';
 import { Input } from '@/components/ui/input';
 import useDebounce from '@/hooks/useDebounce';
-import {
-  useGetPosts,
-  useSearchPosts,
-  useSearchUsers,
-  useGetUsers,
-} from '@/lib/react-query/queries';
+import { useGetInfiniteCreations, useGetSearchCreations } from '@/lib/tanstack-queries/postsQueries';
+import { useGetUsers, useSearchUsers } from '@/lib/tanstack-queries/usersQueries';
+
 import { useState, useEffect, useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
 
@@ -33,7 +30,7 @@ const Explore = () => {
     data: posts,
     fetchNextPage: fetchNextPosts,
     hasNextPage: hasMorePosts,
-  } = useGetPosts();
+  } = useGetInfiniteCreations();
 
   // Fetch users
   const {
@@ -44,7 +41,7 @@ const Explore = () => {
 
   // Search posts
   const { data: searchedPosts, isFetching: isSearchFetchingPosts } =
-    useSearchPosts(debouncedValue);
+    useGetSearchCreations(debouncedValue);
 
   // Search users
   const { data: searchedUsers, isFetching: isSearchFetchingUsers } =

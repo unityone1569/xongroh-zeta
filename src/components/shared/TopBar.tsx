@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useUserContext } from '@/context/AuthContext';
-import { useUnreadMessages } from '@/lib/react-query/messageQueries';
-
+import { useUnreadMessages } from '@/lib/tanstack-queries/conversationsQueries';
 
 const Topbar = () => {
   const { user } = useUserContext();

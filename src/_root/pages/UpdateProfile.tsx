@@ -2,8 +2,7 @@ import UpdateprofileForm from '@/components/forms/UpdateProfileForm';
 import Loader from '@/components/shared/Loader';
 import { Button } from '@/components/ui/button';
 import { useUserContext, INITIAL_USER } from '@/context/AuthContext';
-import { useGetUserById, useSignOutAccount } from '@/lib/react-query/queries';
-
+import { useGetUserById, useSignOutAccount } from '@/lib/tanstack-queries/usersQueries';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const UpdateProfile = () => {

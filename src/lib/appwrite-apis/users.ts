@@ -2,11 +2,200 @@ import { ID, ImageGravity, Models, OAuthProvider, Query } from 'appwrite';
 import { INewUser, IUpdateUser } from '@/types';
 import { account, appwriteConfig, avatars, databases, storage } from './config';
 
-// ****************
-// ***** AUTH *****
+// *** APPWRITE ***
 
-// SIGN-UP
+// Database
+const db = {
+  usersId: appwriteConfig.databases.users.databaseId,
+  postsId: appwriteConfig.databases.posts.databaseId,
+};
 
+// Collections
+const cl = {
+  supportId: appwriteConfig.databases.users.collections.support,
+  creatorId: appwriteConfig.databases.users.collections.creator,
+  projectId: appwriteConfig.databases.posts.collections.project,
+  creationId: appwriteConfig.databases.posts.collections.creation,
+};
+
+// Bucket
+const bk = {
+  creatorBucketId: appwriteConfig.storage.creatorBucket,
+};
+
+// *** SUPPORT ***
+
+// Check-Supporting-User
+export async function checkSupportingUser(
+  creatorId: string,
+  supportingId: string
+): Promise<boolean> {
+  try {
+    const supports = await databases.listDocuments(db.usersId, cl.supportId, [
+      Query.equal('creatorId', creatorId),
+    ]);
+
+    if (supports.documents.length > 0) {
+      const supportDoc = supports.documents[0];
+      const supportingIds = Array.isArray(supportDoc.supportingIds)
+        ? supportDoc.supportingIds
+        : [];
+
+      return supportingIds.includes(supportingId);
+    }
+
+    return false; // No document found for creatorId
+  } catch (error) {
+    console.error('Error checking supporting user:', error);
+    return false;
+  }
+}
+
+// Support-Creator
+export async function support(
+  creatorId: string,
+  supportingId: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    // Fetch user document to update supportingCount
+    const user = await databases.getDocument(
+      db.usersId,
+      cl.creatorId,
+      creatorId
+    );
+
+    // Update supportingCount in the user collection
+    const currentSupportingCount = user.supportingCount || 0;
+    const updatedSupportingCount = currentSupportingCount + 1;
+
+    const updateUserPromise = databases.updateDocument(
+      db.usersId,
+      cl.creatorId,
+      creatorId,
+      { supportingCount: updatedSupportingCount }
+    );
+
+    // Manage supportingIds in the supports collection
+    const supportsQuery = await databases.listDocuments(
+      db.usersId,
+      cl.supportId,
+      [Query.equal('creatorId', creatorId)]
+    );
+
+    let updateSupportsPromise;
+
+    if (supportsQuery.total > 0) {
+      const supportDoc = supportsQuery.documents[0];
+
+      // Ensure supportingIds is an array and append supportingId
+      const currentSupportingIds = Array.isArray(supportDoc.supportingIds)
+        ? supportDoc.supportingIds
+        : [];
+      const updatedSupportingIds = [
+        ...new Set([...currentSupportingIds, supportingId]),
+      ];
+
+      // Update the existing document in supports collection
+      updateSupportsPromise = databases.updateDocument(
+        db.usersId,
+        cl.supportId,
+        supportDoc.$id,
+        { supportingIds: updatedSupportingIds }
+      );
+    } else {
+      // Create a new document in supports collection
+      updateSupportsPromise = databases.createDocument(
+        db.usersId,
+        cl.supportId,
+        ID.unique(),
+        {
+          creatorId,
+          supportingIds: [supportingId],
+        }
+      );
+    }
+
+    // Perform both updates concurrently
+    await Promise.all([updateUserPromise, updateSupportsPromise]);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error supporting creator:', error);
+    return { success: false, error };
+  }
+}
+
+// Unsupport-Creator
+export async function unsupport(
+  creatorId: string,
+  supportingId: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    // Fetch user document to update supportingCount
+    const user = await databases.getDocument(
+      db.usersId,
+      cl.creatorId,
+      creatorId
+    );
+
+    // Ensure supportingCount is not negative
+    const currentSupportingCount = user.supportingCount || 0;
+    const updatedSupportingCount = Math.max(0, currentSupportingCount - 1);
+
+    const updateUserPromise = databases.updateDocument(
+      db.usersId,
+      cl.creatorId,
+      creatorId,
+      { supportingCount: updatedSupportingCount }
+    );
+
+    // Manage supportingIds in the supports collection
+    const supportsQuery = await databases.listDocuments(
+      db.usersId,
+      cl.supportId,
+      [Query.equal('creatorId', creatorId)]
+    );
+
+    let updateSupportsPromise;
+
+    if (supportsQuery.total > 0) {
+      const supportDoc = supportsQuery.documents[0];
+
+      // Ensure supportingIds is an array and remove the supportingId
+      const currentSupportingIds = Array.isArray(supportDoc.supportingIds)
+        ? supportDoc.supportingIds
+        : [];
+      const updatedSupportingIds = currentSupportingIds.filter(
+        (id) => id !== supportingId
+      );
+
+      // Update the supports document with the new supportingIds array
+      updateSupportsPromise = databases.updateDocument(
+        db.usersId,
+        cl.supportId,
+        supportDoc.$id,
+        { supportingIds: updatedSupportingIds }
+      );
+    } else {
+      // No document found, no need to update
+      updateSupportsPromise = Promise.resolve();
+    }
+
+    // Perform both updates concurrently
+    await Promise.all([updateUserPromise, updateSupportsPromise]);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error unsupporting creator:', error);
+    return { success: false, error };
+  }
+}
+
+// *** CREATOR ***
+
+// * AUTH *
+
+// Create-User-Account
 export async function createUserAccount(
   user: INewUser
 ): Promise<Models.Document | Error> {
@@ -68,6 +257,7 @@ export async function createUserAccount(
   }
 }
 
+// Create-User-Account-With-Google
 export async function createUserAccountWithGoogle(
   session: any
 ): Promise<Models.Document> {
@@ -107,8 +297,7 @@ export async function createUserAccountWithGoogle(
   }
 }
 
-// SIGN-IN
-
+// Sign-In
 export async function signInAccount(user: {
   email: string;
   password: string;
@@ -121,6 +310,7 @@ export async function signInAccount(user: {
   }
 }
 
+// Sign-In-With-Google
 export async function loginWithGoogle(): Promise<void> {
   try {
     account.createOAuth2Session(
@@ -134,8 +324,7 @@ export async function loginWithGoogle(): Promise<void> {
   }
 }
 
-// SIGN-OUT
-
+// Sign-Out
 export async function signOutAccount(): Promise<any> {
   try {
     return await account.deleteSession('current');
@@ -145,16 +334,38 @@ export async function signOutAccount(): Promise<any> {
   }
 }
 
-// HELPER
+// Save-User-To-DB
+async function saveUserToDB(user: {
+  accountId: string;
+  name: string;
+  username: string;
+  hometown?: string;
+  email: string;
+  dpUrl: URL;
+}): Promise<Models.Document> {
+  try {
+    // Save the user to the database
+    return await databases.createDocument(
+      db.usersId,
+      cl.creatorId,
+      ID.unique(),
+      user
+    );
+  } catch (error) {
+    console.error('Error saving user to the database:', error);
+    throw new Error('Failed to save user');
+  }
+}
 
+// Update-User-Account-Id
 export async function updateUserAccountId(
   userId: string,
   newAccountId: string
 ): Promise<Models.Document> {
   try {
     const updatedUser = await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
+      db.usersId,
+      cl.creatorId,
       userId,
       { accountId: newAccountId }
     );
@@ -165,15 +376,14 @@ export async function updateUserAccountId(
   }
 }
 
+// Check-User-Exists
 export async function checkUserExists(
   email: string
 ): Promise<Models.Document | null> {
   try {
-    const users = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      [Query.equal('email', email)]
-    );
+    const users = await databases.listDocuments(db.usersId, cl.creatorId, [
+      Query.equal('email', email),
+    ]);
 
     return users.documents?.[0] || null;
   } catch (error) {
@@ -182,34 +392,75 @@ export async function checkUserExists(
   }
 }
 
-async function saveUserToDB(user: {
-  accountId: string;
-  name: string;
-  username: string;
-  hometown?: string;
-  email: string;
-  dpUrl: URL;
-  
-}): Promise<Models.Document> {
+// Send-Verification-Email
+export async function sendVerificationEmail(): Promise<void> {
   try {
-    // Save the user to the database
-    return await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      ID.unique(),
-      user
+    // Update with your actual verification endpoint
+    await account.createVerification(
+      `${window.location.origin}/verify-success`
     );
   } catch (error) {
-    console.error('Error saving user to the database:', error);
-    throw new Error('Failed to save user');
+    console.error('Error sending verification email:', error);
+    throw error;
   }
 }
 
-// *******************
-// ***** PROFILE *****
+// Verify-Email
+export async function verifyEmail(
+  userId: string,
+  secret: string
+): Promise<boolean> {
+  try {
+    const response = await account.updateVerification(userId, secret);
+    // Return true if verification was successful
+    return Boolean(response.$id);
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    throw error;
+  }
+}
 
-// USER-DETAILS
+// Is-Email-Verified
+export async function isEmailVerified(): Promise<boolean> {
+  try {
+    const session = await getAccount();
+    return session?.emailVerification || false;
+  } catch (error) {
+    console.error('Error checking email verification:', error);
+    return false;
+  }
+}
 
+// Reset-Password
+export async function resetPassword(email: string): Promise<void> {
+  try {
+    await account.createRecovery(
+      email,
+      `${window.location.origin}/new-password`
+    );
+  } catch (error) {
+    console.error('Error creating password reset:', error);
+    throw error;
+  }
+}
+
+// Confirm-Password-Reset
+export async function confirmPasswordReset(
+  userId: string,
+  secret: string,
+  newPassword: string
+): Promise<void> {
+  try {
+    await account.updateRecovery(userId, secret, newPassword);
+  } catch (error) {
+    console.error('Error updating password:', error);
+    throw error;
+  }
+}
+
+// * USER MANAGEMENT *
+
+// Get-User
 export async function getAccount(): Promise<any | null> {
   try {
     const checkAccount = await account.get();
@@ -220,6 +471,7 @@ export async function getAccount(): Promise<any | null> {
   }
 }
 
+// Get-Current-User
 export async function getCurrentUser(): Promise<Models.Document> {
   try {
     const currentAccount = await getAccount();
@@ -229,8 +481,8 @@ export async function getCurrentUser(): Promise<Models.Document> {
     }
 
     const currentUser = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
+      db.usersId,
+      cl.creatorId,
       [Query.equal('accountId', currentAccount.$id)]
     );
 
@@ -246,11 +498,12 @@ export async function getCurrentUser(): Promise<Models.Document> {
   }
 }
 
+// Get-User-Account-Id
 export async function getUserAccountId(userId: string): Promise<string> {
   try {
     const userDocument = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
+      db.usersId,
+      cl.creatorId,
       userId
     );
 
@@ -268,11 +521,12 @@ export async function getUserAccountId(userId: string): Promise<string> {
   }
 }
 
+// Get-User-Info
 export async function getUserInfo(accountId: string) {
   try {
     const user = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
+      db.usersId,
+      cl.creatorId,
       accountId
     );
     return {
@@ -293,19 +547,17 @@ export async function getUserInfo(accountId: string) {
   }
 }
 
+// Get-User-ById
 export async function getUserById(userId: string) {
   try {
-    const user = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      userId
-    );
+    const user = await databases.getDocument(db.usersId, cl.creatorId, userId);
     return user;
   } catch (error) {
     console.log(error);
   }
 }
 
+// Update-Profile
 export async function updateProfile(user: IUpdateUser) {
   try {
     let profileMedia = {
@@ -350,8 +602,8 @@ export async function updateProfile(user: IUpdateUser) {
     }
 
     const updatedUser = await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
+      db.usersId,
+      cl.creatorId,
       user.userId,
       {
         name: user.name,
@@ -392,13 +644,12 @@ export async function updateProfile(user: IUpdateUser) {
   }
 }
 
-// USER-SEARCH
-
+// Search-Users
 export async function searchUsers(searchTerm: string) {
   try {
     const { documents: users } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
+      db.usersId,
+      cl.creatorId,
       [Query.search('name', searchTerm)] // Adjust field as necessary
     );
 
@@ -413,142 +664,11 @@ export async function searchUsers(searchTerm: string) {
   }
 }
 
-export async function getInfiniteUsers({ pageParam }: { pageParam: number }) {
-  const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(9)];
-
-  if (pageParam) {
-    queries.push(Query.cursorAfter(pageParam.toString()));
-  }
-
-  try {
-    const { documents: users } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      queries
-    );
-
-    if (!users || users.length === 0) return { documents: [] };
-
-    return { documents: users }; // Ensure consistent return format
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    throw error;
-  }
-}
-
-// USER-POSTS
-
-export async function getUserPosts({
-  pageParam,
-  userId,
-}: {
-  pageParam: number;
-  userId: string;
-}) {
-  const queries: any[] = [
-    Query.orderDesc('$createdAt'),
-    Query.equal('creatorId', userId), // Filter by userId
-    Query.limit(9),
-  ];
-
-  if (pageParam) {
-    queries.push(Query.cursorAfter(pageParam.toString()));
-  }
-
-  try {
-    const { documents: posts } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
-      queries
-    );
-
-    if (!posts || posts.length === 0) return { documents: [] };
-
-    const userFetchPromises = posts.map((post) =>
-      databases.getDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.creatorCollectionId,
-        post.creatorId
-      )
-    );
-
-    // Resolve all user fetch promises in parallel
-    const users = await Promise.all(userFetchPromises);
-
-    // Combine posts with their corresponding user details
-    const postsWithUserDetails = posts.map((post, index) => ({
-      ...post,
-      creator: {
-        name: users[index]?.name || '',
-        dpUrl: users[index]?.dpUrl || null,
-      },
-    }));
-    return { documents: postsWithUserDetails };
-  } catch (error) {
-    console.error('Error fetching posts:', error);
-    throw error;
-  }
-}
-
-// USER-PROJECTS
-export async function getUserProjects({
-  pageParam,
-  userId,
-}: {
-  pageParam: number;
-  userId: string;
-}) {
-  const queries: any[] = [
-    Query.orderDesc('$createdAt'),
-    Query.equal('creatorId', userId), // Filter by userId
-    Query.limit(9),
-  ];
-
-  if (pageParam) {
-    queries.push(Query.cursorAfter(pageParam.toString()));
-  }
-
-  try {
-    const { documents: projects } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.portfolioPostCollectionId,
-      queries
-    );
-
-    if (!projects || projects.length === 0) return { documents: [] };
-
-    const userFetchPromises = projects.map((project) =>
-      databases.getDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.creatorCollectionId, // Replace with actual user collection ID
-        project.creatorId
-      )
-    );
-
-    // Resolve all user fetch promises in parallel
-    const users = await Promise.all(userFetchPromises);
-
-    // Combine posts with their corresponding user details
-    const projectsWithUserDetails = projects.map((project, index) => ({
-      ...project,
-      creator: {
-        name: users[index]?.name || '',
-        dpUrl: users[index]?.dpUrl || null,
-      },
-    }));
-    return { documents: projectsWithUserDetails };
-  } catch (error) {
-    console.error('Error fetching projects:', error);
-    throw error;
-  }
-}
-
-// FILE
-
+// Upload-File
 export async function uploadFile(file: File) {
   try {
     const uploadedFile = await storage.createFile(
-      appwriteConfig.userBucketId,
+      bk.creatorBucketId,
       ID.unique(),
       file
     );
@@ -558,15 +678,16 @@ export async function uploadFile(file: File) {
   }
 }
 
+// Get-File-Preview
 export function getFilePreview(fileId: string) {
   try {
     const fileUrl = storage.getFilePreview(
-      appwriteConfig.userBucketId,
+      bk.creatorBucketId,
       fileId,
       0,
       0,
       ImageGravity.Center,
-     50
+      50
     );
 
     if (!fileUrl) throw Error;
@@ -579,9 +700,10 @@ export function getFilePreview(fileId: string) {
   }
 }
 
+// Delete-File
 export async function deleteFile(fileId: string) {
   try {
-    await storage.deleteFile(appwriteConfig.userBucketId, fileId);
+    await storage.deleteFile(bk.creatorBucketId, fileId);
 
     return { status: 'ok' };
   } catch (error) {
@@ -589,15 +711,15 @@ export async function deleteFile(fileId: string) {
   }
 }
 
-// Top Creators
+// * CREATORS *
 
+// Get-Top-Creators
 export async function getTopCreators() {
   try {
-    const creators = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      [Query.orderDesc('creationsCount'), Query.limit(10)]
-    );
+    const creators = await databases.listDocuments(db.usersId, cl.creatorId, [
+      Query.orderDesc('creationsCount'),
+      Query.limit(10),
+    ]);
 
     if (!creators) throw Error;
 
@@ -608,63 +730,130 @@ export async function getTopCreators() {
   }
 }
 
-export async function sendVerificationEmail(): Promise<void> {
+// Get-Infinite-Users
+export async function getInfiniteUsers({ pageParam }: { pageParam: number }) {
+  const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(9)];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
   try {
-    // Update with your actual verification endpoint
-    await account.createVerification(
-      `${window.location.origin}/verify-success`
+    const { documents: users } = await databases.listDocuments(
+      db.usersId,
+      cl.creatorId,
+      queries
     );
+
+    if (!users || users.length === 0) return { documents: [] };
+
+    return { documents: users }; // Ensure consistent return format
   } catch (error) {
-    console.error('Error sending verification email:', error);
+    console.error('Error fetching users:', error);
     throw error;
   }
 }
 
-export async function verifyEmail(
-  userId: string,
-  secret: string
-): Promise<boolean> {
-  try {
-    const response = await account.updateVerification(userId, secret);
-    // Return true if verification was successful
-    return Boolean(response.$id);
-  } catch (error) {
-    console.error('Error verifying email:', error);
-    throw error;
-  }
-}
+// * USER POSTS *
 
-export async function isEmailVerified(): Promise<boolean> {
-  try {
-    const session = await getAccount();
-    return session?.emailVerification || false;
-  } catch (error) {
-    console.error('Error checking email verification:', error);
-    return false;
-  }
-}
+// Get-User-Posts
+export async function getUserCreations({
+  pageParam,
+  authorId,
+}: {
+  pageParam: number;
+  authorId: string;
+}) {
+  const queries: any[] = [
+    Query.orderDesc('$createdAt'),
+    Query.equal('authorId', authorId), // Filter by authorId
+    Query.limit(9),
+  ];
 
-export async function resetPassword(email: string): Promise<void> {
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
   try {
-    await account.createRecovery(
-      email,
-      `${window.location.origin}/new-password`
+    const { documents: creations } = await databases.listDocuments(
+      db.postsId,
+      cl.creationId,
+      queries
     );
+
+    if (!creations || creations.length === 0) return { documents: [] };
+
+    const authorFetchPromises = creations.map((creation) =>
+      databases.getDocument(db.usersId, cl.creatorId, creation.creatorId)
+    );
+
+    // Resolve all user fetch promises in parallel
+    const users = await Promise.all(authorFetchPromises);
+
+    // Combine posts with their corresponding user details
+    const creationsWithAuthorDetails = creations.map((creation, index) => ({
+      ...creation,
+      author: {
+        name: users[index]?.name || '',
+        dpUrl: users[index]?.dpUrl || null,
+      },
+    }));
+    return { documents: creationsWithAuthorDetails };
   } catch (error) {
-    console.error('Error creating password reset:', error);
+    console.error('Error fetching creations:', error);
     throw error;
   }
 }
 
-export async function confirmPasswordReset(
-  userId: string,
-  secret: string,
-  newPassword: string
-): Promise<void> {
+// Get-User-Projects
+export async function getUserProjects({
+  pageParam,
+  authorId,
+}: {
+  pageParam: number;
+  authorId: string;
+}) {
+  const queries: any[] = [
+    Query.orderDesc('$createdAt'),
+    Query.equal('authorId', authorId), // Filter by authorId
+    Query.limit(9),
+  ];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
   try {
-    await account.updateRecovery(userId, secret, newPassword);
+    const { documents: projects } = await databases.listDocuments(
+      db.postsId,
+      cl.projectId,
+      queries
+    );
+
+    if (!projects || projects.length === 0) return { documents: [] };
+
+    const authorFetchPromises = projects.map((project) =>
+      databases.getDocument(
+        db.usersId,
+        cl.creatorId, // Replace with actual user collection ID
+        project.authorId
+      )
+    );
+
+    // Resolve all user fetch promises in parallel
+    const users = await Promise.all(authorFetchPromises);
+
+    // Combine posts with their corresponding user details
+    const projectsWithAuthorDetails = projects.map((project, index) => ({
+      ...project,
+      author: {
+        name: users[index]?.name || '',
+        dpUrl: users[index]?.dpUrl || null,
+      },
+    }));
+    return { documents: projectsWithAuthorDetails };
   } catch (error) {
-    console.error('Error updating password:', error);
+    console.error('Error fetching projects:', error);
     throw error;
   }
 }

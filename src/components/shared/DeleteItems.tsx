@@ -10,18 +10,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+import Loader from './Loader';
+import {
+  useDeletePost,
+  useDeleteProject,
+} from '@/lib/tanstack-queries/postsQueries';
 import {
   useDeleteComment,
   useDeleteCommentReply,
   useDeleteFeedback,
   useDeleteFeedbackReply,
-  useDeletePost,
-  useDeleteProject,
-} from '@/lib/react-query/queries';
-import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
-import Loader from './Loader';
-import { useDeleteConversation } from '@/lib/react-query/messageQueries';
+} from '@/lib/tanstack-queries/commentsQueries';
+import { useDeleteConversation } from '@/lib/tanstack-queries/conversationsQueries';
 
 interface DeleteDialogProps {
   title: string;
@@ -61,13 +63,13 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
 
 // Delete Creation Component
 const DeleteCreation = ({
-  postId,
+  creationId,
   mediaId,
-  creatorId,
+  authorId,
 }: {
-  postId: string;
+  creationId: string;
   mediaId: string | '';
-  creatorId: string;
+  authorId: string;
 }) => {
   const { toast } = useToast();
   const deletePostMutation = useDeletePost();
@@ -75,7 +77,7 @@ const DeleteCreation = ({
 
   const handleDelete = () => {
     deletePostMutation.mutate(
-      { postId, mediaId, creatorId },
+      { creationId, mediaId, authorId },
       {
         onSuccess: () => {
           toast({ title: 'Creation deleted successfully' });
@@ -107,13 +109,13 @@ const DeleteCreation = ({
 
 // Delete Project Component
 const DeleteProject = ({
-  postId,
+  projectId,
   mediaId,
-  creatorId,
+  authorId,
 }: {
-  postId: string;
+  projectId: string;
   mediaId: string | '';
-  creatorId: string;
+  authorId: string;
 }) => {
   const { toast } = useToast();
   const deletePostMutation = useDeleteProject();
@@ -121,7 +123,7 @@ const DeleteProject = ({
 
   const handleDelete = () => {
     deletePostMutation.mutate(
-      { postId, mediaId, creatorId },
+      { projectId, mediaId, authorId },
       {
         onSuccess: () => {
           toast({ title: 'Project deleted successfully' });
@@ -310,6 +312,7 @@ const DeleteFeedbackReply = ({
   );
 };
 
+// Delete Conversation Component
 const DeleteConversation = ({
   conversationId,
   userId,

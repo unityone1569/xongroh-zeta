@@ -17,8 +17,9 @@ import { ProfileValidation } from '@/lib/validation'; // Define this validation 
 import { Models } from 'appwrite';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { useUpdateProfile } from '@/lib/react-query/queries'; // Custom hook for updating profile
+
 import Loader from '../shared/Loader';
+import { useUpdateProfile } from '@/lib/tanstack-queries/usersQueries';
 
 type ProfileFormProps = {
   user?: Models.Document;

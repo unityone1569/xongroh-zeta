@@ -15,12 +15,13 @@ import {
 import { Input } from '@/components/ui/input';
 import Loader from '@/components/shared/Loader';
 import { Link, useNavigate } from 'react-router-dom';
+
+import { useState } from 'react';
+import { useUserContext } from '@/context/AuthContext';
 import {
   useCreateUserAccount,
   useLoginWithGoogle,
-} from '@/lib/react-query/queries';
-import { useState } from 'react';
-import { useUserContext } from '@/context/AuthContext';
+} from '@/lib/tanstack-queries/usersQueries';
 
 const SignUpForm = () => {
   const { toast } = useToast();

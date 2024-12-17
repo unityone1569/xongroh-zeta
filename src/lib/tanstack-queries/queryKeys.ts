@@ -10,19 +10,23 @@ export enum QUERY_KEYS {
   GET_INFINITE_USERS = 'getInfiniteUsers',
   GET_TOP_CREATORS = 'getTopCreators',
 
-  // POST KEYS
+  // CREATION KEYS
+  GET_RECENT_CREATIONS = 'getRecentCreations',
+  GET_CREATION_BY_ID = 'getCreationById',
+  GET_USER_CREATIONS = 'getUserCreations',
+  GET_SAVED_CREATIONS = 'getSavedCreations',
+  GET_INFINITE_CREATIONS = 'getInfiniteCreations',
+  GET_SEARCH_CREATIONS = 'getSearchCreations',
+
   GET_POSTS = 'getPosts',
-  GET_INFINITE_POSTS = 'getInfinitePosts',
-  GET_RECENT_POSTS = 'getRecentPosts',
-  GET_POST_BY_ID = 'getPostById',
-  GET_USER_POSTS = 'getUserPosts',
+
   GET_FILE_PREVIEW = 'getFilePreview',
-  GET_SAVED_POSTS = 'getSavedPosts',
   GET_SAVED_POST_DETAILS = 'getPostsByIds',
 
   GET_PROJECT_BY_ID = 'getProjectById',
   GET_USER_PROJECTS = 'getUserProjects',
 
+  GET_ITEMS_LIKE_COUNT = 'getItemsLikeCount',
   CHECK_POST_LIKE = 'checkPostLike',
   CHECK_ITEM_LIKE = 'checkItemLike',
   CHECK_POST_SAVE = 'checkPostSave',
@@ -33,8 +37,6 @@ export enum QUERY_KEYS {
   GET_COMMENT_REPLIES = 'getCommentReplies',
   GET_FEEDBACK_REPLIES = 'getFeedbackReplies',
 
-  // SEARCH KEYS
-  SEARCH_POSTS = 'getSearchPosts',
   SEARCH_USERS = 'searchUsers',
 
   // MESSAGE KEYS

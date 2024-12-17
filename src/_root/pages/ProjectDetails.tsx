@@ -3,7 +3,6 @@ import Loader from '@/components/shared/Loader';
 import ProjectStats from '@/components/shared/ProjectStats';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContext } from '@/context/AuthContext';
-import { useGetAuthorById, useGetProjectById } from '@/lib/react-query/queries';
 import { formatDateString } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -12,6 +11,10 @@ import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
 import AudioPlayer from '@/components/shared/AudioPlayer';
 import VideoPlayer from '@/components/shared/VideoPlayer';
 import LazyImage from '@/components/shared/LazyImage';
+import {
+  useGetAuthorById,
+  useGetProjectById,
+} from '@/lib/tanstack-queries/postsQueries';
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -50,7 +53,7 @@ const ProjectDetails = () => {
 
   const [mediaType, setMediaType] = useState<string>('unknown');
   const [isMediaLoading, setIsMediaLoading] = useState(true);
-  
+
   useEffect(() => {
     if (project?.mediaUrl) {
       setIsMediaLoading(true);

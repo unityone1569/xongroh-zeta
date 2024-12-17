@@ -1,6 +1,6 @@
 import PortfolioForm from '@/components/forms/PortfolioForm';
 import Loader from '@/components/shared/Loader';
-import { useGetProjectById } from '@/lib/react-query/queries';
+import { useGetProjectById } from '@/lib/tanstack-queries/postsQueries';
 import { useParams } from 'react-router-dom';
 
 const EditProject = () => {

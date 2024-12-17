@@ -1,11 +1,11 @@
 import { Link, NavLink } from 'react-router-dom';
-import { useGetTopCreators } from '@/lib/react-query/queries';
 import { Models } from 'appwrite';
 import Loader from './Loader';
 import { rightbarLinks } from '@/constants';
 import { INavLink } from '@/types';
 import { useUserContext } from '@/context/AuthContext';
-import { useUnreadMessages } from '@/lib/react-query/messageQueries';
+import { useGetTopCreators } from '@/lib/tanstack-queries/usersQueries';
+import { useUnreadMessages } from '@/lib/tanstack-queries/conversationsQueries';
 
 const RightSideBar = () => {
   const { data: creators, isLoading } = useGetTopCreators();

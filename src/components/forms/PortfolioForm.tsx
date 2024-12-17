@@ -18,8 +18,9 @@ import { Models } from 'appwrite';
 import { useUserContext } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { useAddProject, useUpdateProject } from '@/lib/react-query/queries';
+
 import Loader from '../shared/Loader';
+import { useAddProject, useUpdateProject } from '@/lib/tanstack-queries/postsQueries';
 
 type PortfolioFormProps = {
   project?: Models.Document;
@@ -66,7 +67,7 @@ const PortfolioForm = ({ project, action }: PortfolioFormProps) => {
 
     const newProject = await addProject({
       ...values,
-      userId: user.id,
+      authorId: user.id,
     });
 
     if (!newProject) {

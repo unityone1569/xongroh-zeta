@@ -5,19 +5,20 @@ import PostComments from '@/components/shared/PostComments';
 import PostStats from '@/components/shared/PostStats';
 import VideoPlayer from '@/components/shared/VideoPlayer';
 import { useUserContext } from '@/context/AuthContext';
-import { useGetAuthorById, useGetPostById } from '@/lib/react-query/queries';
+
 import { formatDateString } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
 import LazyImage from '@/components/shared/LazyImage';
+import { useGetAuthorById, useGetCreationById } from '@/lib/tanstack-queries/postsQueries';
 
 const PostDetails = () => {
   const [mediaType, setMediaType] = useState<string>('unknown');
   const [isMediaLoading, setIsMediaLoading] = useState(true);
   const { id } = useParams();
-  const { data: post, isPending } = useGetPostById(id || '');
+  const { data: post, isPending } = useGetCreationById(id || '');
 
   useEffect(() => {
     if (post?.mediaUrl) {

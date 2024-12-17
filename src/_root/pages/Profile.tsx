@@ -2,13 +2,14 @@ import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
-import { useGetUserInfo, useGetUserPosts } from '@/lib/react-query/queries';
 import Loader from '@/components/shared/Loader';
 import PostCard from '@/components/shared/PostCard';
 import { useUserContext } from '@/context/AuthContext';
 import UserSupport from '@/components/shared/UserSupport';
-import { useCreateConversation } from '@/lib/react-query/messageQueries';
 import LazyImage from '@/components/shared/LazyImage';
+import { useCreateConversation } from '@/lib/tanstack-queries/conversationsQueries';
+import { useGetUserCreations } from '@/lib/tanstack-queries/postsQueries';
+import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
 
 interface ProfileCardItemProps {
   creatorId: string;
@@ -176,7 +177,11 @@ const ProfileFeed = ({ userId }: { userId: string }) => {
   );
 
   const { ref, inView } = useInView();
-  const { data: posts, fetchNextPage, hasNextPage } = useGetUserPosts(userId);
+  const {
+    data: posts,
+    fetchNextPage,
+    hasNextPage,
+  } = useGetUserCreations(userId);
 
   useEffect(() => {
     if (inView && hasNextPage) {

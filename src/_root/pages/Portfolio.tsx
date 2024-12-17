@@ -1,11 +1,13 @@
 import { Button } from '@/components/ui/button';
-import { useUserContext } from '@/context/AuthContext';
-import { useGetUserInfo, useGetUserProjects } from '@/lib/react-query/queries';
+
 import { useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import Loader from '@/components/shared/Loader';
 import ProjectCard from '@/components/shared/ProjectCard';
+import { useGetUserProjects } from '@/lib/tanstack-queries/postsQueries';
+import { useUserContext } from '@/context/AuthContext';
+import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
 
 interface PortfolioCardItemProps {
   name: string;
@@ -13,7 +15,7 @@ interface PortfolioCardItemProps {
   about: string;
   userId: string;
   isCurrentUser: boolean;
-  projectsCount:string;
+  projectsCount: string;
 }
 
 const PortfolioCardItem = ({
@@ -37,7 +39,8 @@ const PortfolioCardItem = ({
       <div>
         <p className="text-xl body-bold lg:h3-bold">{name}</p>
         <p className="small-regular lg:base-regular pt-1">
-          Projects: <span className="small-medium lg:base-medium">{projectsCount}</span>
+          Projects:{' '}
+          <span className="small-medium lg:base-medium">{projectsCount}</span>
         </p>
       </div>
     </Link>
@@ -114,7 +117,7 @@ const Portfolio = () => {
       name: profileUser?.name || 'Unknown User',
       dp: profileUser?.dp || '/assets/icons/profile-placeholder.svg',
       about: profileUser?.about || '',
-      projectsCount: profileUser?.projectsCount || '0'
+      projectsCount: profileUser?.projectsCount || '0',
     }),
     [profileUser]
   );

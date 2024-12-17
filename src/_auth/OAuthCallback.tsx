@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { useCreateUserAccountWithGoogle } from '@/lib/react-query/queries';
 import Loader from '@/components/shared/Loader';
 import { useUserContext } from '@/context/AuthContext';
-import { getAccount } from '@/lib/appwrite/user';
+import { useCreateUserAccountWithGoogle } from '@/lib/tanstack-queries/usersQueries';
+import { getAccount } from '@/lib/appwrite-apis/users';
+
 
 const OAuthCallback = () => {
   const navigate = useNavigate();

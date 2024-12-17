@@ -1,4 +1,4 @@
-import { getCurrentUser, isEmailVerified } from '@/lib/appwrite/user';
+import { getCurrentUser, isEmailVerified } from '@/lib/appwrite-apis/users';
 import { IContextType, IUser } from '@/types';
 import {
   createContext,

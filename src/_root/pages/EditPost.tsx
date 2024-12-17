@@ -1,12 +1,13 @@
 import PostForm from '@/components/forms/PostForm';
 import Loader from '@/components/shared/Loader';
-import { useGetPostById } from '@/lib/react-query/queries';
+import { useGetCreationById } from '@/lib/tanstack-queries/postsQueries';
+
 import { useParams } from 'react-router-dom';
 
 const EditPost = () => {
   const { id } = useParams();
 
-  const { data: post, isPending } = useGetPostById(id || '');
+  const { data: post, isPending } = useGetCreationById(id || '');
 
   if (isPending) {
     return <Loader />;

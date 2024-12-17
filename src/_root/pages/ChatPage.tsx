@@ -3,17 +3,12 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useUserContext } from '@/context/AuthContext';
-import {
-  useCreateMessage,
-  useGetMessages,
-  useGetConversation,
-  useMarkMessageAsRead,
-} from '@/lib/react-query/messageQueries';
+
 import Loader from '@/components/shared/Loader';
 import { Link, useParams } from 'react-router-dom';
 import { multiFormatDateString } from '@/lib/utils/utils';
 import { Button } from '@/components/ui/button';
-import { useGetUserInfo } from '@/lib/react-query/queries';
+
 import {
   Form,
   FormControl,
@@ -25,8 +20,33 @@ import { Textarea } from '@/components/ui/textarea';
 import React from 'react';
 import { Models } from 'appwrite';
 import { useInView } from 'react-intersection-observer';
-import { client, appwriteConfig } from '@/lib/appwrite/config';
+
 import { MessageEncryption } from '@/lib/utils/encryption';
+import {
+  useCreateMessage,
+  useGetConversationById,
+  useGetMessages,
+  useMarkMessageAsRead,
+} from '@/lib/tanstack-queries/conversationsQueries';
+import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
+import { appwriteConfig, client } from '@/lib/appwrite-apis/config';
+
+// *** APPWRITE ***
+
+// Database
+const db = {
+  conversationsId: appwriteConfig.databases.conversations.databaseId,
+};
+
+// Collections
+const cl = {
+  messageId: appwriteConfig.databases.conversations.collections.message,
+};
+
+// Encryption
+const encrypt = {
+  messageEncryption: appwriteConfig.encryption.messageEncryption,
+};
 
 const MessageSchema = z.object({
   message: z
@@ -59,7 +79,7 @@ const DecryptedMessage = ({
       try {
         const content = await MessageEncryption.decrypt(
           encryptedContent,
-          appwriteConfig.messageEncryptionKey
+          encrypt.messageEncryption
         );
         setDecryptedContent(content);
       } catch (err) {
@@ -222,7 +242,7 @@ const ChatPage = () => {
   });
 
   const { data: conversationData, isLoading: isConversationLoading } =
-    useGetConversation(convId);
+    useGetConversationById(convId);
 
   const participantsKey =
     conversationData?.documents?.[0]?.participantsKey || '';
@@ -272,7 +292,7 @@ const ChatPage = () => {
 
     // Subscribe to messages collection
     const unsubscribe = client.subscribe(
-      `databases.${appwriteConfig.databaseId}.collections.${appwriteConfig.messageCollectionId}.documents`,
+      `databases.${db.conversationsId}.collections.${cl.messageId}.documents`,
       (response) => {
         if (
           response.events.includes(
@@ -366,7 +386,7 @@ const ChatPage = () => {
           </div>
         </Link>
       </div>
-      <div className='max-w-3xl w-full justify-center items-center flex px-3.5'>
+      <div className="max-w-3xl w-full justify-center items-center flex px-3.5">
         <EncryptionWarning />
       </div>
 

@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
-
 import { useUserContext } from '@/context/AuthContext';
-
 import Loader from '@/components/shared/Loader';
-import { verifyEmail } from '@/lib/appwrite/user';
+import { verifyEmail } from '@/lib/appwrite-apis/users';
 
 const VerifySuccess = () => {
   const [verificationStatus, setVerificationStatus] = useState<

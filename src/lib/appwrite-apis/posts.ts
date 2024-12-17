@@ -1,17 +1,43 @@
 import { ID, Query } from 'appwrite';
-import { INewPost, INewProject, IUpdatePost, IUpdateProject } from '@/types';
+import {
+  INewCreation,
+  INewProject,
+  IUpdateCreation,
+  IUpdateProject,
+} from '@/types';
 import { appwriteConfig, databases, storage } from './config';
+import { deleteAllPostLikes, deleteAllPostSaves } from './interactions';
 import {
   deleteAllCommentsForPost,
   deleteAllFeedbacksForPost,
-  deleteAllPostLikes,
-  deleteAllPostSaves,
-} from './interaction';
+} from './comments';
 
-// ****************
-// ***** POST *****
+// *** APPWRITE ***
 
-export async function getRecentPosts({
+// Database
+const db = {
+  postsId: appwriteConfig.databases.posts.databaseId,
+  usersId: appwriteConfig.databases.users.databaseId,
+  interactionId: appwriteConfig.databases.interactions.databaseId,
+};
+
+// Collections
+const cl = {
+  creationId: appwriteConfig.databases.posts.collections.creation,
+  projectId: appwriteConfig.databases.posts.collections.project,
+  creatorId: appwriteConfig.databases.users.collections.creator,
+  saveId: appwriteConfig.databases.interactions.collections.save,
+};
+
+// Buckets
+const bk = {
+  creationBucketId: appwriteConfig.storage.creationBucket,
+};
+
+// *** CREATIONS ***
+
+// Get-Recent-Creations
+export async function getRecentCreations({
   pageParam,
 }: {
   pageParam: number | null;
@@ -24,7 +50,7 @@ export async function getRecentPosts({
         '$id',
         'content',
         'mediaUrl',
-        'creatorId',
+        'authorId',
         'tags',
         '$createdAt',
       ]),
@@ -35,64 +61,62 @@ export async function getRecentPosts({
     }
 
     // Fetch recent posts with pagination
-    const { documents: posts } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
+    const { documents: creations } = await databases.listDocuments(
+      db.postsId,
+      cl.creationId,
       queries
     );
 
-    if (!posts || posts.length === 0) {
+    if (!creations || creations.length === 0) {
       return { documents: [] };
     }
 
     // Create user fetch promises
-    const userFetchPromises = posts.map((post) =>
-      databases.getDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.creatorCollectionId,
-        post.creatorId
-      )
+    const userFetchPromises = creations.map((creation) =>
+      databases.getDocument(db.postsId, cl.creationId, creation.creatorId)
     );
 
     // Fetch all users in parallel
     const users = await Promise.all(userFetchPromises);
 
-    // Combine posts with user details
-    const postsWithUserDetails = posts.map((post, index) => ({
-      ...post,
+    // Combine creations with user details
+    const creationsWithUserDetails = creations.map((creation, index) => ({
+      ...creation,
       creator: {
         name: users[index]?.name || '',
         dpUrl: users[index]?.dpUrl || null,
       },
     }));
 
-    return { documents: postsWithUserDetails };
+    return { documents: creationsWithUserDetails };
   } catch (error) {
     console.error('Error:', error);
     return { documents: [] };
   }
 }
 
-export async function getPostById(postId: string) {
+// Get-Creation-By-Id
+export async function getCreationById(CreationId: string) {
   try {
-    const post = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
-      postId
+    const creation = await databases.getDocument(
+      db.postsId,
+      cl.creationId,
+      CreationId
     );
-    return post;
+    return creation;
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function createPost(post: INewPost) {
+//add-Creation
+export async function addCreation(creation: INewCreation) {
   try {
     let fileUrl: string = '';
     let uploadedFileId = '';
 
-    if (post.file && post.file.length > 0) {
-      const uploadedFile = await uploadFile(post.file[0]);
+    if (creation.file && creation.file.length > 0) {
+      const uploadedFile = await uploadFile(creation.file[0]);
       if (!uploadedFile) throw new Error('File upload failed');
 
       // Get file Url
@@ -106,47 +130,52 @@ export async function createPost(post: INewPost) {
     }
 
     // convert tags into an array
-    const tags = post.tags?.replace(/ /g, '').split(',') || [];
+    const tags = creation.tags?.replace(/ /g, '').split(',') || [];
 
-    // Create the post
-    const newPost = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
+    // Create the creation
+    const newCreation = await databases.createDocument(
+      db.postsId,
+      cl.creationId,
       ID.unique(),
       {
-        creatorId: post.userId,
-        content: post.content,
+        authorId: creation.authorId,
+        content: creation.content,
         mediaUrl: fileUrl ? [fileUrl] : [],
         mediaId: uploadedFileId ? [uploadedFileId] : [],
         tags: tags,
       }
     );
 
-    if (!newPost && uploadedFileId) {
+    if (!newCreation && uploadedFileId) {
       await deleteFile(uploadedFileId);
       throw Error;
     }
 
     // Increment the projectsCount for the user
-    await incrementUsercreationsCount(post.userId);
-    return newPost;
+    await incrementUsercreationsCount(creation.authorId);
+    return newCreation;
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function updatePost(post: IUpdatePost) {
-  const hasFileToUpdate = post.file.length > 0;
+// Update-Creation
+export async function updateCreation(creation: IUpdateCreation) {
+  const hasFileToUpdate = creation.file.length > 0;
 
   try {
     let media = {
-      mediaUrl: Array.isArray(post.mediaUrl) ? post.mediaUrl : [post.mediaUrl],
-      mediaId: Array.isArray(post.mediaId) ? post.mediaId : [post.mediaId],
+      mediaUrl: Array.isArray(creation.mediaUrl)
+        ? creation.mediaUrl
+        : [creation.mediaUrl],
+      mediaId: Array.isArray(creation.mediaId)
+        ? creation.mediaId
+        : [creation.mediaId],
     };
 
     if (hasFileToUpdate) {
       // Upload new file to appwrite storage
-      const uploadedFile = await uploadFile(post.file[0]);
+      const uploadedFile = await uploadFile(creation.file[0]);
       if (!uploadedFile) throw Error;
 
       // Get new file url
@@ -163,17 +192,17 @@ export async function updatePost(post: IUpdatePost) {
     }
 
     // Convert tags into array
-    const tags = Array.isArray(post.tags)
-      ? post.tags
-      : post.tags?.replace(/ /g, '').split(',') || [];
+    const tags = Array.isArray(creation.tags)
+      ? creation.tags
+      : creation.tags?.replace(/ /g, '').split(',') || [];
 
     //  Update post
-    const updatedPost = await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
-      post.postId,
+    const updatedCreation = await databases.updateDocument(
+      db.postsId,
+      cl.creationId,
+      creation.creationId,
       {
-        content: post.content,
+        content: creation.content,
         mediaUrl: media.mediaUrl,
         mediaId: media.mediaId,
         tags: tags,
@@ -181,7 +210,7 @@ export async function updatePost(post: IUpdatePost) {
     );
 
     // Failed to update
-    if (!updatedPost) {
+    if (!updatedCreation) {
       // Delete new file that has been recently uploaded
       if (hasFileToUpdate) {
         await deleteFile(media.mediaId[0]);
@@ -193,42 +222,43 @@ export async function updatePost(post: IUpdatePost) {
 
     // Safely delete old file after successful update
     if (hasFileToUpdate) {
-      await deleteFile(post.mediaId[0]);
+      await deleteFile(creation.mediaId[0]);
     }
 
-    return updatedPost;
+    return updatedCreation;
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function deletePost(
-  postId: string,
+// Delete-Creation
+export async function deleteCreation(
+  creationId: string,
   mediaId: string,
-  creatorId: string
+  authorId: string
 ) {
-  if (!postId || !creatorId) return;
+  if (!creationId || !authorId) return;
 
   try {
     const statusCode = await databases.deleteDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
-      postId
+      db.postsId,
+      cl.creationId,
+      creationId
     );
 
     if (!statusCode) throw Error;
 
     await deleteFile(mediaId);
 
-    await deleteAllCommentsForPost(postId);
+    await deleteAllCommentsForPost(creationId);
 
-    await deleteAllFeedbacksForPost(postId);
+    await deleteAllFeedbacksForPost(creationId);
 
-    await decrementUserCreationsCount(creatorId);
+    await decrementUserCreationsCount(authorId);
 
-    await deleteAllPostLikes(postId);
+    await deleteAllPostLikes(creationId);
 
-    await deleteAllPostSaves(postId);
+    await deleteAllPostSaves(creationId);
 
     return { status: 'Ok' };
   } catch (error) {
@@ -236,36 +266,35 @@ export async function deletePost(
   }
 }
 
+// Increment-User-Creations-Count
 async function incrementUsercreationsCount(userId: string) {
   try {
     // Retrieve the user document
     const userDoc = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
+      db.usersId,
+      cl.creatorId,
       userId
     );
 
-    // Increment the projectsCount attribute
+    // Increment the creationsCount attribute
     const updatedCreationsCount = (userDoc.creationsCount || 0) + 1;
 
-    // Update the user document with the incremented projectsCount
-    await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      userId,
-      { creationsCount: updatedCreationsCount }
-    );
+    // Update the user document with the incremented creationsCoun
+    await databases.updateDocument(db.usersId, cl.creatorId, userId, {
+      creationsCount: updatedCreationsCount,
+    });
   } catch (error) {
     console.error('Failed to increment projects count:', error);
   }
 }
 
+// Decrement-User-Creations-Count
 async function decrementUserCreationsCount(userId: string) {
   try {
     // Retrieve the user document
     const userDoc = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
+      db.usersId,
+      cl.creatorId,
       userId
     );
 
@@ -276,60 +305,65 @@ async function decrementUserCreationsCount(userId: string) {
     );
 
     // Update the user document with the decremented creationsCount
-    await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      userId,
-      { creationsCount: updatedCreationsCount }
-    );
+    await databases.updateDocument(db.usersId, cl.creatorId, userId, {
+      creationsCount: updatedCreationsCount,
+    });
   } catch (error) {
     console.error('Failed to decrement projects count:', error);
   }
 }
 
-// SEARCH-POST
-
-export async function searchPosts(searchTerm: string) {
+// Get-Search-Creations
+export async function getSearchCreations(searchTerm: string) {
   try {
-    const { documents: posts } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
+    const { documents: creations } = await databases.listDocuments(
+      db.postsId,
+      cl.creationId,
       [Query.search('content', searchTerm)]
     );
 
-    if (!posts || posts.length === 0) {
+    if (!creations || creations.length === 0) {
       // No posts found, return an empty response
       return { documents: [] };
     }
 
-    const creatorIds = [...new Set(posts.map((post) => post.creatorId))];
+    const creatorIds = [
+      ...new Set(creations.map((creation) => creation.creatorId)),
+    ];
 
     // Handle case where creatorIds is empty
     if (creatorIds.length === 0) {
-      return { documents: posts.map((post) => ({ ...post, author: null })) };
+      return {
+        documents: creations.map((creation) => ({ ...creation, author: null })),
+      };
     }
 
     const { documents: authors } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
+      db.usersId,
+      cl.creatorId,
       [Query.equal('$id', creatorIds)]
     );
 
     const authorMap = new Map(authors.map((author) => [author.$id, author]));
 
-    const postsWithAuthors = posts.map((post) => ({
-      ...post,
-      author: authorMap.get(post.creatorId) || null,
+    const creationsWithAuthors = creations.map((creation) => ({
+      ...creation,
+      author: authorMap.get(creation.creatorId) || null,
     }));
 
-    return { documents: postsWithAuthors };
+    return { documents: creationsWithAuthors };
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error fetching creations:', error);
     throw error;
   }
 }
 
-export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
+// Get-Infinite-Creations
+export async function getInfiniteCreations({
+  pageParam,
+}: {
+  pageParam: number;
+}) {
   const queries: any[] = [
     Query.orderDesc('$updatedAt'),
     Query.limit(6),
@@ -337,7 +371,7 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
       '$id',
       'content',
       'mediaUrl',
-      'creatorId',
+      'authorId',
       'tags',
       '$createdAt',
     ]),
@@ -348,37 +382,40 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
   }
 
   try {
-    const { documents: posts } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
+    const { documents: creations } = await databases.listDocuments(
+      db.postsId,
+      cl.creationId,
       queries
     );
 
-    if (!posts || posts.length === 0) return { documents: [] };
+    if (!creations || creations.length === 0) return { documents: [] };
 
-    const creatorIds = [...new Set(posts.map((post) => post.creatorId))];
+    const creatorIds = [
+      ...new Set(creations.map((creation) => creation.creatorId)),
+    ];
 
     const { documents: authors } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
+      db.usersId,
+      cl.creatorId,
       [Query.equal('$id', creatorIds)]
     );
 
     const authorMap = new Map(authors.map((author) => [author.$id, author]));
 
-    const postsWithAuthors = posts.map((post) => ({
-      ...post,
-      author: authorMap.get(post.creatorId) || null,
+    const creationsWithAuthors = creations.map((creation) => ({
+      ...creation,
+      author: authorMap.get(creation.creatorId) || null,
     }));
 
-    return { documents: postsWithAuthors }; // Ensure returning documents
+    return { documents: creationsWithAuthors }; // Ensure returning documents
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error fetching creations:', error);
     throw error;
   }
 }
 
-export async function getSavedPosts({
+// Get-Saved-Creations
+export async function getSavedCreations({
   pageParam,
   userId,
 }: {
@@ -388,10 +425,10 @@ export async function getSavedPosts({
   try {
     // Query saved posts with descending order by creation date
     const queries: any[] = [
-      Query.equal('creatorId', userId),
+      Query.equal('userId', userId),
       Query.orderDesc('$createdAt'), // This ensures newest saves appear first
       Query.limit(5),
-      Query.select(['$id', 'postId']),
+      Query.select(['$id', 'creationId']),
     ];
 
     if (pageParam) {
@@ -399,66 +436,66 @@ export async function getSavedPosts({
     }
 
     // Get saved posts documents
-    const savedPosts = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.savesCollectionId, 
+    const savedCreations = await databases.listDocuments(
+      db.interactionId,
+      cl.saveId,
       queries
     );
 
-    if (!savedPosts?.documents.length) return { documents: [] };
+    if (!savedCreations?.documents.length) return { documents: [] };
 
-    const postIds = savedPosts.documents.map((save) => save.postId);
+    const creationIds = savedCreations.documents.map((save) => save.postId);
 
     // Fetch actual posts ordered by save date
-    const { documents: posts } = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.creationPostCollectionId,
-      [Query.equal('$id', postIds)]
+    const { documents: creations } = await databases.listDocuments(
+      db.postsId,
+      cl.creationId,
+      [Query.equal('$id', creationIds)]
     );
 
-    if (!posts?.length) return { documents: [] };
+    if (!creations?.length) return { documents: [] };
 
     // Fetch creator details
-    const creators = await Promise.all(
-      posts.map((post) =>
-        databases.getDocument(
-          appwriteConfig.databaseId,
-          appwriteConfig.creatorCollectionId,
-          post.creatorId
-        )
+    const authors = await Promise.all(
+      creations.map((creation) =>
+        databases.getDocument(db.usersId, cl.creatorId, creation.authorId)
       )
     );
 
     // Map saved posts to maintain save order
-    const postsWithDetails = savedPosts.documents.map((savedPost) => {
-      const post = posts.find((p) => p.$id === savedPost.postId);
-      const creator = creators.find((c) => c.$id === post?.creatorId);
-      
-      return {
-        ...post,
-        creator: {
-          name: creator?.name || '',
-          dpUrl: creator?.dpUrl || null,
-        },
-        saveId: savedPost.$id,
-      };
-    });
+    const creationsWithDetails = savedCreations.documents.map(
+      (savedCreation) => {
+        const creation = creations.find(
+          (c1) => c1.$id === savedCreation.postId
+        );
+        const author = authors.find((c2) => c2.$id === creation?.authorId);
 
-    return { documents: postsWithDetails };
+        return {
+          ...creation,
+          author: {
+            name: author?.name || '',
+            dpUrl: author?.dpUrl || null,
+          },
+          saveId: savedCreation.$id,
+        };
+      }
+    );
+
+    return { documents: creationsWithDetails };
   } catch (error) {
-    console.error('Error fetching saved posts:', error);
+    console.error('Error fetching saved creations:', error);
     return { documents: [] };
   }
 }
 
-// *******************
-// ***** PROJECT *****
+// *** PROJECT ***
 
+// Get-Project-By-Id
 export async function getProjectById(projectId: string) {
   try {
     const project = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.portfolioPostCollectionId,
+      db.postsId,
+      cl.projectId,
       projectId
     );
     return project;
@@ -467,6 +504,7 @@ export async function getProjectById(projectId: string) {
   }
 }
 
+// Add-Project
 export async function addProject(project: INewProject) {
   try {
     let fileUrl: string = ''; // Explicitly set fileUrl as string
@@ -502,11 +540,11 @@ export async function addProject(project: INewProject) {
 
     // Create the project document
     const newProject = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.portfolioPostCollectionId,
+      db.postsId,
+      cl.projectId,
       ID.unique(),
       {
-        creatorId: project.userId,
+        authorId: project.authorId,
         title: project.title,
         description: project.description,
         mediaUrl: fileUrl ? [fileUrl] : [],
@@ -522,7 +560,7 @@ export async function addProject(project: INewProject) {
     }
 
     // Increment the projectsCount for the user
-    await incrementUserProjectsCount(project.userId);
+    await incrementUserProjectsCount(project.authorId);
 
     return newProject;
   } catch (error) {
@@ -530,82 +568,7 @@ export async function addProject(project: INewProject) {
   }
 }
 
-export async function deleteProject(
-  postId: string,
-  mediaId: string,
-  creatorId: string
-) {
-  if (!postId || !creatorId) return;
-
-  try {
-    const statusCode = await databases.deleteDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.portfolioPostCollectionId,
-      postId
-    );
-
-    if (!statusCode) throw Error;
-
-    await deleteFile(mediaId);
-
-    await decrementUserProjectsCount(creatorId);
-
-    await deleteAllPostLikes(postId);
-
-    return { status: 'Ok' };
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-async function incrementUserProjectsCount(userId: string) {
-  try {
-    // Retrieve the user document
-    const userDoc = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      userId
-    );
-
-    // Increment the projectsCount attribute
-    const updatedProjectsCount = (userDoc.projectsCount || 0) + 1;
-
-    // Update the user document with the incremented projectsCount
-    await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      userId,
-      { projectsCount: updatedProjectsCount }
-    );
-  } catch (error) {
-    console.error('Failed to increment projects count:', error);
-  }
-}
-
-async function decrementUserProjectsCount(userId: string) {
-  try {
-    // Retrieve the user document
-    const userDoc = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      userId
-    );
-
-    // Ensure creationsCount is at least 1 before decrementing
-    const updatedProjectCount = Math.max((userDoc.projectsCount || 0) - 1, 0);
-
-    // Update the user document with the decremented creationsCount
-    await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      userId,
-      { projectsCount: updatedProjectCount }
-    );
-  } catch (error) {
-    console.error('Failed to decrement projects count:', error);
-  }
-}
-
+// Update-Project
 export async function updateProject(project: IUpdateProject) {
   const hasFileToUpdate = project.file.length > 0;
 
@@ -651,8 +614,8 @@ export async function updateProject(project: IUpdateProject) {
 
     // Update document in the database
     const updatedPost = await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.portfolioPostCollectionId,
+      db.postsId,
+      cl.projectId,
       project.projectId,
       {
         title: project.title,
@@ -685,28 +648,100 @@ export async function updateProject(project: IUpdateProject) {
   }
 }
 
-// ******************
-// ***** HELPER *****
+// Delete-Project
+export async function deleteProject(
+  projectId: string,
+  mediaId: string,
+  authorId: string
+) {
+  if (!projectId || !authorId) return;
 
-export async function getAuthorById(creatorId: string) {
   try {
-    const post = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.creatorCollectionId,
-      creatorId
+    const statusCode = await databases.deleteDocument(
+      db.postsId,
+      cl.projectId,
+      projectId
     );
-    return post;
+
+    if (!statusCode) throw Error;
+
+    await deleteFile(mediaId);
+
+    await decrementUserProjectsCount(authorId);
+
+    await deleteAllPostLikes(projectId);
+
+    return { status: 'Ok' };
   } catch (error) {
     console.log(error);
   }
 }
 
-//FILE
+// Increment-User-Projects-Count
+async function incrementUserProjectsCount(userId: string) {
+  try {
+    // Retrieve the user document
+    const userDoc = await databases.getDocument(
+      db.usersId,
+      cl.creatorId,
+      userId
+    );
 
+    // Increment the projectsCount attribute
+    const updatedProjectsCount = (userDoc.projectsCount || 0) + 1;
+
+    // Update the user document with the incremented projectsCount
+    await databases.updateDocument(db.usersId, cl.creatorId, userId, {
+      projectsCount: updatedProjectsCount,
+    });
+  } catch (error) {
+    console.error('Failed to increment projects count:', error);
+  }
+}
+
+// Decrement-User-Projects-Count
+async function decrementUserProjectsCount(userId: string) {
+  try {
+    // Retrieve the user document
+    const userDoc = await databases.getDocument(
+      db.usersId,
+      cl.creatorId,
+      userId
+    );
+
+    // Ensure creationsCount is at least 1 before decrementing
+    const updatedProjectCount = Math.max((userDoc.projectsCount || 0) - 1, 0);
+
+    // Update the user document with the decremented creationsCount
+    await databases.updateDocument(db.usersId, cl.creatorId, userId, {
+      projectsCount: updatedProjectCount,
+    });
+  } catch (error) {
+    console.error('Failed to decrement projects count:', error);
+  }
+}
+
+// *** HELPER-FUNCTION ***
+
+// Get-Authors-By-Id
+export async function getAuthorById(creatorId: string) {
+  try {
+    const response = await databases.getDocument(
+      db.usersId,
+      cl.creatorId,
+      creatorId
+    );
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// File-Upload
 export async function uploadFile(file: File) {
   try {
     const uploadedFile = await storage.createFile(
-      appwriteConfig.postBucketId,
+      bk.creationBucketId,
       ID.unique(),
       file
     );
@@ -716,9 +751,10 @@ export async function uploadFile(file: File) {
   }
 }
 
+// Get-File-Preview
 export function getFilePreview(fileId: string) {
   try {
-    const fileUrl = storage.getFileView(appwriteConfig.postBucketId, fileId);
+    const fileUrl = storage.getFileView(bk.creationBucketId, fileId);
 
     if (!fileUrl) throw Error;
 
@@ -730,9 +766,10 @@ export function getFilePreview(fileId: string) {
   }
 }
 
+// Delete-File
 export async function deleteFile(fileId: string) {
   try {
-    await storage.deleteFile(appwriteConfig.postBucketId, fileId);
+    await storage.deleteFile(bk.creationBucketId, fileId);
 
     return { status: 'ok' };
   } catch (error) {

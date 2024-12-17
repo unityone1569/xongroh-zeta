@@ -1,9 +1,10 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Loader from '@/components/shared/Loader';
 import PostCard from '@/components/shared/PostCard';
-import { useGetRecentPosts, useGetSavedPosts } from '@/lib/react-query/queries';
+
 import { Models } from 'appwrite';
 import { useUserContext } from '@/context/AuthContext';
+import { useGetRecentCreations, useGetSavedCreations } from '@/lib/tanstack-queries/postsQueries';
 
 const tabs = [
   { name: 'creation', label: 'Creations' },
@@ -21,7 +22,7 @@ const Home = () => {
     hasNextPage,
     isFetchingNextPage,
     isLoading: isPostLoading
-  } = useGetRecentPosts();
+  } = useGetRecentCreations();
 
   const {
     data: savedPostsPages,
@@ -29,7 +30,7 @@ const Home = () => {
     hasNextPage: hasNextSavedPage,
     isFetchingNextPage: isFetchingNextSavedPage,
     isLoading: isSavedLoading
-  } = useGetSavedPosts(user.id);
+  } = useGetSavedCreations(user.id);
 
   // Flatten posts from all pages
   const posts = useMemo(() => {

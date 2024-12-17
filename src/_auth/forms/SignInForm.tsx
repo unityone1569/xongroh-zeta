@@ -15,12 +15,9 @@ import { Button } from '@/components/ui/button';
 import Loader from '@/components/shared/Loader';
 import { useToast } from '@/components/ui/use-toast';
 import { SignInValidation } from '@/lib/validation';
-import {
-  useLoginWithGoogle,
-  useSignInAccount,
-} from '@/lib/react-query/queries';
 import { useUserContext } from '@/context/AuthContext';
 import { useState } from 'react';
+import { useLoginWithGoogle, useSignInAccount } from '@/lib/tanstack-queries/usersQueries';
 
 const SignInForm = () => {
   const { toast } = useToast();

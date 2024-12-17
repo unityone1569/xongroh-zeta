@@ -12,15 +12,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea as BaseTextarea } from '@/components/ui/textarea';
-import {
-  useGetComments,
-  useGetFeedbacks,
-  useAddComment,
-  useAddFeedback,
-  useGetUserInfo,
-} from '@/lib/react-query/queries';
 import { useToast } from '@/hooks/use-toast';
-
 import Loader from './Loader';
 import { multiFormatDateString } from '@/lib/utils/utils';
 import { Link } from 'react-router-dom';
@@ -28,7 +20,10 @@ import Replies from './Replies';
 import LikedItems from './LikedItems';
 import { Models } from 'appwrite';
 import { DeleteComment, DeleteFeedback } from './DeleteItems';
-import { getPostById } from '@/lib/appwrite/post';
+import { useAddComment, useAddFeedback, useGetComments, useGetFeedbacks } from '@/lib/tanstack-queries/commentsQueries';
+import { getCreationById } from '@/lib/appwrite-apis/posts';
+import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
+import { getUserAccountId } from '@/lib/appwrite-apis/users';
 
 type PostCommentsProps = {
   postId: string;
@@ -66,6 +61,21 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
   const [activeTab, setActiveTab] = useState<'comments' | 'feedbacks'>(
     'comments'
   );
+  const [accountId, setAccountId] = useState<string>("");
+
+  // Fetch accountId when component mounts
+  useEffect(() => {
+    const fetchAccountId = async () => {
+      try {
+        const id = await getUserAccountId(authorId);
+        setAccountId(id);
+      } catch (error) {
+        console.error('Error fetching account ID:', error);
+      }
+    };
+    
+    fetchAccountId();
+  }, [authorId]);
 
   // Fetching data
   const { data: comments, isLoading: isCommentsLoading } =
@@ -90,7 +100,7 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
   // Check if the user is the author
   useEffect(() => {
     const checkIfAuthor = async () => {
-      const post = await getPostById(postId);
+      const post = await getCreationById(postId);
       setIsAuthor(post?.creatorId === userId);
     };
     checkIfAuthor();
@@ -104,20 +114,20 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
   // Submit handlers
   const onSubmitComment = useCallback(
     async ({ comment }: CommentFormValues) => {
-      await addComment({ postId, userId, content: comment });
+      await addComment({ postId, userId, authorId, content: comment });
       commentForm.reset();
       toast({ title: 'Comment added successfully!' });
     },
-    [addComment, commentForm, postId, userId]
+    [addComment, commentForm, postId, userId, authorId]
   );
 
   const onSubmitFeedback = useCallback(
     async ({ feedback }: FeedbackFormValues) => {
-      await addFeedback({ postId, userId, content: feedback });
+      await addFeedback({ postId, userId, authorId, content: feedback });
       feedbackForm.reset();
       toast({ title: 'Feedback added successfully!' });
     },
-    [addFeedback, feedbackForm, postId, userId]
+    [addFeedback, feedbackForm, postId, userId, authorId]
   );
 
   // Filtered feedbacks based on user role
@@ -140,7 +150,7 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
           commentId={comment.$id}
           postId={postId}
           userId={userId}
-          authorId={authorId}
+          authorId={accountId} // Pass accountId here
           item={comment}
         />
       ));
@@ -154,7 +164,7 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
         feedbackId={feedback.$id}
         postId={postId}
         userId={userId}
-        authorId={authorId}
+        authorId={accountId} // Pass accountId here
         item={feedback}
       />
     ));
@@ -307,7 +317,7 @@ const CommentItem = React.memo(
         </p>
         <div className="flex justify-between items-center ml-1">
           <div className="flex justify-start gap-3.5">
-            <LikedItems item={item} userId={user.id} />
+            <LikedItems item={item} userId={user.id} authorId={authorId} />
             <div
               className={`${
                 user?.id !== creatorId && user?.id !== authorId && 'hidden'
@@ -399,7 +409,7 @@ const FeedbackItem = React.memo(
         </p>
         <div className="flex justify-between items-center ml-1">
           <div className="flex justify-start gap-3.5">
-            <LikedItems item={item} userId={user.id} />
+            <LikedItems item={item} userId={user.id} authorId={authorId} />
             <div
               className={`${
                 user?.id !== creatorId && user?.id !== authorId && 'hidden'

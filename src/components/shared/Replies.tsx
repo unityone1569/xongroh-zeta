@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useUserContext } from '@/context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -11,13 +11,6 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  useAddCommentReply,
-  useGetCommentReplies,
-  useAddFeedbackReply,
-  useGetFeedbackReplies,
-  useGetUserInfo,
-} from '@/lib/react-query/queries';
 import Loader from './Loader';
 import { useToast } from '@/hooks/use-toast';
 import { multiFormatDateString } from '@/lib/utils/utils';
@@ -25,6 +18,14 @@ import { Link } from 'react-router-dom';
 import { Models } from 'appwrite';
 import LikedItems from './LikedItems';
 import { DeleteCommentReply, DeleteFeedbackReply } from './DeleteItems';
+import {
+  useAddCommentReply,
+  useAddFeedbackReply,
+  useGetCommentReplies,
+  useGetFeedbackReplies,
+} from '@/lib/tanstack-queries/commentsQueries';
+import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
+import { getUserAccountId } from '@/lib/appwrite-apis/users';
 
 interface RepliesSectionProps {
   authorId: string;
@@ -73,10 +74,25 @@ const Replies = ({
     defaultValues: { reply: '' },
   });
 
+  const [accountId, setAccountId] = useState<string>("");
+  
+  useEffect(() => {
+    const fetchAccountId = async () => {
+      try {
+        const id = await getUserAccountId(authorId);
+        setAccountId(id);
+      } catch (error) {
+        console.error('Error fetching account ID:', error);
+      }
+    };
+    
+    fetchAccountId();
+  }, [authorId]);
+
   const onSubmitReply = useCallback(
     async ({ reply }: ReplyFormValues) => {
       try {
-        await addReply({ parentId, userId, content: reply });
+        await addReply({ parentId, authorId: accountId, userId, content: reply });
         replyForm.reset();
         toast({
           description: 'Reply added successfully!',
@@ -88,7 +104,7 @@ const Replies = ({
         });
       }
     },
-    [addReply, parentId, userId, replyForm, toast, toggleReplyForm]
+    [addReply, parentId, accountId, userId, replyForm, toast, toggleReplyForm]
   );
 
   return (
@@ -99,7 +115,7 @@ const Replies = ({
         ) : (
           replies?.map((reply) => (
             <ReplyItem
-              authorId={authorId}
+              authorId={accountId}  // Pass accountId instead of authorId
               key={reply.$id}
               content={reply.content}
               creatorId={reply.creatorId}
@@ -198,7 +214,7 @@ const ReplyItem = React.memo(
           {content}
         </p>
         <div className="flex justify-start gap-3.5 items-center ml-1">
-          <LikedItems item={item} userId={user.id} />
+          <LikedItems item={item} userId={user.id} authorId={authorId} />
           <div
             className={`${
               user?.id !== creatorId && user?.id !== authorId && 'hidden'

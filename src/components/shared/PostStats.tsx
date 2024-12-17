@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { getUserAccountId } from '@/lib/appwrite-apis/users';
+import { Models } from 'appwrite';
+import { useLocation } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import Loader from './Loader';
 import {
   useCheckPostLike,
   useCheckPostSave,
@@ -7,13 +12,8 @@ import {
   useSavePost,
   useUnlikePost,
   useUnsavePost,
-} from '@/lib/react-query/queries';
-
-import { Models } from 'appwrite';
-import { useLocation } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
-import { QUERY_KEYS } from '@/lib/react-query/queryKeys';
-import Loader from './Loader';
+} from '@/lib/tanstack-queries/interactionsQueries';
+import { QUERY_KEYS } from '@/lib/tanstack-queries/queryKeys';
 
 type PostStatsProps = {
   post: Models.Document;
@@ -22,9 +22,10 @@ type PostStatsProps = {
 
 const PostStats = ({ post, userId }: PostStatsProps) => {
   const { toast } = useToast();
-  const { $id: postId, postType, likesCount } = post;
+  const { $id: postId, authorId, likesCount } = post;
   const location = useLocation();
   const queryClient = useQueryClient();
+  const [accountId, setAccountId] = useState<string>("");
 
   const handleShare = () => {
     const urlToShare = window.location.href;
@@ -84,6 +85,19 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     }
   }, [isSavedData, isSaveLoading]);
 
+  useEffect(() => {
+    const fetchAccountId = async () => {
+      try {
+        const id = await getUserAccountId(authorId);
+        setAccountId(id);
+      } catch (error) {
+        console.error('Error fetching account ID:', error);
+      }
+    };
+    
+    fetchAccountId();
+  }, [authorId]);
+
   const handleLikePost = () => {
     const updateLikeCount = () => {
       setInitialLikesCount((prevCount) => prevCount + (isLikedState ? -1 : 1));
@@ -91,11 +105,11 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
       if (!isLikedState) {
         setIsLikedState(true);
         likePostMutation(
-          { postId, userId, postType },
+          { postId, authorId: accountId, userId },
           {
             onSuccess: () => {
               queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId, postType],
+                queryKey: [QUERY_KEYS.GET_CREATION_BY_ID, postId],
               });
               toast({ title: 'Creation liked!' });
             },
@@ -109,11 +123,11 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
       } else {
         setIsLikedState(false);
         unlikePostMutation(
-          { postId, userId, postType },
+          { postId, userId },
           {
             onSuccess: () => {
               queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId, postType],
+                queryKey: [QUERY_KEYS.GET_CREATION_BY_ID, postId],
               });
               toast({ title: 'Creation unliked!' });
             },
@@ -131,17 +145,16 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   };
 
   const handleSavePost = () => {
-    if (savePostPending || unsavePostPending || postType === 'portfolioPost')
-      return;
+    if (savePostPending || unsavePostPending) return;
 
     if (!isSavedState) {
       setIsSavedState(true);
       savePostMutation(
-        { postId, userId, postType },
+        { postId, authorId: accountId, userId },
         {
           onSuccess: () => {
             queryClient.invalidateQueries({
-              queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId, postType],
+              queryKey: [QUERY_KEYS.GET_CREATION_BY_ID, postId],
             });
             toast({ title: 'Creation saved!' });
           },
@@ -154,11 +167,11 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     } else {
       setIsSavedState(false);
       unsavePostMutation(
-        { postId, userId, postType },
+        { postId, userId },
         {
           onSuccess: () => {
             queryClient.invalidateQueries({
-              queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId, postType],
+              queryKey: [QUERY_KEYS.GET_CREATION_BY_ID, postId],
             });
             toast({ title: 'Creation unsaved!' });
           },
@@ -205,8 +218,8 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
           {savePostPending || unsavePostPending ? (
             <Loader />
           ) : (
-            // Hide save button if post type is portfolioPost OR if user is the creator
-            postType !== 'portfolioPost' && userId !== post?.creatorId && (
+            // Hide save button if user is the creator
+            userId !== post?.creatorId && (
               <img
                 src={
                   isSavedState
