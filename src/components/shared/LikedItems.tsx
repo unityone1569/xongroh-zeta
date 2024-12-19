@@ -7,7 +7,6 @@ import {
   useUnlikeItem,
   useGetItemsLikesCount,
 } from '@/lib/tanstack-queries/interactionsQueries';
-import { getUserAccountId } from '@/lib/appwrite-apis/users';
 
 type LikedItemsProps = {
   item: Models.Document;
@@ -19,86 +18,63 @@ const LikedItems = ({ item, userId, authorId }: LikedItemsProps) => {
   const { toast } = useToast();
   const { $id: itemId } = item;
 
-  // Get likes count query
-  const { data: likesCountData } = useGetItemsLikesCount(itemId);
-
-  const { data: isLikedData, isLoading: isLikeLoading } = useCheckItemLike(
+  // Queries
+  const { data: likesCount = 0 } = useGetItemsLikesCount(itemId);
+  const { data: isLiked = false, isLoading: isLikeLoading } = useCheckItemLike(
     itemId,
     userId
   );
 
-  const { mutateAsync: likeItemMutation, isPending: likeItemPending } =
-    useLikeItem();
-  const { mutateAsync: unlikeItemMutation, isPending: unlikeItemPending } =
-    useUnlikeItem();
+  const { mutateAsync: likeItem, isPending: isLiking } = useLikeItem();
+  const { mutateAsync: unlikeItem, isPending: isUnliking } = useUnlikeItem();
 
-  const [isLikedState, setIsLikedState] = useState<boolean>(false);
-  const [localLikesCount, setLocalLikesCount] = useState<number>(0);
-  const [accountId, setAccountId] = useState<string>("");
+  const [isLikedState, setIsLikedState] = useState(false);
+  const [localLikesCount, setLocalLikesCount] = useState(likesCount);
 
-  // Update local states when data changes
+  // Sync with server state
   useEffect(() => {
-    if (!isLikeLoading && isLikedData !== undefined) {
-      setIsLikedState(isLikedData);
+    if (!isLikeLoading) {
+      setIsLikedState(isLiked);
+      setLocalLikesCount(likesCount);
     }
-    if (likesCountData !== undefined) {
-      setLocalLikesCount(likesCountData);
+  }, [isLiked, likesCount, isLikeLoading]);
+
+  const handleLikeItem = async () => {
+    if (!itemId || !userId || !authorId) {
+      toast({
+        title: 'Error',
+        description: 'Missing required information',
+      });
+      return;
     }
-  }, [isLikedData, isLikeLoading, likesCountData]);
+    if (isLiking || isUnliking) return;
 
-  useEffect(() => {
-    const fetchAccountId = async () => {
-      try {
-        const id = await getUserAccountId(authorId);
-        setAccountId(id);
-      } catch (error) {
-        console.error('Error fetching account ID:', error);
-      }
-    };
-    
-    fetchAccountId();
-  }, [authorId]);
+    try {
+      const newLikeState = !isLikedState;
 
-  const handleLikeItem = () => {
-    if (likeItemPending || unlikeItemPending) return;
-
-    const updateLikeCount = () => {
-      setLocalLikesCount((prevCount) => prevCount + (isLikedState ? -1 : 1));
-
-      if (!isLikedState) {
-        setIsLikedState(true);
-        likeItemMutation(
-          { itemId, userId, authorId: accountId },
-          {
-            onSuccess: () => {
-              toast({ title: 'Liked!' });
-            },
-            onError: () => {
-              setIsLikedState(false);
-              setLocalLikesCount((prevCount) => prevCount - 1);
-              toast({ title: 'Oops, please try again!' });
-            },
-          }
-        );
+      // API call with validation
+      if (newLikeState) {
+        await likeItem({
+          itemId,
+          userId,
+          authorId,
+        });
       } else {
-        setIsLikedState(false);
-        unlikeItemMutation(
-          { itemId, userId },
-          {
-            onSuccess: () => {
-              toast({ title: 'Unliked!' });
-            },
-            onError: () => {
-              setIsLikedState(true);
-              setLocalLikesCount((prevCount) => prevCount + 1);
-              toast({ title: 'Oops, please try again!' });
-            },
-          }
-        );
+        await unlikeItem({
+          itemId,
+          userId,
+        });
       }
-    };
 
-    setTimeout(updateLikeCount, 0);
+      setIsLikedState(newLikeState);
+      setLocalLikesCount((prev) => prev + (newLikeState ? 1 : -1));
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update like status',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -112,9 +88,7 @@ const LikedItems = ({ item, userId, authorId }: LikedItemsProps) => {
           width={23}
           onClick={handleLikeItem}
           className={`cursor-pointer ${
-            likeItemPending || unlikeItemPending
-              ? 'opacity-50 cursor-not-allowed'
-              : ''
+            isLiking || isUnliking ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         />
         {localLikesCount > 0 && (

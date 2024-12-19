@@ -1,10 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { getUserAccountId } from '@/lib/appwrite-apis/users';
+import { useCallback } from 'react';
 import { Models } from 'appwrite';
 import { useLocation } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import Loader from './Loader';
 import {
   useCheckPostLike,
   useCheckPostSave,
@@ -12,232 +9,209 @@ import {
   useSavePost,
   useUnlikePost,
   useUnsavePost,
+  useGetPostLikesCount,
+  useGetPostSavesCount,
 } from '@/lib/tanstack-queries/interactionsQueries';
+import { useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/lib/tanstack-queries/queryKeys';
 
 type PostStatsProps = {
   post: Models.Document;
   userId: string;
+  authorId: string;
 };
 
-const PostStats = ({ post, userId }: PostStatsProps) => {
+const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
   const { toast } = useToast();
-  const { $id: postId, authorId, likesCount } = post;
+  const { $id: postId } = post;
   const location = useLocation();
   const queryClient = useQueryClient();
-  const [accountId, setAccountId] = useState<string>("");
 
-  const handleShare = () => {
-    const urlToShare = window.location.href;
-    const shareText = 'Check out this post from Xongroh!';
+  // Queries
+  const { data: likesCount = 0 } = useGetPostLikesCount(postId);
+  const { data: savesCount = 0 } = useGetPostSavesCount(postId);
+  const { data: isLiked = false } = useCheckPostLike(postId, userId);
+  const { data: isSaved = false } = useCheckPostSave(postId, userId);
 
-    if (navigator.share) {
-      navigator
-        .share({
-          title: 'Creation Post',
-          text: shareText,
-          url: urlToShare,
-        })
-        .then(() => toast({ title: 'Content shared successfully!' }))
-        .catch(() =>
-          toast({ title: 'Error sharing content. Please try again.' })
-        );
-    } else {
-      navigator.clipboard
-        .writeText(`${shareText} ${urlToShare}`)
-        .then(() => toast({ title: 'Link copied to clipboard!' }))
-        .catch(() => toast({ title: 'Error copying text. Please try again.' }));
-    }
-  };
+  // Mutations
+  const { mutateAsync: likePost, isPending: isLiking } = useLikePost();
+  const { mutateAsync: unlikePost, isPending: isUnliking } = useUnlikePost();
+  const { mutateAsync: savePost, isPending: isSaving } = useSavePost();
+  const { mutateAsync: unsavePost, isPending: isUnsaving } = useUnsavePost();
 
-  const { data: isLikedData, isLoading: isLikeLoading } = useCheckPostLike(
-    postId,
-    userId
-  );
-  const { data: isSavedData, isLoading: isSaveLoading } = useCheckPostSave(
-    postId,
-    userId
-  );
+  const handleLike = useCallback(async () => {
+    if (!postId || !userId || isLiking || isUnliking) return;
 
-  const { mutateAsync: likePostMutation, isPending: likePostPending } =
-    useLikePost();
-  const { mutateAsync: unlikePostMutation, isPending: unlikePostPending } =
-    useUnlikePost();
-  const { mutateAsync: savePostMutation, isPending: savePostPending } =
-    useSavePost();
-  const { mutateAsync: unsavePostMutation, isPending: unsavePostPending } =
-    useUnsavePost();
+    // Optimistic update
+    queryClient.setQueryData(
+      [QUERY_KEYS.GET_POST_LIKES_COUNT, postId],
+      (old: number) => (isLiked ? old - 1 : old + 1)
+    );
+    queryClient.setQueryData(
+      [QUERY_KEYS.CHECK_POST_LIKE, postId, userId],
+      !isLiked
+    );
 
-  const [isLikedState, setIsLikedState] = useState<boolean>(false);
-  const [isSavedState, setIsSavedState] = useState<boolean>(false);
-  const [initialLikesCount, setInitialLikesCount] =
-    useState<number>(likesCount);
-
-  useEffect(() => {
-    if (!isLikeLoading && isLikedData !== undefined) {
-      setIsLikedState(isLikedData);
-    }
-  }, [isLikedData, isLikeLoading]);
-
-  useEffect(() => {
-    if (!isSaveLoading && isSavedData !== undefined) {
-      setIsSavedState(isSavedData);
-    }
-  }, [isSavedData, isSaveLoading]);
-
-  useEffect(() => {
-    const fetchAccountId = async () => {
-      try {
-        const id = await getUserAccountId(authorId);
-        setAccountId(id);
-      } catch (error) {
-        console.error('Error fetching account ID:', error);
-      }
-    };
-    
-    fetchAccountId();
-  }, [authorId]);
-
-  const handleLikePost = () => {
-    const updateLikeCount = () => {
-      setInitialLikesCount((prevCount) => prevCount + (isLikedState ? -1 : 1));
-
-      if (!isLikedState) {
-        setIsLikedState(true);
-        likePostMutation(
-          { postId, authorId: accountId, userId },
-          {
-            onSuccess: () => {
-              queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_CREATION_BY_ID, postId],
-              });
-              toast({ title: 'Creation liked!' });
-            },
-            onError: () => {
-              setIsLikedState(false);
-              setInitialLikesCount((prevCount) => prevCount - 1); // Revert the count change
-              toast({ title: 'Failed to like the post.' });
-            },
-          }
-        );
+    try {
+      if (isLiked) {
+        await unlikePost({ postId, userId });
       } else {
-        setIsLikedState(false);
-        unlikePostMutation(
-          { postId, userId },
-          {
-            onSuccess: () => {
-              queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_CREATION_BY_ID, postId],
-              });
-              toast({ title: 'Creation unliked!' });
-            },
-            onError: () => {
-              setIsLikedState(true);
-              setInitialLikesCount((prevCount) => prevCount + 1); // Revert the count change
-              toast({ title: 'Failed to unlike the creation.' });
-            },
-          }
-        );
+        await likePost({ postId, authorId, userId });
       }
-    };
-
-    setTimeout(updateLikeCount, 0);
-  };
-
-  const handleSavePost = () => {
-    if (savePostPending || unsavePostPending) return;
-
-    if (!isSavedState) {
-      setIsSavedState(true);
-      savePostMutation(
-        { postId, authorId: accountId, userId },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({
-              queryKey: [QUERY_KEYS.GET_CREATION_BY_ID, postId],
-            });
-            toast({ title: 'Creation saved!' });
-          },
-          onError: () => {
-            setIsSavedState(false);
-            toast({ title: 'Failed to save the creation.' });
-          },
-        }
+    } catch (error) {
+      // Revert on error
+      queryClient.setQueryData(
+        [QUERY_KEYS.GET_POST_LIKES_COUNT, postId],
+        (old: number) => (isLiked ? old + 1 : old - 1)
       );
-    } else {
-      setIsSavedState(false);
-      unsavePostMutation(
-        { postId, userId },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({
-              queryKey: [QUERY_KEYS.GET_CREATION_BY_ID, postId],
-            });
-            toast({ title: 'Creation unsaved!' });
-          },
-          onError: () => {
-            setIsSavedState(true);
-            toast({ title: 'Failed to unsave the creation.' });
-          },
-        }
+      queryClient.setQueryData(
+        [QUERY_KEYS.CHECK_POST_LIKE, postId, userId],
+        isLiked
       );
+      toast({
+        title: 'Error',
+        description: 'Failed to update like status',
+        variant: 'destructive',
+      });
     }
-  };
+  }, [
+    postId,
+    userId,
+    authorId,
+    isLiked,
+    isLiking,
+    isUnliking,
+    likePost,
+    unlikePost,
+    queryClient,
+    toast,
+  ]);
 
-  const containerStyles = location.pathname.startsWith('/profile')
-    ? 'w-full'
-    : '';
+  const handleSave = useCallback(async () => {
+    if (!postId || !userId || isSaving || isUnsaving) return;
+
+    // Optimistic update
+    queryClient.setQueryData(
+      [QUERY_KEYS.GET_POST_SAVES_COUNT, postId],
+      (old: number) => (isSaved ? old - 1 : old + 1)
+    );
+    queryClient.setQueryData(
+      [QUERY_KEYS.CHECK_POST_SAVE, postId, userId],
+      !isSaved
+    );
+
+    try {
+      if (isSaved) {
+        await unsavePost({ postId, userId });
+      } else {
+        await savePost({ postId, authorId, userId });
+      }
+    } catch (error) {
+      // Revert on error
+      queryClient.setQueryData(
+        [QUERY_KEYS.GET_POST_SAVES_COUNT, postId],
+        (old: number) => (isSaved ? old + 1 : old - 1)
+      );
+      queryClient.setQueryData(
+        [QUERY_KEYS.CHECK_POST_SAVE, postId, userId],
+        isSaved
+      );
+      toast({
+        title: 'Error',
+        description: 'Failed to update save status',
+        variant: 'destructive',
+      });
+    }
+  }, [
+    postId,
+    userId,
+    authorId,
+    isSaved,
+    isSaving,
+    isUnsaving,
+    savePost,
+    unsavePost,
+    queryClient,
+    toast,
+  ]);
+
+  const handleShare = useCallback(async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Creation Post',
+          text: 'Check out this post from Xongroh!',
+          url: window.location.href,
+        });
+        toast({ title: 'Content shared successfully!' });
+      } else {
+        await navigator.clipboard.writeText(
+          `Check out this post from Xongroh! ${window.location.href}`
+        );
+        toast({ title: 'Link copied to clipboard!' });
+      }
+    } catch (error) {
+      toast({ title: 'Error sharing content', variant: 'destructive' });
+    }
+  }, [toast]);
 
   return (
     <div
-      className={`flex justify-between items-center z-20 ${containerStyles}`}
+      className={`flex justify-between items-center z-20 ${
+        location.pathname.startsWith('/profile') ? 'w-full' : ''
+      }`}
     >
       <div className="flex gap-1 items-center">
         <img
-          src={
-            isLikedState ? '/assets/icons/liked.svg' : '/assets/icons/like.svg'
-          }
+          src={isLiked ? '/assets/icons/liked.svg' : '/assets/icons/like.svg'}
           alt="like"
           width={27}
-          onClick={handleLikePost}
+          onClick={handleLike}
           className={`cursor-pointer ${
-            likePostPending || unlikePostPending
-              ? 'opacity-50 cursor-not-allowed'
-              : ''
+            isLiking || isUnliking ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         />
-        {initialLikesCount > 0 && (
+        {likesCount > 0 && (
           <p className="small-semibold lg:base-semibold text-light-3">
-            {initialLikesCount}
+            {likesCount}
           </p>
         )}
       </div>
 
       <div className="flex-center gap-5">
-        <div className="flex gap-2">
-          {savePostPending || unsavePostPending ? (
-            <Loader />
-          ) : (
-            // Hide save button if user is the creator
-            userId !== post?.creatorId && (
-              <img
-                src={
-                  isSavedState
-                    ? '/assets/icons/saved.svg'
-                    : '/assets/icons/save.svg'
-                }
-                alt="save"
-                width={25}
-                onClick={handleSavePost}
-                className={`cursor-pointer ${
-                  savePostPending || unsavePostPending
-                    ? 'opacity-50 cursor-not-allowed'
-                    : ''
-                }`}
-              />
-            )
-          )}
-        </div>
+        {userId !== post?.authorId ? (
+          <div className="flex gap-2">
+            <img
+              src={
+                isSaved ? '/assets/icons/saved.svg' : '/assets/icons/save.svg'
+              }
+              alt="save"
+              width={25}
+              onClick={handleSave}
+              className={`cursor-pointer ${
+                isSaving || isUnsaving ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            />
+            {savesCount > 0 && (
+              <p className="small-semibold lg:base-semibold text-light-3 pt-0.5">
+                {savesCount}
+              </p>
+            )}
+          </div>
+        ) : (
+          <>
+            {savesCount > 0 ? (
+              <div className="flex gap-2">
+                <img src="/assets/icons/saved.svg" alt="save" width={25} />
+                <p className="small-semibold lg:base-semibold text-light-3 pt-0.5">
+                  {savesCount}
+                </p>
+              </div>
+            ) : (
+              <img src="/assets/icons/save.svg" alt="save" width={25} />
+            )}
+          </>
+        )}
         <img
           src="/assets/icons/share.svg"
           alt="share"

@@ -4,11 +4,14 @@ import PostCard from '@/components/shared/PostCard';
 
 import { Models } from 'appwrite';
 import { useUserContext } from '@/context/AuthContext';
-import { useGetRecentCreations, useGetSavedCreations } from '@/lib/tanstack-queries/postsQueries';
+import {
+  useGetRecentCreations,
+  useGetSavedCreations,
+} from '@/lib/tanstack-queries/postsQueries';
 
 const tabs = [
   { name: 'creation', label: 'Creations' },
-  { name: 'saved', label: 'Saved' }
+  { name: 'saved', label: 'Saved' },
 ];
 
 const Home = () => {
@@ -21,7 +24,7 @@ const Home = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isLoading: isPostLoading
+    isLoading: isPostLoading,
   } = useGetRecentCreations();
 
   const {
@@ -29,17 +32,17 @@ const Home = () => {
     fetchNextPage: fetchNextSavedPage,
     hasNextPage: hasNextSavedPage,
     isFetchingNextPage: isFetchingNextSavedPage,
-    isLoading: isSavedLoading
+    isLoading: isSavedLoading,
   } = useGetSavedCreations(user.id);
 
   // Flatten posts from all pages
   const posts = useMemo(() => {
-    return postsPages?.pages.flatMap(page => page.documents) || [];
+    return postsPages?.pages.flatMap((page) => page.documents) || [];
   }, [postsPages]);
 
   // Flatten saved posts from all pages
   const savedPosts = useMemo(() => {
-    return savedPostsPages?.pages.flatMap(page => page.documents) || [];
+    return savedPostsPages?.pages.flatMap((page) => page.documents) || [];
   }, [savedPostsPages]);
 
   // Intersection Observer for infinite scroll
@@ -63,7 +66,11 @@ const Home = () => {
     } else if (activeTab === 'saved') {
       observer = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && hasNextSavedPage && !isFetchingNextSavedPage) {
+          if (
+            entries[0].isIntersecting &&
+            hasNextSavedPage &&
+            !isFetchingNextSavedPage
+          ) {
             fetchNextSavedPage();
           }
         },
@@ -88,7 +95,7 @@ const Home = () => {
     isFetchingNextPage,
     isFetchingNextSavedPage,
     fetchNextPage,
-    fetchNextSavedPage
+    fetchNextSavedPage,
   ]);
 
   // Add ref for saved posts infinite scroll

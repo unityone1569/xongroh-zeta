@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import Loader from './Loader';
 import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
 import LazyImage from './LazyImage';
+import { getUserAccountId } from '@/lib/appwrite-apis/users';
 
 type PostCardProps = {
   post: Models.Document;
@@ -18,6 +19,20 @@ const PostCard = ({ post }: PostCardProps) => {
   const { user } = useUserContext();
   const [mediaType, setMediaType] = useState<string>('unknown');
   const [isMediaLoading, setIsMediaLoading] = useState(true);
+  const creatorId = post?.authorId;
+  const [accountId, setAccountId] = useState<string>('');
+  
+
+  // Fetch accountId when author data is available
+  useEffect(() => {
+    const getAccountId = async () => {
+      if (creatorId) {
+        const id = await getUserAccountId(creatorId);
+        setAccountId(id);
+      }
+    };
+    getAccountId();
+  }, [creatorId]);
 
   useEffect(() => {
     if (post?.mediaUrl) {
@@ -28,25 +43,27 @@ const PostCard = ({ post }: PostCardProps) => {
     }
   }, [post?.mediaUrl]);
 
-  if (!post.creatorId) return;
+  if (!post.authorId) return;
+
+
+  
 
   return (
     <div className="post-card">
       <div className="flex-between">
         <div className="flex items-center gap-3">
-          <Link to={`/profile/${post?.creatorId}`}>
+          <Link to={`/profile/${post?.authorId}`}>
             <LazyImage
               src={
-                post?.creator?.dpUrl || '/assets/icons/profile-placeholder.svg'
+                post?.author?.dpUrl || '/assets/icons/profile-placeholder.svg'
               }
-              alt="creator"
+              alt="author"
               className="rounded-full object-cover w-10 h-10 lg:w-14 lg:h-14"
-              
             />
           </Link>
           <div className="flex flex-col">
             <p className="base-medium lg:body-bold text-light-1">
-              {post?.creator?.name}
+              {post?.author?.name}
             </p>
             <div className="flex-start text-light-3 pt-0.5">
               <p className="subtle-semibold lg:small-regular ">
@@ -57,7 +74,7 @@ const PostCard = ({ post }: PostCardProps) => {
         </div>
         <Link
           to={`/update-post/${post?.$id}`}
-          className={`${user.id !== post?.creatorId && 'hidden'}`}
+          className={`${user.id !== post?.authorId && 'hidden'}`}
         >
           <img src="/assets/icons/edit.svg" alt="edit" width={20} />
         </Link>
@@ -91,19 +108,19 @@ const PostCard = ({ post }: PostCardProps) => {
                       <LazyImage
                         src={post?.mediaUrl}
                         alt="post image"
-                        className="post-card_img"
+                        className="post-card_img mt-5"
                       />
                     </Link>
                   );
                 case 'audio':
                   return (
-                    <div className="post-card_audio ">
+                    <div className="post-card_audio mt-5">
                       <AudioPlayer audioUrl={post?.mediaUrl} />
                     </div>
                   );
                 case 'video':
                   return (
-                    <div className="post-card_video">
+                    <div className="post-card_video mt-5">
                       <VideoPlayer videoUrl={post?.mediaUrl[0]} />
                     </div>
                   );
@@ -133,7 +150,7 @@ const PostCard = ({ post }: PostCardProps) => {
         )}
 
       <div className="mt-5">
-        <PostStats post={post} userId={user.id} />
+        <PostStats post={post} userId={user.id} authorId={accountId} />
       </div>
     </div>
   );

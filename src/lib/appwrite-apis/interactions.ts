@@ -24,16 +24,35 @@ const fn = {
 
 // *** POST-LIKE ***
 
+// Get-Post-Likes-Count
+export async function getPostLikeCount(postId: string): Promise<number> {
+  if (!postId) return 0;
+
+  try {
+    const likes = await databases.listDocuments(
+      db.interactionsId,
+      cl.postLikeId,
+      [Query.equal('postId', postId), Query.select(['userId'])]
+    );
+    return likes.total;
+  } catch (error) {
+    console.error('Error getting post likes count:', error);
+    return 0;
+  }
+}
+
 // Check-Post-Like
 export async function checkPostLike(
   postId: string,
   userId: string
 ): Promise<boolean> {
+  if (!postId || !userId) return false;
+
   try {
     const likes = await databases.listDocuments(
       db.interactionsId,
       cl.postLikeId,
-      [Query.equal('creatorId', userId), Query.equal('postId', postId)]
+      [Query.equal('userId', userId), Query.equal('postId', postId)]
     );
 
     return likes.documents.length > 0;
@@ -48,7 +67,9 @@ export async function likePost(
   postId: string,
   authorId: string,
   userId: string
-): Promise<{ success: boolean; error?: unknown; likesCount?: number }> {
+): Promise<{ success: boolean; error?: unknown }> {
+  if (!postId || !userId || !authorId) return { success: false };
+
   try {
     // Save like record in post likes collection
     const postLike = await databases.createDocument(
@@ -56,7 +77,7 @@ export async function likePost(
       cl.postLikeId,
       ID.unique(),
       {
-        creatorId: userId,
+        userId,
         postId,
       }
     );
@@ -69,16 +90,8 @@ export async function likePost(
 
     await functions.createExecution(fn.postLikePermissionId, payload, true);
 
-    // Get total likes count for this post
-    const likesCount = await databases.listDocuments(
-      db.interactionsId,
-      cl.postLikeId,
-      [Query.equal('postId', postId)]
-    );
-
     return {
       success: true,
-      likesCount: likesCount.total,
     };
   } catch (error) {
     console.error('Error liking post:', error);
@@ -90,13 +103,14 @@ export async function likePost(
 export async function unlikePost(
   postId: string,
   userId: string
-): Promise<{ success: boolean; error?: unknown; likesCount?: number }> {
+): Promise<{ success: boolean; error?: unknown }> {
+  if (!postId || !userId) return { success: false };
   try {
     // Find and delete like record
     const likes = await databases.listDocuments(
       db.interactionsId,
       cl.postLikeId,
-      [Query.equal('postId', postId), Query.equal('creatorId', userId)]
+      [Query.equal('postId', postId), Query.equal('userId', userId)]
     );
 
     if (!likes.documents.length) throw Error;
@@ -108,16 +122,8 @@ export async function unlikePost(
       likes.documents[0].$id
     );
 
-    // Get updated likes count
-    const likesCount = await databases.listDocuments(
-      db.interactionsId,
-      cl.postLikeId,
-      [Query.equal('postId', postId)]
-    );
-
     return {
       success: true,
-      likesCount: likesCount.total,
     };
   } catch (error) {
     console.error('Error unliking post:', error);
@@ -188,7 +194,7 @@ export async function checkItemLike(
     const likes = await databases.listDocuments(
       db.interactionsId,
       cl.itemLikeId,
-      [Query.equal('creatorId', userId), Query.equal('itemId', itemId)]
+      [Query.equal('userId', userId), Query.equal('itemId', itemId)]
     );
 
     return likes.documents.length > 0;
@@ -215,9 +221,9 @@ export async function likeItem(
   itemId: string,
   userId: string,
   authorId: string
-): Promise<{ success: boolean; error?: unknown; likesCount: number }> {
+): Promise<{ success: boolean; error?: unknown }> {
   if (!itemId || !userId || !authorId) {
-    return { success: false, likesCount: 0 };
+    return { success: false };
   }
 
   try {
@@ -227,7 +233,7 @@ export async function likeItem(
       cl.itemLikeId,
       ID.unique(),
       {
-        creatorId: userId,
+        userId: userId,
         itemId,
       }
     );
@@ -240,19 +246,14 @@ export async function likeItem(
 
     await functions.createExecution(fn.itemLikePermissionId, payload, true);
 
-    // Get updated likes count
-    const likesCount = await getLikesCount(itemId);
-
     return {
       success: true,
-      likesCount,
     };
   } catch (error) {
     console.error('Error liking item:', error);
     return {
       success: false,
       error,
-      likesCount: 0,
     };
   }
 }
@@ -271,7 +272,7 @@ export async function unlikeItem(
     const likes = await databases.listDocuments(
       db.interactionsId,
       cl.itemLikeId,
-      [Query.equal('itemId', itemId), Query.equal('creatorId', userId)]
+      [Query.equal('itemId', itemId), Query.equal('userId', userId)]
     );
 
     if (!likes.documents.length) {
@@ -332,14 +333,31 @@ export async function deleteItemLike(
 
 // *** SAVE ***
 
+// Get-Post-Saves-Count
+export async function getPostSaveCount(postId: string): Promise<number> {
+  if (!postId) return 0;
+
+  try {
+    const saves = await databases.listDocuments(db.interactionsId, cl.saveId, [
+      Query.equal('postId', postId),
+      Query.select(['postId']),
+    ]);
+    return saves.total;
+  } catch (error) {
+    console.error('Error getting post saves count:', error);
+    return 0;
+  }
+}
+
 // Check-Post-Save
 export async function checkPostSave(
   postId: string,
   userId: string
 ): Promise<boolean> {
+  if (!postId || !userId) return false;
   try {
     const saves = await databases.listDocuments(db.interactionsId, cl.saveId, [
-      Query.equal('creatorId', userId),
+      Query.equal('userId', userId),
       Query.equal('postId', postId),
     ]);
 
@@ -355,7 +373,9 @@ export async function savePost(
   postId: string,
   authorId: string,
   userId: string
-): Promise<{ success: boolean; error?: unknown; saveCount?: number }> {
+): Promise<{ success: boolean; error?: unknown }> {
+  if (!postId || !userId || !authorId) return { success: false };
+
   try {
     // Save record in saves collection
     const saveRecord = await databases.createDocument(
@@ -363,7 +383,7 @@ export async function savePost(
       cl.saveId,
       ID.unique(),
       {
-        creatorId: userId,
+        userId,
         postId,
       }
     );
@@ -376,16 +396,8 @@ export async function savePost(
 
     await functions.createExecution(fn.savePermissionId, payload, true);
 
-    // Get total saves count for this post
-    const saveCount = await databases.listDocuments(
-      db.interactionsId,
-      cl.saveId,
-      [Query.equal('postId', postId)]
-    );
-
     return {
       success: true,
-      saveCount: saveCount.total,
     };
   } catch (error) {
     console.error('Error saving post:', error);
@@ -397,12 +409,14 @@ export async function savePost(
 export async function unsavePost(
   postId: string,
   userId: string
-): Promise<{ success: boolean; error?: unknown; saveCount?: number }> {
+): Promise<{ success: boolean; error?: unknown }> {
+  if (!postId || !userId) return { success: false };
+
   try {
     // Find save record
     const saves = await databases.listDocuments(db.interactionsId, cl.saveId, [
       Query.equal('postId', postId),
-      Query.equal('creatorId', userId),
+      Query.equal('userId', userId),
     ]);
 
     if (!saves.documents.length) throw Error;
@@ -414,16 +428,8 @@ export async function unsavePost(
       saves.documents[0].$id
     );
 
-    // Get total saves count for this post
-    const saveCount = await databases.listDocuments(
-      db.interactionsId,
-      cl.saveId,
-      [Query.equal('postId', postId)]
-    );
-
     return {
       success: true,
-      saveCount: saveCount.total,
     };
   } catch (error) {
     console.error('Error unsaving post:', error);
@@ -449,7 +455,17 @@ export async function deleteAllPostSaves(postId: string) {
 
     // Delete each save
     for (const save of postSaves.documents) {
-      await databases.deleteDocument(db.interactionsId, cl.saveId, save.$id);
+      const saveId = save.$id;
+
+      const statusCode = await databases.deleteDocument(
+        db.interactionsId,
+        cl.postLikeId,
+        saveId
+      );
+
+      if (!statusCode) {
+        throw new Error(`Failed to delete like with ID: ${saveId}`);
+      }
     }
 
     return { status: 'Ok', postId };

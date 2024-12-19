@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useUserContext } from '@/context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -25,9 +25,9 @@ import {
   useGetFeedbackReplies,
 } from '@/lib/tanstack-queries/commentsQueries';
 import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
-import { getUserAccountId } from '@/lib/appwrite-apis/users';
 
 interface RepliesSectionProps {
+  postAuthorId: string;
   authorId: string;
   parentId: string;
   userId: string;
@@ -53,6 +53,7 @@ const Textarea = React.forwardRef<
 Textarea.displayName = 'Textarea';
 
 const Replies = ({
+  postAuthorId,
   authorId,
   parentId,
   userId,
@@ -74,25 +75,12 @@ const Replies = ({
     defaultValues: { reply: '' },
   });
 
-  const [accountId, setAccountId] = useState<string>("");
-  
-  useEffect(() => {
-    const fetchAccountId = async () => {
-      try {
-        const id = await getUserAccountId(authorId);
-        setAccountId(id);
-      } catch (error) {
-        console.error('Error fetching account ID:', error);
-      }
-    };
-    
-    fetchAccountId();
-  }, [authorId]);
+  const { formState: { isSubmitting } } = replyForm;
 
   const onSubmitReply = useCallback(
     async ({ reply }: ReplyFormValues) => {
       try {
-        await addReply({ parentId, authorId: accountId, userId, content: reply });
+        await addReply({ parentId, authorId, userId, content: reply });
         replyForm.reset();
         toast({
           description: 'Reply added successfully!',
@@ -104,7 +92,7 @@ const Replies = ({
         });
       }
     },
-    [addReply, parentId, accountId, userId, replyForm, toast, toggleReplyForm]
+    [addReply, parentId, authorId, userId, replyForm, toast, toggleReplyForm]
   );
 
   return (
@@ -115,10 +103,11 @@ const Replies = ({
         ) : (
           replies?.map((reply) => (
             <ReplyItem
-              authorId={accountId}  // Pass accountId instead of authorId
+              postAuthorId={postAuthorId} // Pass postAuthorId
+              authorId={authorId} // Pass accountId instead of authorId
               key={reply.$id}
               content={reply.content}
-              creatorId={reply.creatorId}
+              creatorId={reply.userId}
               createdAt={reply.$createdAt}
               toggleReplyForm={toggleReplyForm} // Pass toggleReplyForm as a prop
               item={reply}
@@ -148,10 +137,12 @@ const Replies = ({
               )}
             />
             <button
-              className="text-light-3 font-semibold text-sm md:text-base ml-2 mt-4 mb-6 whitespace-nowrap"
+              className={`text-light-3 font-semibold text-sm md:text-base ml-2 mt-4 mb-6 whitespace-nowrap
+                ${isSubmitting ? 'opacity-50' : ''}`}
               type="submit"
+              disabled={isSubmitting}
             >
-              Send
+              {isSubmitting ? 'Sending' : 'Send'}
             </button>
           </form>
         </Form>
@@ -165,6 +156,7 @@ type ReplyItemProps = {
   createdAt: string;
   creatorId: string;
   authorId: string;
+  postAuthorId: string;
   item: Models.Document;
   toggleReplyForm: () => void;
   isFeedback: boolean; // Add isFeedback
@@ -177,6 +169,7 @@ const ReplyItem = React.memo(
     createdAt,
     creatorId,
     authorId,
+    postAuthorId,
     item,
     toggleReplyForm,
     isFeedback,
@@ -217,7 +210,7 @@ const ReplyItem = React.memo(
           <LikedItems item={item} userId={user.id} authorId={authorId} />
           <div
             className={`${
-              user?.id !== creatorId && user?.id !== authorId && 'hidden'
+              user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
             }`}
           >
             {isFeedback ? (

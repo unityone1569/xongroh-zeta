@@ -5,6 +5,8 @@ import {
   checkPostLike,
   checkPostSave,
   getItemLikesCount,
+  getPostLikeCount,
+  getPostSaveCount,
   likeItem,
   likePost,
   savePost,
@@ -15,11 +17,21 @@ import {
 
 // *** POST-LIKE-QUERIES ***
 
+// Use-Get-Post-Likes-Count
+export const useGetPostLikesCount = (postId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_POST_LIKES_COUNT, postId],
+    queryFn: () => getPostLikeCount(postId),
+    enabled: Boolean(postId),
+  });
+};
+
 // Use-Check-Post-Like
 export const useCheckPostLike = (postId: string, userId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.CHECK_POST_LIKE, postId, userId],
     queryFn: () => checkPostLike(postId, userId),
+    enabled: Boolean(postId && userId),
   });
 };
 
@@ -36,7 +48,7 @@ export const useLikePost = () => {
       postId: string;
       authorId: string;
       userId: string;
-    }) => likePost(postId, userId, authorId),
+    }) => likePost(postId, authorId, userId),
     onSuccess: (_, { postId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_CREATION_BY_ID, postId],
@@ -136,11 +148,21 @@ export const useUnlikeItem = () => {
 
 // *** SAVE-POST-QUERIES ***
 
+// Use-Get-Post-Saves-Count
+export const useGetPostSavesCount = (postId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_POST_SAVES_COUNT, postId],
+    queryFn: () => getPostSaveCount(postId),
+    enabled: Boolean(postId),
+  });
+};
+
 // Use-Check-Save-Post
 export const useCheckPostSave = (postId: string, userId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.CHECK_POST_SAVE, postId, userId],
     queryFn: () => checkPostSave(postId, userId),
+    enabled: Boolean(postId && userId),
   });
 };
 
@@ -171,6 +193,9 @@ export const useSavePost = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_SAVED_POST_DETAILS, postId],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_SAVES_COUNT, postId],
+      });
     },
   });
 };
@@ -180,13 +205,8 @@ export const useUnsavePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      postId,
-      userId,
-    }: {
-      postId: string;
-      userId: string;         
-    }) => unsavePost(postId, userId),
+    mutationFn: ({ postId, userId }: { postId: string; userId: string }) =>
+      unsavePost(postId, userId),
     onSuccess: (_, { postId, userId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_CREATION_BY_ID, postId],
@@ -202,6 +222,9 @@ export const useUnsavePost = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_SAVED_POST_DETAILS, postId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_SAVES_COUNT, postId],
       });
     },
   });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useUserContext } from '@/context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,15 +20,19 @@ import Replies from './Replies';
 import LikedItems from './LikedItems';
 import { Models } from 'appwrite';
 import { DeleteComment, DeleteFeedback } from './DeleteItems';
-import { useAddComment, useAddFeedback, useGetComments, useGetFeedbacks } from '@/lib/tanstack-queries/commentsQueries';
-import { getCreationById } from '@/lib/appwrite-apis/posts';
+import {
+  useAddComment,
+  useAddFeedback,
+  useGetComments,
+  useGetFeedbacks,
+} from '@/lib/tanstack-queries/commentsQueries';
 import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
-import { getUserAccountId } from '@/lib/appwrite-apis/users';
 
 type PostCommentsProps = {
   postId: string;
   userId: string;
   authorId: string;
+  postAuthorId: string;
 };
 
 interface CommentFormValues {
@@ -55,27 +59,16 @@ const Textarea = React.forwardRef<
 >((props, ref) => <BaseTextarea {...props} ref={ref} />);
 Textarea.displayName = 'Textarea';
 
-const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
+const PostComments = ({
+  postId,
+  userId,
+  authorId,
+  postAuthorId,
+}: PostCommentsProps) => {
   const { toast } = useToast();
-  const [isAuthor, setIsAuthor] = useState(false);
   const [activeTab, setActiveTab] = useState<'comments' | 'feedbacks'>(
     'comments'
   );
-  const [accountId, setAccountId] = useState<string>("");
-
-  // Fetch accountId when component mounts
-  useEffect(() => {
-    const fetchAccountId = async () => {
-      try {
-        const id = await getUserAccountId(authorId);
-        setAccountId(id);
-      } catch (error) {
-        console.error('Error fetching account ID:', error);
-      }
-    };
-    
-    fetchAccountId();
-  }, [authorId]);
 
   // Fetching data
   const { data: comments, isLoading: isCommentsLoading } =
@@ -96,15 +89,6 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
     resolver: zodResolver(feedbackSchema),
     defaultValues: { feedback: '' },
   });
-
-  // Check if the user is the author
-  useEffect(() => {
-    const checkIfAuthor = async () => {
-      const post = await getCreationById(postId);
-      setIsAuthor(post?.creatorId === userId);
-    };
-    checkIfAuthor();
-  }, [postId, userId]);
 
   const handleTabChange = useCallback(
     (tab: 'comments' | 'feedbacks') => setActiveTab(tab),
@@ -130,12 +114,11 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
     [addFeedback, feedbackForm, postId, userId, authorId]
   );
 
-  // Filtered feedbacks based on user role
   const visibleFeedbacks = useMemo(() => {
     return feedbacks?.filter(
-      (feedback) => isAuthor || feedback.creatorId === userId
+      (feedback) => postAuthorId === userId || feedback.userId === userId
     );
-  }, [feedbacks, isAuthor, userId]);
+  }, [feedbacks, authorId, userId]);
 
   // Rendered Items
   const RenderedItems = useMemo(() => {
@@ -144,13 +127,14 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
       return comments?.map((comment) => (
         <CommentItem
           key={comment.$id}
+          creatorId={comment.userId}
           content={comment.content}
-          creatorId={comment.creatorId}
           createdAt={comment.$createdAt}
           commentId={comment.$id}
           postId={postId}
           userId={userId}
-          authorId={accountId} // Pass accountId here
+          authorId={authorId}
+          postAuthorId={postAuthorId}
           item={comment}
         />
       ));
@@ -159,12 +143,13 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
       <FeedbackItem
         key={feedback.$id}
         content={feedback.content}
-        creatorId={feedback.creatorId}
+        creatorId={feedback.userId}
         createdAt={feedback.$createdAt}
         feedbackId={feedback.$id}
         postId={postId}
         userId={userId}
-        authorId={accountId} // Pass accountId here
+        authorId={authorId}
+        postAuthorId={postAuthorId}
         item={feedback}
       />
     ));
@@ -177,6 +162,13 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
     postId,
     userId,
   ]);
+
+  const {
+    formState: { isSubmitting: isSubmittingComment },
+  } = commentForm;
+  const {
+    formState: { isSubmitting: isSubmittingFeedback },
+  } = feedbackForm;
 
   return (
     <div className="post-comments-container">
@@ -218,10 +210,13 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
                 )}
               />
               <Button
-                className="shad-button_primary ml-1 mt-4 mb-6 whitespace-nowrap"
+                className={`shad-button_primary ml-1 mt-4 mb-6 whitespace-nowrap ${
+                  isSubmittingComment ? 'opacity-50' : ''
+                }`}
                 type="submit"
+                disabled={isSubmittingComment}
               >
-                Submit
+                {isSubmittingComment ? 'Sending' : 'Send'}
               </Button>
             </form>
           </Form>
@@ -245,10 +240,13 @@ const PostComments = ({ postId, userId, authorId }: PostCommentsProps) => {
                 )}
               />
               <Button
-                className="shad-button_primary ml-1 mt-4 mb-6 whitespace-nowrap"
+                className={`shad-button_primary ml-1 mt-4 mb-6 whitespace-nowrap ${
+                  isSubmittingFeedback ? 'opacity-50' : ''
+                }`}
                 type="submit"
+                disabled={isSubmittingFeedback}
               >
-                Submit
+                {isSubmittingFeedback ? 'Sending' : 'Send'}
               </Button>
             </form>
           </Form>
@@ -266,6 +264,7 @@ type CommentProps = {
   postId: string;
   userId: string;
   authorId: string;
+  postAuthorId: string;
   item: Models.Document;
 };
 
@@ -277,6 +276,7 @@ const CommentItem = React.memo(
     commentId,
     userId,
     authorId,
+    postAuthorId,
     item,
     postId,
   }: CommentProps) => {
@@ -320,7 +320,7 @@ const CommentItem = React.memo(
             <LikedItems item={item} userId={user.id} authorId={authorId} />
             <div
               className={`${
-                user?.id !== creatorId && user?.id !== authorId && 'hidden'
+                user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
               }`}
             >
               <DeleteComment commentId={commentId} postId={postId} />
@@ -335,6 +335,7 @@ const CommentItem = React.memo(
         </div>
         <div>
           <Replies
+            postAuthorId={postAuthorId}
             parentId={commentId}
             userId={userId}
             isFeedback={false}
@@ -358,6 +359,7 @@ type FeedbackProps = {
   postId: string;
   userId: string;
   authorId: string;
+  postAuthorId: string;
   item: Models.Document;
 };
 
@@ -368,6 +370,7 @@ const FeedbackItem = React.memo(
     creatorId,
     feedbackId,
     userId,
+    postAuthorId,
     authorId,
     item,
     postId,
@@ -412,7 +415,7 @@ const FeedbackItem = React.memo(
             <LikedItems item={item} userId={user.id} authorId={authorId} />
             <div
               className={`${
-                user?.id !== creatorId && user?.id !== authorId && 'hidden'
+                user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
               }`}
             >
               <DeleteFeedback feedbackId={feedbackId} postId={postId} />
@@ -427,6 +430,7 @@ const FeedbackItem = React.memo(
         </div>
         <div>
           <Replies
+            postAuthorId={postAuthorId}
             authorId={authorId}
             parentId={feedbackId}
             userId={userId}

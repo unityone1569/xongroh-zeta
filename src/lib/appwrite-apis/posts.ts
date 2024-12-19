@@ -73,7 +73,9 @@ export async function getRecentCreations({
 
     // Create user fetch promises
     const userFetchPromises = creations.map((creation) =>
-      databases.getDocument(db.postsId, cl.creationId, creation.creatorId)
+      databases.getDocument(db.usersId, cl.creatorId, creation.authorId, [
+        Query.select(['name', 'dpUrl']),
+      ])
     );
 
     // Fetch all users in parallel
@@ -82,7 +84,7 @@ export async function getRecentCreations({
     // Combine creations with user details
     const creationsWithUserDetails = creations.map((creation, index) => ({
       ...creation,
-      creator: {
+      author: {
         name: users[index]?.name || '',
         dpUrl: users[index]?.dpUrl || null,
       },
@@ -426,9 +428,9 @@ export async function getSavedCreations({
     // Query saved posts with descending order by creation date
     const queries: any[] = [
       Query.equal('userId', userId),
-      Query.orderDesc('$createdAt'), // This ensures newest saves appear first
+      Query.orderDesc('$createdAt'),
       Query.limit(5),
-      Query.select(['$id', 'creationId']),
+      Query.select(['$id', 'postId']),
     ];
 
     if (pageParam) {

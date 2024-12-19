@@ -27,6 +27,8 @@ export enum QUERY_KEYS {
   GET_USER_PROJECTS = 'getUserProjects',
 
   GET_ITEMS_LIKE_COUNT = 'getItemsLikeCount',
+  GET_POST_LIKES_COUNT = 'getPostLikesCount',
+  GET_POST_SAVES_COUNT = 'getPostSavesCount',
   CHECK_POST_LIKE = 'checkPostLike',
   CHECK_ITEM_LIKE = 'checkItemLike',
   CHECK_POST_SAVE = 'checkPostSave',

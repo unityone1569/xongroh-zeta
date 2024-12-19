@@ -119,19 +119,27 @@ export const appwriteConfig: AppwriteConfig = {
   functions: {
     conversationPermission: import.meta.env
       .VITE_APPWRITE_CONVERSATION_PERMISSION_FUNCTION_ID,
+
     messagePermission: import.meta.env
       .VITE_APPWRITE_MESSAGE_PERMISSION_FUNCTION_ID,
+
       postLikePermission: import.meta.env
-      .VITE_APPWRITE_CREATION_LIKE_PERMISSION_FUNCTION_ID,
+      .VITE_APPWRITE_POST_LIKE_PERMISSION_FUNCTION_ID,
+
     itemLikePermission: import.meta.env
       .VITE_APPWRITE_ITEM_LIKE_PERMISSION_FUNCTION_ID,
+
     savePermission: import.meta.env.VITE_APPWRITE_SAVE_PERMISSION_FUNCTION_ID,
+
     commentPermission: import.meta.env
       .VITE_APPWRITE_COMMENT_PERMISSION_FUNCTION_ID,
+
     feedbackPermission: import.meta.env
       .VITE_APPWRITE_FEEDBACK_PERMISSION_FUNCTION_ID,
+
     commentReplyPermission: import.meta.env
       .VITE_APPWRITE_COMMENT_REPLY_PERMISSION_FUNCTION_ID,
+
     feedbackReplyPermission: import.meta.env
       .VITE_APPWRITE_FEEDBACK_REPLY_PERMISSION_FUNCTION_ID,
   },

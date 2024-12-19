@@ -56,7 +56,7 @@ export async function addComment(
       ID.unique(),
       {
         postId,
-        creatorId: userId,
+        userId,
         content,
       }
     );
@@ -140,7 +140,7 @@ export async function getFeedbacks(postId: string) {
   }
 }
 
-// Create-Feedback
+// Add-Feedback
 export async function addFeedback(
   postId: string,
   authorId: string,
@@ -154,7 +154,7 @@ export async function addFeedback(
       ID.unique(),
       {
         postId,
-        creatorId: userId,
+        userId,
         content,
       }
     );
@@ -238,7 +238,7 @@ export async function getCommentReplies(commentId: string) {
   }
 }
 
-// Create-Comment-Reply
+// Add-Comment-Reply
 export async function addCommentReply(
   parentId: string,
   authorId: string,
@@ -252,7 +252,7 @@ export async function addCommentReply(
       ID.unique(),
       {
         commentId: parentId,
-        creatorId: userId,
+        userId,
         content,
       }
     );
@@ -336,7 +336,7 @@ export async function getFeedbackReplies(feedbackId: string) {
   }
 }
 
-// Create-Feedback-Reply
+// Add-Feedback-Reply
 export async function addFeedbackReply(
   parentId: string,
   authorId: string,
@@ -350,7 +350,7 @@ export async function addFeedbackReply(
       ID.unique(),
       {
         feedbackId: parentId,
-        creatorId: userId,
+        userId,
         content,
       }
     );

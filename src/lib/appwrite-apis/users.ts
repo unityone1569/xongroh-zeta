@@ -784,7 +784,7 @@ export async function getUserCreations({
     if (!creations || creations.length === 0) return { documents: [] };
 
     const authorFetchPromises = creations.map((creation) =>
-      databases.getDocument(db.usersId, cl.creatorId, creation.creatorId)
+      databases.getDocument(db.usersId, cl.creatorId, creation.authorId)
     );
 
     // Resolve all user fetch promises in parallel

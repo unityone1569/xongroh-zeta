@@ -12,13 +12,32 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
 import LazyImage from '@/components/shared/LazyImage';
-import { useGetAuthorById, useGetCreationById } from '@/lib/tanstack-queries/postsQueries';
+import {
+  useGetAuthorById,
+  useGetCreationById,
+} from '@/lib/tanstack-queries/postsQueries';
+import { getUserAccountId } from '@/lib/appwrite-apis/users';
 
 const PostDetails = () => {
   const [mediaType, setMediaType] = useState<string>('unknown');
   const [isMediaLoading, setIsMediaLoading] = useState(true);
+  const [accountId, setAccountId] = useState<string>("");
   const { id } = useParams();
   const { data: post, isPending } = useGetCreationById(id || '');
+  const { user } = useUserContext();
+  const { data: author } = useGetAuthorById(post?.authorId);
+  const creatorId = post?.authorId;
+
+  // Fetch accountId when author data is available
+  useEffect(() => {
+    const getAccountId = async () => {
+      if (creatorId) {
+        const id = await getUserAccountId(creatorId);
+        setAccountId(id);
+      }
+    };
+    getAccountId();
+  }, [creatorId]);
 
   useEffect(() => {
     if (post?.mediaUrl) {
@@ -28,16 +47,14 @@ const PostDetails = () => {
         .finally(() => setIsMediaLoading(false));
     }
   }, [post?.mediaUrl]);
-  const { user } = useUserContext();
-  const { data: author } = useGetAuthorById(post?.creatorId);
+
   const postId = id || '';
   const mediaId = post?.mediaId[0];
-  const creatorId = post?.creatorId;
   const navigate = useNavigate();
 
   return (
     <div className="post_details-container">
-      {isPending ? (
+      {(isPending || !accountId) ? (
         <Loader />
       ) : (
         <div className="post_details-card">
@@ -120,9 +137,9 @@ const PostDetails = () => {
 
                 <div className={`${user?.id !== post?.creatorId && 'hidden'}`}>
                   <DeleteCreation
-                    postId={postId}
+                    creationId={postId}
                     mediaId={mediaId}
-                    creatorId={creatorId}
+                    authorId={accountId}
                   />
                 </div>
               </div>
@@ -153,12 +170,15 @@ const PostDetails = () => {
             <div className="w-full  pt-1.5">
               <PostStats
                 post={post ?? ({} as Models.Document)}
-                userId={user?.id}
+                userId={user.id}
+                authorId={accountId}
+        
               />
               <PostComments
                 postId={post?.$id ?? ''}
                 userId={user.id}
-                authorId={creatorId}
+                authorId={accountId}  
+                postAuthorId ={post?.authorId}
               />
             </div>
           </div>
