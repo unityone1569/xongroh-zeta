@@ -73,14 +73,14 @@ const PostCard = ({ post }: PostCardProps) => {
           </div>
         </div>
         <Link
-          to={`/update-post/${post?.$id}`}
+          to={`/update-creation/${post?.$id}`}
           className={`${user.id !== post?.authorId && 'hidden'}`}
         >
           <img src="/assets/icons/edit.svg" alt="edit" width={20} />
         </Link>
       </div>
 
-      <Link to={`/posts/${post?.$id}`}>
+      <Link to={`/creations/${post?.$id}`}>
         <div className="small-medium lg:base-medium ">
           {post?.mediaUrl?.length > 0 ? (
             <p className="pl-0.5 whitespace-pre-line pt-5 pb-4 small-regular line-clamp-5 text-pretty">
@@ -104,7 +104,7 @@ const PostCard = ({ post }: PostCardProps) => {
               switch (mediaType) {
                 case 'image':
                   return (
-                    <Link to={`/posts/${post?.$id}`}>
+                    <Link to={`/creations/${post?.$id}`}>
                       <LazyImage
                         src={post?.mediaUrl}
                         alt="post image"
@@ -134,7 +134,7 @@ const PostCard = ({ post }: PostCardProps) => {
       {post?.tags &&
         Array.isArray(post?.tags) &&
         post?.tags.filter((tag: string) => tag.trim() !== '').length > 0 && (
-          <Link to={`/posts/${post?.$id}`}>
+          <Link to={`/creations/${post?.$id}`}>
             <ul className="flex py-1.5 flex-wrap gap-3.5 mt-3.5 mb-0.5 overflow-x-hidden">
               {post?.tags
                 .filter((tag: string) => tag.trim() !== '') // Filter out empty tags

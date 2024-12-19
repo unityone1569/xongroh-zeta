@@ -10,7 +10,7 @@ type ProjectCardProps = {
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
   const { user } = useUserContext();
-  if (!project.creatorId) return;
+  if (!project.authorId) return;
 
   return (
     <div className="post-card">
@@ -51,10 +51,10 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
 
       <div className="flex-between pt-6">
         <div className="flex items-center gap-3">
-          <Link to={`/profile/${project?.creatorId}`}>
+          <Link to={`/profile/${project?.authorId}`}>
             <LazyImage
               src={
-                project?.creator?.dpUrl ||
+                project?.author?.dpUrl ||
                 '/assets/icons/profile-placeholder.svg'
               }
               alt="creator"
@@ -63,12 +63,12 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           </Link>
           <div className="flex flex-col">
             <p className="small-medium lg:base-medium text-light-1">
-              {project?.creator?.name}
+              {project?.author?.name}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <ProjectStats project={project} userId={user.id} />
+          <ProjectStats project={project} userId={user.id} authorId={project.authorId} />
         </div>
       </div>
     </div>

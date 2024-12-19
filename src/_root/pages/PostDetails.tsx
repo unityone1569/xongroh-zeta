@@ -26,18 +26,18 @@ const PostDetails = () => {
   const { data: post, isPending } = useGetCreationById(id || '');
   const { user } = useUserContext();
   const { data: author } = useGetAuthorById(post?.authorId);
-  const creatorId = post?.authorId;
+  const authorId = post?.authorId;
 
   // Fetch accountId when author data is available
   useEffect(() => {
     const getAccountId = async () => {
-      if (creatorId) {
-        const id = await getUserAccountId(creatorId);
+      if (authorId) {
+        const id = await getUserAccountId(authorId);
         setAccountId(id);
       }
-    };
+    };  
     getAccountId();
-  }, [creatorId]);
+  }, [authorId]);
 
   useEffect(() => {
     if (post?.mediaUrl) {
@@ -108,12 +108,12 @@ const PostDetails = () => {
           <div className="post_details-info mt-3">
             <div className="flex-between w-full">
               <Link
-                to={`/profile/${post?.creatorId}`}
+                to={`/profile/${post?.authorId}`}
                 className="flex items-center gap-3"
               >
                 <LazyImage
                   src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
-                  alt="creator"
+                  alt="author"
                   className="rounded-full object-cover w-10 h-10 lg:w-14 lg:h-14"
                 />
 
@@ -129,13 +129,13 @@ const PostDetails = () => {
                 </div>
               </Link>
               <div className="flex-center gap-5">
-                <div className={`${user?.id !== post?.creatorId && 'hidden'}`}>
-                  <Link to={`/update-post/${post?.$id}`}>
+                <div className={`${user?.id !== post?.authorId && 'hidden'}`}>
+                  <Link to={`/update-creation/${post?.$id}`}>
                     <img src="/assets/icons/edit.svg" alt="edit" width={22} />
                   </Link>
                 </div>
 
-                <div className={`${user?.id !== post?.creatorId && 'hidden'}`}>
+                <div className={`${user?.id !== post?.authorId && 'hidden'}`}>
                   <DeleteCreation
                     creationId={postId}
                     mediaId={mediaId}

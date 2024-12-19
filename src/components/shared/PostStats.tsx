@@ -136,24 +136,24 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
   ]);
 
   const handleShare = useCallback(async () => {
+    const shareUrl = `${window.location.origin}/creations/${post.$id}`;
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'Creation Post',
-          text: 'Check out this post from Xongroh!',
-          url: window.location.href,
+          title: 'Creation',
+          text: 'Check out this creation from Xongroh!',
+          url: shareUrl,
         });
-        toast({ title: 'Content shared successfully!' });
       } else {
         await navigator.clipboard.writeText(
-          `Check out this post from Xongroh! ${window.location.href}`
+          `Check out this creation from Xongroh! ${shareUrl}`
         );
         toast({ title: 'Link copied to clipboard!' });
       }
     } catch (error) {
-      toast({ title: 'Error sharing content', variant: 'destructive' });
+      toast({ title: 'Error sharing creation', variant: 'destructive' });
     }
-  }, [toast]);
+  }, [post.$id, toast]);
 
   return (
     <div
@@ -200,15 +200,13 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
           </div>
         ) : (
           <>
-            {savesCount > 0 ? (
+            {savesCount > 0 && (
               <div className="flex gap-2">
-                <img src="/assets/icons/saved.svg" alt="save" width={25} />
+                <img src="/assets/icons/save.svg" alt="save" width={25} />
                 <p className="small-semibold lg:base-semibold text-light-3 pt-0.5">
                   {savesCount}
                 </p>
               </div>
-            ) : (
-              <img src="/assets/icons/save.svg" alt="save" width={25} />
             )}
           </>
         )}

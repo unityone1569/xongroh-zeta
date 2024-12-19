@@ -1,6 +1,6 @@
+import { useCallback } from 'react';
 import { Models } from 'appwrite';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useCheckPostLike,
@@ -23,73 +23,54 @@ const ProjectStats = ({ project, userId, authorId }: ProjectStatsProps) => {
 
   // Queries
   const { data: likesCount = 0 } = useGetPostLikesCount(projectId);
-  const { data: isLiked = false, isLoading: isLikeLoading } = useCheckPostLike(
-    projectId,
-    userId
-  );
+  const { data: isLiked = false } = useCheckPostLike(projectId, userId);
 
   // Mutations
   const { mutateAsync: likePost, isPending: isLiking } = useLikePost();
   const { mutateAsync: unlikePost, isPending: isUnliking } = useUnlikePost();
 
-  // Local states
-  const [isLikedState, setIsLikedState] = useState(false);
-  const [localLikesCount, setLocalLikesCount] = useState(likesCount);
+  const handleLikeProject = useCallback(async () => {
+    if (!projectId || !userId || isLiking || isUnliking) return;
 
-  // Sync with server state
-  useEffect(() => {
-    if (!isLikeLoading) {
-      setIsLikedState(isLiked);
-      setLocalLikesCount(likesCount);
-    }
-  }, [isLiked, likesCount, isLikeLoading]);
-
-  const handleLikeProject = async () => {
-    if (!projectId || !userId || !authorId) {
-      toast({
-        title: 'Error',
-        description: 'Missing required information',
-      });
-      return;
-    }
-    if (isLiking || isUnliking) return;
+    // Optimistic update
+    queryClient.setQueryData(
+      [QUERY_KEYS.GET_POST_LIKES_COUNT, projectId],
+      (old: number) => (isLiked ? old - 1 : old + 1)
+    );
+    queryClient.setQueryData(
+      [QUERY_KEYS.CHECK_POST_LIKE, projectId, userId],
+      !isLiked
+    );
 
     try {
-      const newLikeState = !isLikedState;
-
-      // Optimistic update
-      setIsLikedState(newLikeState);
-      setLocalLikesCount(prev => prev + (newLikeState ? 1 : -1));
-
-      // API call
-      if (newLikeState) {
-        await likePost({ postId: projectId, userId, authorId });
-      } else {
+      if (isLiked) {
         await unlikePost({ postId: projectId, userId });
+      } else {
+        await likePost({ postId: projectId, authorId, userId });
       }
-
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_PROJECT_BY_ID, projectId],
-      });
-
     } catch (error) {
-      // Revert optimistic updates
-      setIsLikedState(!isLikedState);
-      setLocalLikesCount(prev => prev + (isLikedState ? 1 : -1));
-      
+      // Revert on error
+      queryClient.setQueryData(
+        [QUERY_KEYS.GET_POST_LIKES_COUNT, projectId],
+        (old: number) => (isLiked ? old + 1 : old - 1)
+      );
+      queryClient.setQueryData(
+        [QUERY_KEYS.CHECK_POST_LIKE, projectId, userId],
+        isLiked
+      );
       toast({
         title: 'Error',
         description: 'Failed to update like status',
         variant: 'destructive',
       });
     }
-  };
+  }, [projectId, userId, authorId, isLiked, isLiking, isUnliking, likePost, unlikePost, queryClient, toast]);
 
   return (
     <div className="z-20">
       <div className="flex gap-1 items-center">
         <img
-          src={isLikedState ? '/assets/icons/liked.svg' : '/assets/icons/like.svg'}
+          src={isLiked ? '/assets/icons/liked.svg' : '/assets/icons/like.svg'}
           alt="like"
           width={25}
           onClick={handleLikeProject}
@@ -97,9 +78,9 @@ const ProjectStats = ({ project, userId, authorId }: ProjectStatsProps) => {
             isLiking || isUnliking ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         />
-        {localLikesCount > 0 && (
+        {likesCount > 0 && (
           <p className="small-semibold lg:base-semibold text-light-3">
-            {localLikesCount}
+            {likesCount}
           </p>
         )}
       </div>

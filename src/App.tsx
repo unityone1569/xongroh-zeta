@@ -59,8 +59,8 @@ const App = () => {
 
             {/* creationPost */}
             <Route path="/add-creation" element={<AddCreation />} />
-            <Route path="/update-post/:id" element={<EditPost />} />
-            <Route path="/posts/:id" element={<PostDetails />} />
+            <Route path="/update-creation/:id" element={<EditPost />} />
+            <Route path="/creations/:id" element={<PostDetails />} />
 
             {/* portfolioPost */}
             <Route path="/add-project" element={<AddProject />} />

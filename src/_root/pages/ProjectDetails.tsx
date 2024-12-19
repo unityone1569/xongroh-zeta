@@ -6,7 +6,7 @@ import { useUserContext } from '@/context/AuthContext';
 import { formatDateString } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
 import AudioPlayer from '@/components/shared/AudioPlayer';
 import VideoPlayer from '@/components/shared/VideoPlayer';
@@ -20,36 +20,33 @@ const ProjectDetails = () => {
   const { id } = useParams();
   const { data: project, isPending } = useGetProjectById(id || '');
   const { user } = useUserContext();
-  const { data: author } = useGetAuthorById(project?.creatorId);
+  const { data: author } = useGetAuthorById(project?.authorId);
 
   const postId = id || '';
   const mediaId = project?.mediaId[0];
-  const creatorId = project?.creatorId;
+  const authorId = project?.authorId;
   const { toast } = useToast();
   const navigate = useNavigate();
-  const handleShare = () => {
-    const urlToShare = window.location.href;
-    const shareText = 'Check out this post from Xongroh!';
 
-    if (navigator.share) {
-      navigator
-        .share({
-          title: 'Portfolio Project',
-          text: shareText,
+  const handleShare = useCallback(async () => {
+    const urlToShare = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Project',
+          text: 'Check out this project from Xongroh!',
           url: urlToShare,
-        })
-        .then(() => toast({ title: 'Content shared successfully!' }))
-        .catch(() =>
-          toast({ title: 'Error sharing content. Please try again.' })
+        });
+      } else {
+        await navigator.clipboard.writeText(
+          `Check out this project from Xongroh! ${urlToShare}`
         );
-    } else {
-      // Fallback for browsers that do not support the Web Share API
-      navigator.clipboard
-        .writeText(`${shareText} ${urlToShare}`)
-        .then(() => toast({ title: 'Link copied to clipboard!' }))
-        .catch(() => toast({ title: 'Error copying text. Please try again.' }));
+        toast({ title: 'Link copied to clipboard!' });
+      }
+    } catch (error) {
+      toast({ title: 'Error sharing project', variant: 'destructive' });
     }
-  };
+  }, [toast]);
 
   const [mediaType, setMediaType] = useState<string>('unknown');
   const [isMediaLoading, setIsMediaLoading] = useState(true);
@@ -120,12 +117,12 @@ const ProjectDetails = () => {
           <div className="post_details-info">
             <div className="flex-between w-full">
               <Link
-                to={`/profile/${project?.creatorId}`}
+                to={`/profile/${project?.authorId}`}
                 className="flex items-center gap-3"
               >
                 <LazyImage
                   src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
-                  alt="creator"
+                  alt="authorId"
                   className="rounded-full w-10 h-10 lg:w-14 object-cover lg:h-14"
                 />
 
@@ -143,7 +140,7 @@ const ProjectDetails = () => {
               <div className="flex-center gap-5">
                 <div
                   className={`pr-1 ${
-                    user?.id !== project?.creatorId && 'hidden'
+                    user?.id !== project?.authorId && 'hidden'
                   }`}
                 >
                   <Link to={`/update-project/${project?.$id}`}>
@@ -153,13 +150,13 @@ const ProjectDetails = () => {
 
                 <div
                   className={`ghost_details-delete_btn ${
-                    user?.id !== project?.creatorId && 'hidden'
+                    user?.id !== project?.authorId && 'hidden'
                   }`}
                 >
                   <DeleteProject
-                    postId={postId}
+                    projectId={postId}
                     mediaId={mediaId}
-                    creatorId={creatorId}
+                    authorId={authorId}
                   />
                 </div>
               </div>
@@ -214,6 +211,7 @@ const ProjectDetails = () => {
               <ProjectStats
                 project={project ?? ({} as Models.Document)}
                 userId={user?.id}
+                authorId={project?.authorId}
               />
               <img
                 src="/assets/icons/share.svg"
