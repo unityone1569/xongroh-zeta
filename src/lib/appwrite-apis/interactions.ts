@@ -52,7 +52,11 @@ export async function checkPostLike(
     const likes = await databases.listDocuments(
       db.interactionsId,
       cl.postLikeId,
-      [Query.equal('userId', userId), Query.equal('postId', postId)]
+      [
+        Query.equal('userId', userId),
+        Query.equal('postId', postId),
+        Query.select(['userId']),
+      ]
     );
 
     return likes.documents.length > 0;
@@ -110,7 +114,11 @@ export async function unlikePost(
     const likes = await databases.listDocuments(
       db.interactionsId,
       cl.postLikeId,
-      [Query.equal('postId', postId), Query.equal('userId', userId)]
+      [
+        Query.equal('postId', postId),
+        Query.equal('userId', userId),
+        Query.select(['$id']),
+      ]
     );
 
     if (!likes.documents.length) throw Error;
@@ -140,7 +148,7 @@ export async function deleteAllPostLikes(postId: string) {
     const postLikes = await databases.listDocuments(
       db.interactionsId,
       cl.postLikeId,
-      [Query.equal('postId', postId)]
+      [Query.equal('postId', postId), Query.select(['$id'])]
     );
 
     // If no documents are found, throw an error
@@ -178,7 +186,7 @@ async function getLikesCount(itemId: string): Promise<number> {
   const likes = await databases.listDocuments(
     db.interactionsId,
     cl.itemLikeId,
-    [Query.equal('itemId', itemId)]
+    [Query.equal('itemId', itemId), Query.select(['userId'])]
   );
   return likes.total;
 }
@@ -194,7 +202,11 @@ export async function checkItemLike(
     const likes = await databases.listDocuments(
       db.interactionsId,
       cl.itemLikeId,
-      [Query.equal('userId', userId), Query.equal('itemId', itemId)]
+      [
+        Query.equal('userId', userId),
+        Query.equal('itemId', itemId),
+        Query.select(['userId']),
+      ]
     );
 
     return likes.documents.length > 0;
@@ -272,7 +284,11 @@ export async function unlikeItem(
     const likes = await databases.listDocuments(
       db.interactionsId,
       cl.itemLikeId,
-      [Query.equal('itemId', itemId), Query.equal('userId', userId)]
+      [
+        Query.equal('itemId', itemId),
+        Query.equal('userId', userId),
+        Query.select(['$id']),
+      ]
     );
 
     if (!likes.documents.length) {
@@ -306,7 +322,7 @@ export async function deleteItemLike(
     const interactionLike = await databases.listDocuments(
       db.interactionsId,
       cl.itemLikeId,
-      [Query.equal('itemId', itemId)]
+      [Query.equal('itemId', itemId), Query.select(['$id'])]
     );
 
     if (!interactionLike.documents.length) {
@@ -340,7 +356,7 @@ export async function getPostSaveCount(postId: string): Promise<number> {
   try {
     const saves = await databases.listDocuments(db.interactionsId, cl.saveId, [
       Query.equal('postId', postId),
-      Query.select(['postId']),
+      Query.select(['userId']),
     ]);
     return saves.total;
   } catch (error) {
@@ -359,6 +375,7 @@ export async function checkPostSave(
     const saves = await databases.listDocuments(db.interactionsId, cl.saveId, [
       Query.equal('userId', userId),
       Query.equal('postId', postId),
+      Query.select(['userId']),
     ]);
 
     return saves.documents.length > 0;
@@ -417,6 +434,7 @@ export async function unsavePost(
     const saves = await databases.listDocuments(db.interactionsId, cl.saveId, [
       Query.equal('postId', postId),
       Query.equal('userId', userId),
+      Query.select(['$id']),
     ]);
 
     if (!saves.documents.length) throw Error;
@@ -446,7 +464,7 @@ export async function deleteAllPostSaves(postId: string) {
     const postSaves = await databases.listDocuments(
       db.interactionsId,
       cl.saveId,
-      [Query.equal('post', postId)]
+      [Query.equal('postId', postId), Query.select(['$id'])]
     );
 
     if (postSaves.documents.length === 0) {
@@ -459,7 +477,7 @@ export async function deleteAllPostSaves(postId: string) {
 
       const statusCode = await databases.deleteDocument(
         db.interactionsId,
-        cl.postLikeId,
+        cl.saveId,
         saveId
       );
 

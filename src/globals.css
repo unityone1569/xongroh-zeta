@@ -155,7 +155,7 @@
   }
 
   .explore-inner_container {
-    @apply max-w-3xl flex flex-col items-center w-full gap-6 md:gap-9;
+    @apply max-w-5xl flex flex-col items-center w-full gap-6 md:gap-9;
   }
 
   .explore-search {

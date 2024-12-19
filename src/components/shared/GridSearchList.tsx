@@ -39,12 +39,8 @@ const GridPostMedia = ({ post }: { post: Models.Document }) => {
           <LazyImage
             src={post?.mediaUrl}
             alt="post"
-            className=" w-full h-auto object-cover object-center"
-            
+            className=" w-full h-auto object-contain object-center"
           />
-          <p className="w-full whitespace-pre-line px-5 text-center small-medium line-clamp-2 text-light-3 text-pretty">
-            {post?.content}
-          </p>
         </div>
       );
     case 'audio':
@@ -54,7 +50,6 @@ const GridPostMedia = ({ post }: { post: Models.Document }) => {
             src="/assets/icons/audio.svg"
             alt="music"
             className=" h-32 w-32 p-5"
-             
           />
           <p className="w-full whitespace-pre-line px-3.5 text-center subtle-comment line-clamp-2 text-light-2 opacity-45 text-pretty">
             {post?.content}
@@ -88,15 +83,15 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
             className="rounded-xl border border-dark-4 overflow-hidden flex flex-col h-[320px]"
           >
             <Link
-              to={`/posts/${post?.$id}`}
+              to={`/creations/${post?.$id}`}
               className="flex flex-col flex-1 min-h-0"
             >
               <div className="flex-1 min-h-0">
                 <GridPostMedia post={post} />
               </div>
 
-              <div className="p-3.5 mt-auto">
-                <div className="flex items-center gap-2">
+              <div className="p-3.5 mt-auto z-10">
+                <div className="flex items-center gap-2 ">
                   <LazyImage
                     src={
                       post?.author?.dpUrl ||

@@ -139,7 +139,7 @@ const PostDetails = () => {
                   <DeleteCreation
                     creationId={postId}
                     mediaId={mediaId}
-                    authorId={accountId}
+                    authorId={authorId}
                   />
                 </div>
               </div>
