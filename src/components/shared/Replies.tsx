@@ -80,7 +80,7 @@ const Replies = ({
   const onSubmitReply = useCallback(
     async ({ reply }: ReplyFormValues) => {
       try {
-        await addReply({ parentId, authorId, userId, content: reply });
+        await addReply({ parentId, authorId, userId, content: reply, postAuthorId });
         replyForm.reset();
         toast({
           description: 'Reply added successfully!',

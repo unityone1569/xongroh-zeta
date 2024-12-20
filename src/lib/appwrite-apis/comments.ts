@@ -1,6 +1,7 @@
 import { ID, Query } from 'appwrite';
 import { appwriteConfig, databases, functions } from './config';
 import { deleteItemLike } from './interactions';
+import { getUserAccountId } from './users';
 
 // *** APPWRITE ***
 
@@ -23,6 +24,8 @@ const fn = {
   feedbackPermissionId: appwriteConfig.functions.feedbackPermission,
   commentReplyPermissionId: appwriteConfig.functions.commentReplyPermission,
   feedbackReplyPermissionId: appwriteConfig.functions.feedbackReplyPermission,
+  feedbackReplyParentPermissionId:
+    appwriteConfig.functions.feedbackReplyParentPermission,
 };
 
 // *** COMMENTS ***
@@ -339,11 +342,19 @@ export async function getFeedbackReplies(feedbackId: string) {
 // Add-Feedback-Reply
 export async function addFeedbackReply(
   parentId: string,
+  postAuthorId: string,
   authorId: string,
   userId: string,
   content: string
 ): Promise<{ success: boolean; error?: unknown }> {
   try {
+    // Get parent feedback to identify creator
+    const parentFeedback = await databases.listDocuments(
+      db.commentsId,
+      cl.feedbackId,
+      [Query.equal('$id', parentId), Query.select(['userId'])]
+    );
+
     const feedbackReply = await databases.createDocument(
       db.commentsId,
       cl.feedbackReplyId,
@@ -355,17 +366,22 @@ export async function addFeedbackReply(
       }
     );
 
-    // Trigger the Appwrite Function to add receiver permissions
+    const parentAuthorId = await getUserAccountId(
+      parentFeedback.documents[0].userId
+    );
+
+    // Determine which permission function to use
+    const isAuthorReplying = userId === postAuthorId;
+    const functionId = isAuthorReplying
+      ? fn.feedbackReplyParentPermissionId // If author replies, give permission to feedback creator
+      : fn.feedbackReplyPermissionId; // If user replies, give permission to author
+
     const payload = JSON.stringify({
       feedbackReplyId: feedbackReply.$id,
-      authorId,
+      authorId: isAuthorReplying ? parentAuthorId : authorId,
     });
 
-    await functions.createExecution(
-      fn.feedbackReplyPermissionId,
-      payload,
-      true
-    );
+    await functions.createExecution(functionId, payload, true);
 
     return { success: true };
   } catch (error) {

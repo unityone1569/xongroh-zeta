@@ -156,6 +156,7 @@ export const useAddCommentReply = () => {
       authorId: string;
       userId: string;
       content: string;
+      postAuthorId: string;
     }) => addCommentReply(parentId, authorId, userId, content),
     onSuccess: (_, { parentId }) => {
       queryClient.invalidateQueries({
@@ -204,6 +205,7 @@ export const useAddFeedbackReply = () => {
 
   return useMutation({
     mutationFn: ({
+      postAuthorId,
       parentId,
       authorId,
       userId,
@@ -213,7 +215,8 @@ export const useAddFeedbackReply = () => {
       authorId: string;
       userId: string;
       content: string;
-    }) => addFeedbackReply(parentId, authorId, userId, content),
+      postAuthorId: string;
+    }) => addFeedbackReply(parentId, postAuthorId, authorId, userId, content),
     onSuccess: (_, { parentId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, parentId],

@@ -36,12 +36,12 @@ interface AppwriteConfig {
     feedbackPermission: string;
     commentReplyPermission: string;
     feedbackReplyPermission: string;
+    feedbackReplyParentPermission: string;
   };
   storage: {
     creatorBucket: string;
-   creationBucket: string;
-   projectBucket: string;
-
+    creationBucket: string;
+    projectBucket: string;
   };
   encryption: {
     messageEncryption: string;
@@ -123,7 +123,7 @@ export const appwriteConfig: AppwriteConfig = {
     messagePermission: import.meta.env
       .VITE_APPWRITE_MESSAGE_PERMISSION_FUNCTION_ID,
 
-      postLikePermission: import.meta.env
+    postLikePermission: import.meta.env
       .VITE_APPWRITE_POST_LIKE_PERMISSION_FUNCTION_ID,
 
     itemLikePermission: import.meta.env
@@ -142,6 +142,9 @@ export const appwriteConfig: AppwriteConfig = {
 
     feedbackReplyPermission: import.meta.env
       .VITE_APPWRITE_FEEDBACK_REPLY_PERMISSION_FUNCTION_ID,
+
+    feedbackReplyParentPermission: import.meta.env
+      .VITE_APPWRITE_FEEDBACK_REPLY_PARENT_PERMISSION_FUNCTION_ID,
   },
 
   storage: {
