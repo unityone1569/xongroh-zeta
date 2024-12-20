@@ -565,7 +565,7 @@ export async function updateProfile(user: IUpdateUser) {
       dpId: user.dpId || '',
     };
     let coverMedia = {
-      coverUrl: user.coverUrl || '',
+      coverUrl: user.coverUrl || null,
       coverId: user.coverId || '',
     };
 
