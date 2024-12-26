@@ -315,8 +315,8 @@ export async function loginWithGoogle(): Promise<void> {
   try {
     account.createOAuth2Session(
       OAuthProvider.Google,
-      'http://localhost:5173/oauth/callback',
-      'http://localhost:5173/sign-in'
+      'https://xongroh.com/oauth/callback',
+      'https://xongroh.com/sign-in'
     );
   } catch (error) {
     console.error('Error during Google OAuth session creation:', error);
