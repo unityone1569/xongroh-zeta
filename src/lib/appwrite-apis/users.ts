@@ -23,6 +23,11 @@ const bk = {
   creatorBucketId: appwriteConfig.storage.creatorBucket,
 };
 
+const url = {
+  googleSuccessUrl: appwriteConfig.oauth.googleSuccessUrl,
+  googleFailureUrl: appwriteConfig.oauth.googleFailureUrl,
+};
+
 // *** SUPPORT ***
 
 // Check-Supporting-User
@@ -315,8 +320,8 @@ export async function loginWithGoogle(): Promise<void> {
   try {
     account.createOAuth2Session(
       OAuthProvider.Google,
-      'https://xongroh.com/oauth/callback',
-      'https://xongroh.com/sign-in'
+      url.googleSuccessUrl,
+      url.googleFailureUrl
     );
   } catch (error) {
     console.error('Error during Google OAuth session creation:', error);

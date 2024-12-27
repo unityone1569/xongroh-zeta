@@ -43,6 +43,11 @@ interface AppwriteConfig {
     creationBucket: string;
     projectBucket: string;
   };
+
+  oauth: {
+    googleSuccessUrl: string;
+    googleFailureUrl: string;
+  };
   encryption: {
     messageEncryption: string;
   };
@@ -151,6 +156,11 @@ export const appwriteConfig: AppwriteConfig = {
     creatorBucket: import.meta.env.VITE_APPWRITE_CREATOR_BUCKET_ID,
     creationBucket: import.meta.env.VITE_APPWRITE_CREATION_BUCKET_ID,
     projectBucket: import.meta.env.VITE_APPWRITE_PROJECT_BUCKET_ID,
+  },
+
+  oauth: {
+    googleSuccessUrl: import.meta.env.VITE_GOOGLE_SUCCESS_URL,
+    googleFailureUrl: import.meta.env.VITE_GOOGLE_FAILURE_URL,
   },
 
   encryption: {
