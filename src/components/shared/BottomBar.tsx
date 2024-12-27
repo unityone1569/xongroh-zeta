@@ -4,6 +4,16 @@ import { Link, useLocation } from 'react-router-dom';
 const BottomBar = () => {
   const { pathname } = useLocation();
 
+  // Check if current path matches bottombar routes or any profile route
+  const shouldShowBottomBar = bottombarLinks.some(
+    (link) =>
+      link.route === pathname ||
+      pathname.startsWith('/profile') ||
+      pathname === '/messages'
+  );
+
+  if (!shouldShowBottomBar) return null;
+
   return (
     <section className="bottom-bar">
       {bottombarLinks.map((link) => {
@@ -26,7 +36,6 @@ const BottomBar = () => {
                 isActive && 'invert-white'
               }`}
             />
-            {/* <p className="tiny-medium text-light-2">{link.label}</p> */}
           </Link>
         );
       })}

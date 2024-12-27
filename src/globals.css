@@ -137,7 +137,7 @@
     @apply flex flex-col flex-1 items-center gap-6 overflow-scroll pt-24 pb-28 md:py-14 px-5 md:px-8  custom-scrollbar;
   }
   .common-msg-container {
-    @apply flex flex-col flex-1 items-center overflow-scroll pt-24 pb-28 md:py-14 px-0 md:px-8  custom-scrollbar;
+    @apply flex flex-col flex-1 items-center overflow-scroll pt-24 pb-5 md:py-14 px-0 md:px-8  custom-scrollbar;
   }
 
   /* All Users */
@@ -151,7 +151,7 @@
 
   /* Explore */
   .explore-container {
-    @apply flex flex-col flex-1 items-center overflow-scroll py-10 px-5 md:p-14 custom-scrollbar;
+    @apply flex flex-col flex-1 items-center overflow-scroll py-10 px-5 md:p-14 custom-scrollbar overflow-x-hidden;
   }
 
   .explore-inner_container {
@@ -253,12 +253,12 @@
 
   /* Topbar */
   .topbar {
-    @apply fixed top-0 z-50 lg:hidden bg-dark-2 w-full;
+    @apply fixed top-0 z-50 lg:hidden bg-dark-3 w-full;
   }
 
   /* Bottom bar */
   .bottom-bar {
-    @apply z-50 flex-between w-full fixed bottom-0 bg-dark-2 px-6 py-4 lg:hidden;
+    @apply z-50 flex-between w-full fixed bottom-0 bg-dark-3 px-6 py-4 lg:hidden;
   }
 
   /* Left sidebar */
