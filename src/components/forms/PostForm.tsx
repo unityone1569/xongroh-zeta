@@ -64,7 +64,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
       }
 
       toast({ title: 'Creation added successfully!' });
-      return navigate(`/posts/${post.$id}`);
+      return navigate(`/creations/${post.$id}`);
     }
 
     const newPost = await createPost({
