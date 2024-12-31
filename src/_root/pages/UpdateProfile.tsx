@@ -53,7 +53,7 @@ const UpdateProfile = () => {
         <div className="max-w-3xl mt-8 pt-8 border-t border-dark-4">
           <div className="flex flex-wrap gap-6 text-light-3">
             <a
-              href="/privacy-policy"
+              href="/privacy"
               target="_blank"
               rel="noopener noreferrer"
               className="text-small-regular hover:text-light-1 transition-colors"
@@ -69,7 +69,7 @@ const UpdateProfile = () => {
               Terms of Service
             </a>
             <a
-              href="/community-guidelines"
+              href="/guidelines"
               target="_blank"
               rel="noopener noreferrer"
               className="text-small-regular hover:text-light-1 transition-colors"
