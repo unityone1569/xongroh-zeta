@@ -87,22 +87,15 @@ const VerifyEmail = () => {
             </>
           ) : (
             <p className="text-light-3">
-              Please check your email inbox for the verification link.
+              Please check your email inbox for the verification link. If you
+              dont see it,
+              <span className="font-semibold text-gray-500">
+                check your spam folder
+              </span>{' '}
+              and mark the email as
+              <span className="font-semibold text-gray-500">"Not Spam"</span>.
             </p>
           )}
-
-          <span className="text-sm text-gray-600">
-            Please check your email for a verification link. If you don't see
-            it,
-            <span className="font-semibold text-gray-500">
-              check your spam folder
-            </span>{' '}
-            and
-            <span className="font-semibold text-gray-500">
-              mark the email as "Not Spam"
-            </span>
-            .
-          </span>
 
           <Button
             onClick={handleResendEmail}
