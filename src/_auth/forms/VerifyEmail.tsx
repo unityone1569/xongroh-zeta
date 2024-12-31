@@ -91,11 +91,9 @@ const VerifyEmail = () => {
           )}
 
           <span className="text-sm text-gray-600">
-            If you dont see it,
-            <span className="font-semibold text-gray-500">
-              check your spam folder
-            </span>{' '}
-            and mark the email as{' '}
+            If you don't see it, check your{' '}
+            <span className="font-semibold text-gray-500">spam folder</span> and
+            mark the email as{' '}
             <span className="font-semibold text-gray-500">"Not Spam"</span>.
           </span>
 
