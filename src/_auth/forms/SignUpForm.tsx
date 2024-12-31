@@ -15,6 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import Loader from '@/components/shared/Loader';
 import { Link, useNavigate } from 'react-router-dom';
+import { Checkbox } from '@/components/ui/checkbox';
 
 import { useState } from 'react';
 import { useUserContext } from '@/context/AuthContext';
@@ -41,12 +42,21 @@ const SignUpForm = () => {
   });
 
   const [isGoogleSignUp, setIsGoogleSignUp] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showTermsError, setShowTermsError] = useState(false);
+
   const formDisabled = isGoogleSignUp || isCreatingAccount || isUserLoading;
 
   const handleSignupWithGoogle = async (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     event.preventDefault();
+
+    if (!termsAccepted) {
+      setShowTermsError(true);
+      return;
+    }
+
     setIsGoogleSignUp(true);
 
     try {
@@ -65,6 +75,10 @@ const SignUpForm = () => {
   // console.log('Form Errors:', form.formState.errors);
 
   const handleSignup = async (user: z.infer<typeof SignUpFormSchema>) => {
+    if (!termsAccepted) {
+      setShowTermsError(true);
+      return; // Stop form submission here
+    }
     // console.log('Form Submission Triggered with data:', user);
     try {
       // Create user account
@@ -114,7 +128,14 @@ const SignUpForm = () => {
           </p>
         </div>
         <form
-          onSubmit={form.handleSubmit(handleSignup)}
+          onSubmit={(e) => {
+            if (!termsAccepted) {
+              e.preventDefault();
+              setShowTermsError(true);
+              return;
+            }
+            form.handleSubmit(handleSignup)(e);
+          }}
           className="flex flex-col gap-5 w-full  mt-4"
         >
           <FormField
@@ -189,6 +210,45 @@ const SignUpForm = () => {
               </FormItem>
             )}
           />
+          <div className="flex flex-col gap-3.5 mt-2">
+            <div className="flex items-start space-x-3.5">
+              <Checkbox
+                id="terms"
+                checked={termsAccepted}
+                onCheckedChange={(checked) => {
+                  setTermsAccepted(checked as boolean);
+                  if (checked) setShowTermsError(false);
+                }}
+                className="mt-1"
+              />
+              <label
+                htmlFor="terms"
+                className="text-sm text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                I agree to the{' '}
+                <a href="/privacy" className="text-primary-500 hover:underline">
+                  Privacy Policy
+                </a>
+                ,{' '}
+                <a href="/terms" className="text-primary-500 hover:underline">
+                  Terms of Service
+                </a>{' '}
+                and{' '}
+                <a
+                  href="/guidelines"
+                  className="text-primary-500 hover:underline"
+                >
+                  Community Guidelines
+                </a>
+              </label>
+            </div>
+
+            {showTermsError && (
+              <div className="text-red text-sm">
+                Please accept the user agreements to continue
+              </div>
+            )}
+          </div>
           <Button
             type="submit"
             className="shad-button_primary mt-3"

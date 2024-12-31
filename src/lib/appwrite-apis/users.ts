@@ -253,6 +253,7 @@ export async function createUserAccount(
       email: newAccount.email,
       dpUrl: avatarUrl,
       username: username, // Add the generated username
+      agreeUserAgreements: true,
     });
 
     return newUser;
@@ -293,6 +294,7 @@ export async function createUserAccountWithGoogle(
       email: session.email,
       dpUrl: avatars.getInitials(session.name),
       username: username,
+      agreeUserAgreements: true,
     });
 
     return newUser;
@@ -347,6 +349,7 @@ async function saveUserToDB(user: {
   hometown?: string;
   email: string;
   dpUrl: URL;
+  agreeUserAgreements: boolean;
 }): Promise<Models.Document> {
   try {
     // Save the user to the database

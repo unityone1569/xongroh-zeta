@@ -30,6 +30,9 @@ import VerifySuccess from './_auth/forms/VerifySuccess';
 import { ProtectedRoute } from './components/shared/ProtectedRoute';
 import NewPasswordForm from './_auth/forms/NewPasswordForm';
 import ResetPasswordForm from './_auth/forms/ResetPasswordForm';
+import TermsOfService from './_auth/TermsOfService';
+import PrivacyPolicy from './_auth/PrivacyPolicy';
+import CommunityGuidelines from './_auth/CommunityGuidelines';
 
 const App = () => {
   return (
@@ -75,6 +78,9 @@ const App = () => {
         </Route>
 
         {/* Special Routes */}
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/guidelines" element={<CommunityGuidelines />} />
         <Route path="/reset-password" element={<ResetPasswordForm />} />
         <Route path="/new-password" element={<NewPasswordForm />} />
         <Route path="/verify-success" element={<VerifySuccess />} />
