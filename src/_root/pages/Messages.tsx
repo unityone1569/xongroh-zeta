@@ -151,7 +151,7 @@ const ConversationCard = ({
             )}
             {message?.$createdAt && (
               <span className="subtle-normal text-nowrap text-light-3">
-                {multiFormatDateString(conversation?.lastUpdated)}
+                {multiFormatDateString(conversation?.$updatedAt	)}
               </span>
             )}
           </div>
