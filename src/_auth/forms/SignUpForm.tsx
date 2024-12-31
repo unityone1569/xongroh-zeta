@@ -225,7 +225,7 @@ const SignUpForm = () => {
                 htmlFor="terms"
                 className="text-sm text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                I agree to the{' '}
+                I have read and agreed to the{' '}
                 <a href="/privacy" className="text-primary-500 hover:underline">
                   Privacy Policy
                 </a>
@@ -240,6 +240,7 @@ const SignUpForm = () => {
                 >
                   Community Guidelines
                 </a>
+                .
               </label>
             </div>
 
