@@ -289,13 +289,14 @@ export async function createUserAccountWithGoogle(
 
   try {
     const username = session.email.split('@')[0];
+    const agreedUserAgreements = true;
     const newUser = await saveUserToDB({
       accountId: session.$id,
       name: session.name,
       email: session.email,
       dpUrl: avatars.getInitials(session.name),
       username: username,
-      agreeUserAgreements: true,
+      agreeUserAgreements: agreedUserAgreements,
     });
 
     return newUser;
