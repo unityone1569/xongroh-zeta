@@ -48,11 +48,11 @@ const VerifyEmail = () => {
     try {
       await sendVerificationEmail();
       toast({ title: 'Verification email sent!' });
-      
+
       // Calculate exponential countdown: 60 * 2^attempts
       const newCountdown = 60 * Math.pow(2, attempts);
       setCountdown(newCountdown);
-      setAttempts(prev => prev + 1);
+      setAttempts((prev) => prev + 1);
     } catch (error) {
       toast({
         title: 'Failed to send verification email',
@@ -70,13 +70,15 @@ const VerifyEmail = () => {
           <img
             className="h-16 w-16"
             src="/assets/icons/logo.svg"
-            alt="Email Verified"/>
+            alt="Email Verified"
+          />
           <h2 className="h3-bold md:h2-bold text-light-1">Verify Your Email</h2>
           {user?.email ? (
             <>
               <p className="text-light-3">
                 Please check your email inbox and click the verification link to
-                activate your account.
+                activate your account.If you do not see it, check your spam
+                folder and mark the email as "Not Spam".
               </p>
               <p className="text-light-3">
                 We have sent a verification link to:
@@ -88,6 +90,19 @@ const VerifyEmail = () => {
               Please check your email inbox for the verification link.
             </p>
           )}
+
+          <span className="text-sm text-gray-600">
+            Please check your email for a verification link. If you don't see
+            it,
+            <span className="font-semibold text-gray-500">
+              check your spam folder
+            </span>{' '}
+            and
+            <span className="font-semibold text-gray-500">
+              mark the email as "Not Spam"
+            </span>
+            .
+          </span>
 
           <Button
             onClick={handleResendEmail}
