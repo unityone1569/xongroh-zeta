@@ -246,6 +246,7 @@ export async function createUserAccount(
 
     // Generate avatar and save user data to the database
     const avatarUrl = avatars.getInitials(user.name);
+    const agreedUserAgreements = true;
     const newUser = await saveUserToDB({
       accountId: newAccount.$id,
       name: newAccount.name,
@@ -253,7 +254,7 @@ export async function createUserAccount(
       email: newAccount.email,
       dpUrl: avatarUrl,
       username: username, // Add the generated username
-      agreeUserAgreements: true,
+      agreeUserAgreements: agreedUserAgreements,
     });
 
     return newUser;
