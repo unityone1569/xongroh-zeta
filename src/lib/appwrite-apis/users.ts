@@ -349,7 +349,7 @@ async function saveUserToDB(user: {
   hometown?: string;
   email: string;
   dpUrl: URL;
-  agreeUserAgreements: boolean;
+  agreeUserAgreements: Boolean;
 }): Promise<Models.Document> {
   try {
     // Save the user to the database
