@@ -287,9 +287,11 @@
   .post-card {
     @apply bg-dark-2 rounded-2xl border  border-dark-4 p-5 lg:p-7 w-full max-w-screen-sm;
   }
-
   .post-card_img {
     @apply h-[310px] xs:h-[360px] overflow-hidden bg-dark-4 lg:h-[450px] w-full object-contain;
+  }
+  .post-card-detail_img {
+    @apply h-full overflow-hidden bg-dark-4 w-full object-contain;
   }
   .post-card_video {
     @apply h-[260px] xs:h-[350px] overflow-hidden bg-dark-4 lg:h-[430px] w-full object-contain;

@@ -5,7 +5,6 @@ import PostComments from '@/components/shared/PostComments';
 import PostStats from '@/components/shared/PostStats';
 import VideoPlayer from '@/components/shared/VideoPlayer';
 import { useUserContext } from '@/context/AuthContext';
-
 import { formatDateString } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -21,7 +20,7 @@ import { getUserAccountId } from '@/lib/appwrite-apis/users';
 const PostDetails = () => {
   const [mediaType, setMediaType] = useState<string>('unknown');
   const [isMediaLoading, setIsMediaLoading] = useState(true);
-  const [accountId, setAccountId] = useState<string>("");
+  const [accountId, setAccountId] = useState<string>('');
   const { id } = useParams();
   const { data: post, isPending } = useGetCreationById(id || '');
   const { user } = useUserContext();
@@ -35,7 +34,7 @@ const PostDetails = () => {
         const id = await getUserAccountId(authorId);
         setAccountId(id);
       }
-    };  
+    };
     getAccountId();
   }, [authorId]);
 
@@ -54,7 +53,7 @@ const PostDetails = () => {
 
   return (
     <div className="post_details-container">
-      {(isPending || !accountId) ? (
+      {isPending || !accountId ? (
         <Loader />
       ) : (
         <div className="post_details-card">
@@ -83,7 +82,7 @@ const PostDetails = () => {
                         <LazyImage
                           src={post.mediaUrl}
                           alt="post"
-                          className="post-card_img"
+                          className="post-card-detail_img"
                         />
                       );
                     case 'audio':
@@ -172,13 +171,12 @@ const PostDetails = () => {
                 post={post ?? ({} as Models.Document)}
                 userId={user.id}
                 authorId={accountId}
-        
               />
               <PostComments
                 postId={post?.$id ?? ''}
                 userId={user.id}
-                authorId={accountId}  
-                postAuthorId ={post?.authorId}
+                authorId={accountId}
+                postAuthorId={post?.authorId}
               />
             </div>
           </div>
