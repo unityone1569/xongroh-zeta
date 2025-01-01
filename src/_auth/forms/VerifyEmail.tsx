@@ -112,12 +112,12 @@ const VerifyEmail = () => {
           </Button>
 
           <div className="mt-9 text-center">
-            <p className="text-light-3 mb-2">Still need help?</p>
+            <p className="text-light-3 small-regular mb-2">Still need help?</p>
             <a
               href="https://api.whatsapp.com/send/?phone=919127510087&text=I+need+help"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary-500 hover:underline"
+              className="text-primary-500 small-medium hover:underline"
             >
               WhatsApp us
             </a>
