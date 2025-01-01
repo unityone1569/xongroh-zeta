@@ -117,7 +117,7 @@ const VerifyEmail = () => {
               href="https://api.whatsapp.com/send/?phone=919127510087&text=I+need+help"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary-500 small-medium hover:underline"
+              className="text-primary-500 subtle-semibold hover:underline"
             >
               WhatsApp us
             </a>
