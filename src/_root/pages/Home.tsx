@@ -9,7 +9,7 @@ import {
   useGetSavedCreations,
 } from '@/lib/tanstack-queries/postsQueries';
 import { WelcomeDialog } from "@/components/shared/WelcomeDialog";
-import { updateWelcomeStatus } from "@/lib/appwrite-apis/users";
+import { useUpdateWelcomeStatus } from "@/lib/tanstack-queries/usersQueries";
 
 const tabs = [
   { name: 'creation', label: 'Creations' },
@@ -17,10 +17,11 @@ const tabs = [
 ];
 
 const Home = () => {
-  const { user } = useUserContext();
+  const { user, setUser } = useUserContext();
   const [activeTab, setActiveTab] = useState('creation');
   const containerRef = useRef(null);
   const [showWelcome, setShowWelcome] = useState(false);
+  const updateWelcomeMutation = useUpdateWelcomeStatus();
 
   const {
     data: postsPages,
@@ -112,7 +113,18 @@ const Home = () => {
 
   const handleWelcomeChange = async (open: boolean) => {
     if (!open && user) {
-      await updateWelcomeStatus(user.id);
+      try {
+        // Update database
+        await updateWelcomeMutation.mutateAsync(user.id);
+        
+        // Update auth context
+        setUser({
+          ...user,
+          hasSeenWelcome: true
+        });
+      } catch (error) {
+        console.error('Error updating welcome status:', error);
+      }
     }
     setShowWelcome(open);
   };

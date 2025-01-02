@@ -21,6 +21,7 @@ import {
   support,
   unsupport,
   updateProfile,
+  updateWelcomeStatus,
 } from '../appwrite-apis/users';
 import { QUERY_KEYS } from './queryKeys';
 
@@ -229,5 +230,23 @@ export const useSearchUsers = (searchTerm: string) => {
       return searchUsers(searchTerm);
     },
     enabled: !!searchTerm, // Fetch only when a search term exists
+  });
+};
+
+
+// Use-Update-Welcome-Status
+export const useUpdateWelcomeStatus = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (userId: string) => updateWelcomeStatus(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID],
+      });
+    },
   });
 };
