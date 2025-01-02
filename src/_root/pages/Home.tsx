@@ -8,6 +8,8 @@ import {
   useGetRecentCreations,
   useGetSavedCreations,
 } from '@/lib/tanstack-queries/postsQueries';
+import { WelcomeDialog } from "@/components/shared/WelcomeDialog";
+import { updateWelcomeStatus } from "@/lib/appwrite-apis/users";
 
 const tabs = [
   { name: 'creation', label: 'Creations' },
@@ -18,6 +20,7 @@ const Home = () => {
   const { user } = useUserContext();
   const [activeTab, setActiveTab] = useState('creation');
   const containerRef = useRef(null);
+  const [showWelcome, setShowWelcome] = useState(false);
 
   const {
     data: postsPages,
@@ -100,6 +103,19 @@ const Home = () => {
 
   // Add ref for saved posts infinite scroll
   const savedPostsRef = useRef(null);
+
+  useEffect(() => {
+    if (user && !user.hasSeenWelcome) {
+      setShowWelcome(true);
+    }
+  }, [user]);
+
+  const handleWelcomeChange = async (open: boolean) => {
+    if (!open && user) {
+      await updateWelcomeStatus(user.id);
+    }
+    setShowWelcome(open);
+  };
 
   const renderContent = () => {
     if (activeTab === 'creation') {
@@ -194,6 +210,10 @@ const Home = () => {
           {renderContent()}
         </div>
       </div>
+      <WelcomeDialog 
+        open={showWelcome} 
+        onOpenChange={handleWelcomeChange}
+      />
     </div>
   );
 };

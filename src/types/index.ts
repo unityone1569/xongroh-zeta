@@ -61,6 +61,7 @@ export type IUser = {
   dpUrl: string;
   coverUrl: string;
   bio: string;
+  hasSeenWelcome?: boolean;
 };
 
 export type INewUser = {

@@ -37,6 +37,7 @@ export const INITIAL_USER: IUser = {
   dpUrl: '',
   coverUrl: '',
   bio: '',
+  hasSeenWelcome: false,
 };
 
 const initialState: AuthState = {
@@ -105,6 +106,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           dpUrl: currentAccount.dpUrl || '',
           coverUrl: currentAccount.coverUrl || '',
           bio: currentAccount.bio || '',
+          hasSeenWelcome: currentAccount.hasSeenWelcome || false,
         },
       });
 

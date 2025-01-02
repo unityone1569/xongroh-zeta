@@ -867,3 +867,14 @@ export async function getUserProjects({
     throw error;
   }
 }
+
+export async function updateWelcomeStatus(userId: string) {
+  try {
+    return await databases.updateDocument(db.usersId, cl.creatorId, userId, {
+      hasSeenWelcome: true,
+    });
+  } catch (error) {
+    console.error('Error updating welcome status:', error);
+    throw error;
+  }
+}
