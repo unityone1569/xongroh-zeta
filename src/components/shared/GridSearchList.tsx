@@ -114,47 +114,50 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
 
   if (type === 'user') {
     return (
-      <ul className="grid-container">
+      <ul className="grid-container overflow-hidden">
         {items.map((user) => (
           <li key={user.$id} className="user-card flex flex-start gap-4">
-            <div className="w-28">
+            <div className="flex-shrink-0">
               <Link to={`/profile/${user.$id}`}>
                 <LazyImage
                   src={user.dpUrl || '/assets/icons/profile-placeholder.svg'}
                   alt={user.name || 'User'}
-                  className="w-20 h-20 object-cover rounded-full"
+                  className="w-14 h-14 object-cover rounded-full"
                 />
               </Link>
             </div>
             <div className="w-full flex-col">
               <Link to={`/profile/${user.$id}`}>
-                <h3 className="base-bold">{user.name || 'Unknown User'}</h3>
+                <h3 className="base-bold line-clamp-1">
+                  {user.name || 'Unknown User'}
+                </h3>
               </Link>
 
-              {user?.profession && (
-                <div className="flex gap-2 pt-2 justify-start items-center">
+              <div className="flex gap-2 pt-2 justify-start items-center">
+                <div className="flex-shrink-0 w-4">
                   <LazyImage
                     src="/assets/icons/profession.svg"
                     alt="profession"
-                    className="w-4 h-4 "
+                    className="w-4 h-4"
                   />
-                  <p className="subtle-normal lg:subtle-comment">
-                    {user?.profession}
-                  </p>
                 </div>
-              )}
-              {user?.hometown && (
-                <div className="flex gap-2 pt-1 justify-start items-center">
+                <p className="subtle-normal line-clamp-1 lg:subtle-comment overflow-hidden text-ellipsis">
+                  {user?.profession || 'Creator'}
+                </p>
+              </div>
+
+              <div className="flex gap-2 pt-1 justify-start items-center">
+                <div className="flex-shrink-0 w-4">
                   <LazyImage
                     src="/assets/icons/hometown.svg"
                     alt="hometown"
                     className="w-4 h-4 "
                   />
-                  <p className="subtle-normal lg:subtle-comment">
-                    {user?.hometown}
-                  </p>
                 </div>
-              )}
+                <p className="subtle-normal line-clamp-1 lg:subtle-comment">
+                  {user?.hometown || 'Earth'}
+                </p>
+              </div>
             </div>
           </li>
         ))}

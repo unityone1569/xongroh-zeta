@@ -16,7 +16,7 @@ const Explore = () => {
   const tabs = useMemo(
     () => [
       { name: 'post', label: 'Creations' },
-      { name: 'user', label: 'Users' },
+      { name: 'user', label: 'Creator' },
     ],
     []
   );
@@ -98,7 +98,7 @@ const Explore = () => {
         users?.pages.every((page) => page.documents.length === 0);
 
       return (
-        <div className="flex flex-wrap gap-9 w-full mt-4">
+        <div className="flex flex-wrap w-full mt-4">
           {isSearchActive ? (
             <SearchResult
               isSearchFetching={isSearchFetchingUsers}

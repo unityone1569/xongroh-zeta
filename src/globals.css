@@ -240,7 +240,7 @@
 
   /* Grid Post List */
   .grid-container {
-    @apply w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2  gap-7 max-w-5xl pb-6;
+    @apply w-full grid grid-cols-1 sm:grid-cols-2 gap-7 max-w-5xl pb-6;
   }
 
   .grid-post_link {
@@ -272,7 +272,7 @@
 
   /* Right sidebar */
   .rightsidebar {
-    @apply hidden lg:flex flex-col min-w-[360px] bg-dark-2 px-6 py-10 gap-10 overflow-scroll custom-scrollbar;
+    @apply hidden xl:flex flex-col min-w-[360px] bg-dark-2 px-6 py-10 gap-10 overflow-scroll custom-scrollbar;
   }
 
   .rightsidebar-link {
@@ -280,7 +280,7 @@
   }
 
   .creator-card {
-    @apply flex px-3 py-4 rounded-xl bg-dark-3 hover:bg-dark-4 transition-all border border-dark-4;
+    @apply flex px-1.5 py-3.5 w-40 rounded-xl bg-dark-3 hover:bg-dark-4 transition-all border border-dark-4;
   }
 
   /* Post Card */

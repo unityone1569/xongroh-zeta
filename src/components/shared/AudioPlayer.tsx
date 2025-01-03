@@ -7,104 +7,93 @@ interface AudioPlayerProps {
 }
 
 const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
-  const waveformRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [wavesurfer, setWavesurfer] = useState<WaveSurfer | null>(null);
+  const waveformRef = useRef<HTMLDivElement>(null);
+  const wavesurferRef = useRef<WaveSurfer | null>(null);
+  const isInitialized = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState('00:00:00');
   const [totalDuration, setTotalDuration] = useState('00:00:00');
   const [volume, setVolume] = useState(35);
-  const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const lastPlayedPositionRef = useRef(0);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
+    if (!waveformRef.current || isInitialized.current) return;
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
+    const ws = WaveSurfer.create({
+      container: waveformRef.current,
+      height: 65,
+      barWidth: 4,
+      barGap: 6,
+      barRadius: 16,
+      waveColor: '#D4AAFF',
+      progressColor: '#9C39FF',
+      normalize: true,
+    });
 
-    return () => observer.disconnect();
-  }, []);
+    wavesurferRef.current = ws;
+    isInitialized.current = true;
 
-  useEffect(() => {
-    // Wait for container to be ready
-    const container = waveformRef.current;
-    if (!container || !isVisible) return;
-
-    let ws: WaveSurfer | null = null;
-    
-    try {
-      // Create WaveSurfer instance
-      ws = WaveSurfer.create({
-        container,
-        height: 65,
-        barWidth: 4,
-        barGap: 6,
-        barRadius: 16,
-        waveColor: '#D4AAFF',
-        progressColor: '#9C39FF',
-        normalize: true,
-      });
-
-      setWavesurfer(ws);
-      setIsLoading(true);
-
-      // Load audio
-      ws.load(audioUrl);
-
-      // Event handlers
-      ws.on('ready', () => {
-        setIsLoading(false);
-        setTotalDuration(formatTime(ws!.getDuration()));
-      });
-
-      ws.on('error', () => {
-        console.error('WaveSurfer error');
-        setIsLoading(false);
-      });
-
-      ws.on('audioprocess', () => {
-        setCurrentTime(formatTime(ws!.getCurrentTime()));
-      });
-
-    } catch (error) {
-      console.error('WaveSurfer initialization failed:', error);
+    ws.on('ready', () => {
       setIsLoading(false);
-    }
+      setTotalDuration(formatTime(ws.getDuration()));
+      ws.setVolume(volume / 100);
+      if (lastPlayedPositionRef.current > 0) {
+        ws.seekTo(lastPlayedPositionRef.current / ws.getDuration());
+      }
+    });
 
-    return () => ws?.destroy();
-  }, [audioUrl, isVisible]);
+    ws.on('finish', () => {
+      setIsPlaying(false);
+      lastPlayedPositionRef.current = 0;
+    });
+
+    ws.on('audioprocess', () => {
+      const currentTime = ws.getCurrentTime();
+      lastPlayedPositionRef.current = currentTime;
+      requestAnimationFrame(() => {
+        setCurrentTime(formatTime(currentTime));
+      });
+    });
+
+    ws.on('error', () => setIsLoading(false));
+
+    setIsLoading(true);
+    ws.load(audioUrl);
+
+    return () => {
+      if (wavesurferRef.current) {
+        wavesurferRef.current.destroy();
+      }
+    };
+  }, []); // Empty dependency array - run once on mount
 
   const formatTime = (seconds: number) => {
     return new Date(seconds * 1000).toISOString().substr(11, 8);
   };
 
   const togglePlayPause = () => {
-    if (wavesurfer) {
-      wavesurfer.playPause();
-      setIsPlaying(wavesurfer.isPlaying());
+    if (wavesurferRef.current) {
+      wavesurferRef.current.playPause();
+      setIsPlaying(wavesurferRef.current.isPlaying());
     }
   };
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Memoize handlers to prevent recreating on every render
+  const handleVolumeChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = Number(e.target.value) / 100;
     setVolume(Number(e.target.value));
-    if (wavesurfer) wavesurfer.setVolume(newVolume);
-  };
+    if (wavesurferRef.current) wavesurferRef.current.setVolume(newVolume);
+  }, []);
 
-  const toggleMute = () => {
-    if (wavesurfer) {
-      const isMuted = wavesurfer.getMuted();
-      wavesurfer.setMuted(!isMuted);
+  const toggleMute = React.useCallback(() => {
+    if (wavesurferRef.current) {
+      const isMuted = wavesurferRef.current.getMuted();
+      wavesurferRef.current.setMuted(!isMuted);
       setVolume(!isMuted ? 0 : volume); // Reflect mute state
     }
-  };
+  }, [volume]);
 
   return (
     <div ref={containerRef} className="w-full max-w-4xl mx-auto bg-dark-1 shadow-lg p-2 sm:p-4 overflow-x-auto custom-scrollbar">
@@ -130,9 +119,10 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
             ref={waveformRef}
             className="w-full h-[65px] mt-1 sm:mt-2 bg-dark-3 rounded-md"
           />
-          {isLoading && (
+
+          {/* {isLoading && (
             <div className="w-full h-[65px] bg-dark-3 rounded-md animate-pulse absolute top-0 left-0" />
-          )}
+          )} */}
 
           <div className="flex flex-row items-start justify-between mt-2 sm:mt-4 gap-2 sm:gap-0">
             <div className="flex items-center gap-2">
@@ -140,7 +130,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
                 id="volumeIcon"
                 className="w-4 h-4 sm:w-5 sm:h-5 cursor-pointer"
                 src={
-                  wavesurfer?.getMuted()
+                  wavesurferRef.current?.getMuted()
                     ? '/assets/icons/mute.svg'
                     : '/assets/icons/volume.svg'
                 }
