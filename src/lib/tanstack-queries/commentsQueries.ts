@@ -13,9 +13,24 @@ import {
   getComments,
   getFeedbackReplies,
   getFeedbacks,
+  getPostCommentsCount,
+  getPostFeedbacksCount,
+  getPostRepliesCount,
 } from '../appwrite-apis/comments';
 
 // *** COMMENT-QUERIES ***
+
+// Use-Get-Post-Comments-Count
+export const useGetPostCommentsCount = (postId?: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_POST_COMMENTS_COUNT, postId],
+    queryFn: async () => {
+      if (!postId) throw new Error('Post ID is required');
+      return getPostCommentsCount(postId);
+    },
+    enabled: !!postId,
+  });
+};
 
 // Use-Get-Comments
 export const useGetComments = (postId: string) => {
@@ -46,6 +61,12 @@ export const useAddComment = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_COMMENTS, postId],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_COMMENTS_COUNT, postId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES_COUNT, postId],
+      });
       //   queryClient.invalidateQueries({
       //     queryKey: [QUERY_KEYS.GET_USER_INFO],
       //   });
@@ -69,11 +90,29 @@ export const useDeleteComment = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_COMMENTS, postId],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_COMMENTS_COUNT, postId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES_COUNT, postId],
+      });
     },
   });
 };
 
 // *** FEEBACK-QUERIES ***
+
+// Use-Get-Post-Feedbacks-Count
+export const useGetPostFeedbacksCount = (postId?: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS_COUNT, postId],
+    queryFn: async () => {
+      if (!postId) throw new Error('Post ID is required');
+      return getPostFeedbacksCount(postId);
+    },
+    enabled: !!postId,
+  });
+};
 
 // Use-Get-Feedbacks
 export const useGetFeedbacks = (postId: string) => {
@@ -105,6 +144,9 @@ export const useAddFeedback = () => {
         queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS, postId],
       });
       queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS_COUNT, postId],
+      });
+      queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_INFO],
       });
     },
@@ -126,11 +168,26 @@ export const useDeleteFeedback = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS, postId],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_FEEDBACKS_COUNT, postId],
+      });
     },
   });
 };
 
 // *** COMMENT-REPLY-QUERIES ***
+
+// Use-Get-Post-Replies-Count
+export const useGetPostRepliesCount = (postId?: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES_COUNT, postId],
+    queryFn: async () => {
+      if (!postId) throw new Error('Post ID is required');
+      return getPostRepliesCount(postId);
+    },
+    enabled: !!postId,
+  });
+};
 
 // Get-Comment-Replies
 export const useGetCommentReplies = (commentId: string) => {

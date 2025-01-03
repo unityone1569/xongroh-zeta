@@ -30,6 +30,17 @@ const fn = {
 
 // *** COMMENTS ***
 
+// Get-Post-Comments-Count
+export async function getPostCommentsCount(postId: string) {
+  try {
+    const comments = await getComments(postId);
+    return comments.length;
+  } catch (error) {
+    console.error('Error getting comments count:', error);
+    throw error;
+  }
+}
+
 // Get-Comment
 export async function getComments(postId: string) {
   try {
@@ -38,6 +49,7 @@ export async function getComments(postId: string) {
       cl.commentId,
       [Query.equal('postId', postId)]
     );
+
     return response.documents;
   } catch (error) {
     console.error('Error fetching comments:', error);
@@ -127,6 +139,21 @@ export async function deleteAllCommentsForPost(postId: string) {
 }
 
 // *** FEEDBACK ***
+
+// Get-Post-Feedbacks-Count
+export async function getPostFeedbacksCount(postId: string) {
+  try {
+    const feedbacks = await databases.listDocuments(
+      db.commentsId,
+      cl.feedbackId,
+      [Query.equal('postId', postId)]
+    );
+    return feedbacks.total;
+  } catch (error) {
+    console.error('Error getting feedbacks count:', error);
+    throw error;
+  }
+}
 
 // Get-Feedback
 export async function getFeedbacks(postId: string) {
@@ -225,6 +252,21 @@ export async function deleteAllFeedbacksForPost(postId: string) {
 }
 
 // *** COMMENT REPLIES ***
+
+// Get-Post-Replies-Count
+export async function getPostRepliesCount(postId: string) {
+  try {
+    const comments = await getComments(postId);
+    const repliesPromises = comments.map((comment) =>
+      getCommentReplies(comment.$id)
+    );
+    const replies = await Promise.all(repliesPromises);
+    return replies.flat().length;
+  } catch (error) {
+    console.error('Error getting replies count:', error);
+    throw error;
+  }
+}
 
 // Get-Comment-Replies
 export async function getCommentReplies(commentId: string) {

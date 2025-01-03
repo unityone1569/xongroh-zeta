@@ -34,8 +34,11 @@ export enum QUERY_KEYS {
   CHECK_POST_SAVE = 'checkPostSave',
   CHECK_SUPPORTING_USER = 'checkSupportingUser',
 
+  GET_POST_COMMENTS_COUNT = 'getPostCommentsCount',
   GET_POST_COMMENTS = 'getComments',
+  GET_POST_FEEDBACKS_COUNT = 'getPostFeedbacksCount',
   GET_POST_FEEDBACKS = 'getFeedbacks',
+  GET_COMMENT_REPLIES_COUNT = 'getCommentRepliesCount',
   GET_COMMENT_REPLIES = 'getCommentReplies',
   GET_FEEDBACK_REPLIES = 'getFeedbackReplies',
 
