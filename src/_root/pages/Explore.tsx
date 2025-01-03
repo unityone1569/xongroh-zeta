@@ -132,7 +132,7 @@ const Explore = () => {
     <div className="explore-container">
       {/* Header */}
       <div className="explore-inner_container">
-        <h2 className="h3-bold md:h2-bold w-full">Explore</h2>
+        <h2 className="h3-bold md:h2-bold mt-16 lg:mt-0 w-full">Explore</h2>
 
         {/* Search Bar */}
         <div className="flex items-center gap-2 px-4 w-full rounded-lg bg-dark-4">
