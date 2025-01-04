@@ -200,7 +200,7 @@ const Home = () => {
           </h2>
 
           {/* Tabs */}
-          <div className="flex-start gap-3 w-full max-w-5xl">
+          <div className="flex-start w-full max-w-5xl">
             {tabs.map((tab) => (
               <button
                 key={tab.name}

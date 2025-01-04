@@ -84,16 +84,16 @@ const ConversationCard = ({
 
   return (
     <div className="block">
-      <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-dark-2 border border-dark-4 hover:bg-dark-3 transition-colors">
+      <div className="flex items-center justify-between gap-3.5 p-3.5 rounded-lg bg-dark-2 border border-dark-4 hover:bg-dark-3 transition-colors">
         <Link
           to={`/chat/${conversation?.$id}`}
           className="flex items-center gap-3.5 "
         >
-          <div className="relative">
+          <div className="relative flex-shrink-0">
             <img
               src={userData?.dp || '/assets/icons/profile-placeholder.svg'}
               alt={userData?.name || 'User'}
-              className="w-11 h-11 rounded-full object-cover"
+              className="w-9 h-9 rounded-full object-cover"
             />
             {unreadCount > 0 && (
               <span className=" bg-gradient-to-r from-purple-500 to-purple-400 absolute -top-2 -right-2 text-white px-2 py-1 rounded-full text-xs">
@@ -103,7 +103,7 @@ const ConversationCard = ({
           </div>
           <div className="flex-1 flex flex-col gap-1">
             <div className="flex justify-between items-center">
-              <h3 className="small-semibold lg:base-bold text-light-1">
+              <h3 className="small-semibold line-clamp-1 lg:base-bold text-light-1">
                 {userData?.name || 'Unknown User'}
               </h3>
             </div>
@@ -119,7 +119,7 @@ const ConversationCard = ({
           </div>
         </Link>
 
-        <div className="flex-center flex gap-5 max-w-1/3">
+        <div className="flex-center flex flex-shrink-0 gap-3.5">
           <div className="flex-center flex-col">
             {isLastMessageFromMe && (
               <span className="flex items-center">
@@ -150,8 +150,8 @@ const ConversationCard = ({
               </span>
             )}
             {message?.$createdAt && (
-              <span className="subtle-normal text-nowrap text-light-3">
-                {multiFormatDateString(conversation?.$updatedAt	)}
+              <span className="tiny-medium text-nowrap text-light-3">
+                {multiFormatDateString(conversation?.$updatedAt)}
               </span>
             )}
           </div>
