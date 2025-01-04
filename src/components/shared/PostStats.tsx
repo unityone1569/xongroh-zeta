@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { Models } from 'appwrite';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import {
   useCheckPostLike,
@@ -180,43 +180,40 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
               isLiking || isUnliking ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           />
+
           {likesCount > 0 && (
-            <p className="small-semibold lg:base-semibold text-light-3">
+            <p className="small-semibold lg:base-semibold text-light-4">
               {likesCount}
             </p>
           )}
         </div>
         <div className="flex gap-1.5 items-center">
-          <img
-            src={
-              commentsCount + repliesCount > 0
-                ? '/assets/icons/comment-filled.svg'
-                : '/assets/icons/comment.svg'
-            }
-            alt="comments"
-            width={26}
-            className="cursor-pointer"
-          />
+          <Link to={`/creations/${post.$id}`}>
+            <img
+              src="/assets/icons/comment.svg"
+              alt="comments"
+              width={26}
+              className="cursor-pointer"
+            />
+          </Link>
           {commentsCount + repliesCount > 0 && (
-            <p className="small-semibold lg:base-semibold text-light-3">
+            <p className="small-semibold lg:base-semibold text-light-4">
               {commentsCount + repliesCount}
             </p>
           )}
         </div>
         {userId === post?.authorId && (
           <div className="flex gap-1.5 items-center">
-            <img
-              src={
-                feedbacksCount > 0
-                  ? '/assets/icons/feedback-filled.svg'
-                  : '/assets/icons/feedback.svg'
-              }
-              alt="feedbacks"
-              width={26}
-              className="cursor-pointer"
-            />
+            <Link to={`/creations/${post.$id}`}>
+              <img
+                src="/assets/icons/feedback.svg"
+                alt="feedbacks"
+                width={26}
+                className="cursor-pointer"
+              />
+            </Link>
             {feedbacksCount > 0 && (
-              <p className="small-semibold lg:base-semibold text-light-3">
+              <p className="small-semibold lg:base-semibold text-light-4">
                 {feedbacksCount}
               </p>
             )}
@@ -239,7 +236,7 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
               }`}
             />
             {savesCount > 0 && (
-              <p className="small-semibold lg:base-semibold text-light-3 pt-0.5">
+              <p className="small-semibold lg:base-semibold text-light-4 pt-0.5">
                 {savesCount}
               </p>
             )}
