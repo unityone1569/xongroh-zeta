@@ -147,7 +147,7 @@ const MessagesList: React.FC<MessagesListProps> = React.memo(
                         : 'bg-dark-4'
                     }`}
                   >
-                    <p className="break-words pb-2">
+                    <p className="break-words whitespace-pre-line pb-2">
                       <DecryptedMessage encryptedContent={message.content} />
                     </p>
                     <span className="text-xs opacity-45 flex items-center">
