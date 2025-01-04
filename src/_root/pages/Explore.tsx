@@ -16,7 +16,7 @@ const Explore = () => {
   const tabs = useMemo(
     () => [
       { name: 'post', label: 'Creations' },
-      { name: 'user', label: 'Creator' },
+      { name: 'user', label: 'Creators' },
     ],
     []
   );
