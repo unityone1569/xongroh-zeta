@@ -45,7 +45,7 @@ const RightSideBar = () => {
         {isLoading ? (
           <Loader />
         ) : (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
             {creators?.documents.map((creator) => (
               <CreatorCard key={creator.$id} creator={creator} />
             ))}

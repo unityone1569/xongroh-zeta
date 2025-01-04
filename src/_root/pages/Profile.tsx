@@ -71,11 +71,14 @@ const ProfileCardItem = ({
         <div className="flex flex-col justify-start items-start pb-6 px-3 sm:px-6 lg:pl-9">
           <div className="w-full">
             <div className="flex justify-between gap-10 ">
-              <LazyImage
-                src={dp}
-                className="h-24 w-24 lg:h-32 lg:w-32 object-cover rounded-full bottom-9 lg:bottom-11 relative"
-                alt="Profile"
-              />
+              <div className="flex-shrink-0">
+                <LazyImage
+                  src={dp}
+                  className="h-24 w-24  lg:h-32 lg:w-32 object-cover rounded-full bottom-9 lg:bottom-11 relative"
+                  alt="Profile"
+                />
+              </div>
+
               <div className="flex gap-6 lg:gap-20 pt-2 lg:pt-4">
                 <div className="text-center">
                   <div className="small-medium lg:base-medium">
