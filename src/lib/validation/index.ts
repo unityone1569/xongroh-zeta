@@ -1,5 +1,27 @@
 import { z } from 'zod';
 
+// Allowlist of legitimate email domains
+const allowedEmailDomains = [
+  'gmail.com',
+  'outlook.com',
+  'hotmail.com',
+  'live.com',
+  'yahoo.com',
+  'ymail.com',
+  'icloud.com',
+  'me.com',
+  'mac.com',
+  'aol.com',
+  'zoho.com',
+  'protonmail.com',
+  'gmx.com',
+  'gmx.de',
+  'yandex.com',
+  'yandex.ru',
+  'mail.com',
+  // Add more domains as needed
+];
+
 export const SignUpFormSchema = z.object({
   name: z
     .string()
@@ -9,7 +31,16 @@ export const SignUpFormSchema = z.object({
     .string()
     .min(2, { message: 'Hometown must be at least 2 characters.' })
     .max(30, { message: 'Hometown must be at most 30 characters.' }),
-  email: z.string().email(),
+  email: z
+    .string()
+    .email({ message: 'Invalid email address.' })
+    .refine(
+      (email) => {
+        const domain = email.split('@')[1];
+        return allowedEmailDomains.includes(domain);
+      },
+      { message: 'Email must be from a valid provider (e.g., Gmail, Yahoo).' }
+    ),
   password: z
     .string()
     .min(8, { message: 'Password must be at least 8 characters.' }),
@@ -56,9 +87,12 @@ export const ProfileValidation = z.object({
   name: z.string().min(2).max(100).optional(),
   username: z
     .string()
-    .min(3)
-    .max(65)
-    .regex(/^[a-zA-Z0-9_]+$/)
+    .min(1, { message: 'Username must be at least 1 character.' })
+    .max(64, { message: 'Username must be at most 64 characters.' })
+    .regex(
+      /^(?!\.)(?!.*\.\.)(?!.*\.$)(?!.*\.\.$)[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+$/,
+      { message: 'Invalid username format.' }
+    )
     .optional(),
   profession: z.string().max(65).optional(),
   hometown: z.string().max(65).optional(),
