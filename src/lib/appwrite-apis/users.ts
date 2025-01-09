@@ -742,7 +742,12 @@ export async function getTopCreators() {
 
 // Get-Infinite-Users
 export async function getInfiniteUsers({ pageParam }: { pageParam: number }) {
-  const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(10)];
+  const queries: any[] = [
+    Query.orderDesc('$updatedAt'),
+    Query.equal('hasSeenWelcome', true),
+    Query.limit(10),
+    Query.select(['$id', 'name', 'profession', 'hometown', 'dpUrl']),
+  ];
 
   if (pageParam) {
     queries.push(Query.cursorAfter(pageParam.toString()));
