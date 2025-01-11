@@ -43,6 +43,10 @@ const NotificationItem = React.memo(
       triggerOnce: true,
     });
 
+    const getFirstName = (fullName?: string) => {
+      if (!fullName) return 'User';
+      return fullName.split(' ')[0];
+    };
     useEffect(() => {
       if (inView && !notification.isRead) {
         markAsRead(notification.$id);
@@ -53,33 +57,37 @@ const NotificationItem = React.memo(
       <Link
         ref={ref}
         to={`/creations/${notification.resourceId}`}
-        className={`flex items-center gap-4 p-4 hover:bg-dark-4 rounded-lg transition-all ${
+        className={`flex items-center gap-3 p-3 sm:p-4 hover:bg-dark-4 rounded-lg transition-all ${
           !notification.isRead ? 'bg-dark-3' : ''
         }`}
       >
         <img
           src={senderInfo?.dp || '/assets/icons/profile-placeholder.svg'}
           alt="profile"
-          className="w-11 h-11 rounded-full object-cover"
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover flex-shrink-0"
         />
-        <div className="flex-1">
-          <div className="flex items-center gap-1.5">
-            <p className="base-medium text-light-2">
-              {senderInfo?.name || 'User'}
-            </p>
-            <p className="base-medium text-light-3">{notification.message}</p>
+        <div className="flex-1 min-w-0">
+          <div className="flex sm:items-center gap-1 sm:gap-1.5">
+            <span className="small-regular sm:base-medium text-light-3 line-clamp-2 sm:line-clamp-1">
+              <span className="text-light-2 small-medium sm:base-medium">
+                {getFirstName(senderInfo?.name) || 'User'}
+              </span>{' '}
+              {notification.message}
+            </span>
           </div>
-          <p className="subtle-semibold text-light-4 pt-1">
+          <span className="subtle-normal text-light-4 pt-1.5 block">
             {multiFormatDateString(notification.$createdAt)}
-          </p>
+          </span>
         </div>
         {!notification.isRead && (
-          <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+          <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-purple-500 flex-shrink-0" />
         )}
       </Link>
     );
   }
 );
+
+NotificationItem.displayName = 'NotificationItem';
 
 const NotificationsList: React.FC<NotificationsListProps> = ({
   notifications,
@@ -173,7 +181,9 @@ const NotificationPage = () => {
   return (
     <div className="common-container">
       <div className="flex-between w-full max-w-5xl">
-        <h2 className="h3-bold md:h2-bold w-full">Notifications</h2>
+        <h2 className="h3-bold md:h2-bold mt-0 md:mt-16 lg:mt-0 w-full">
+          Notifications
+        </h2>
       </div>
 
       <div
