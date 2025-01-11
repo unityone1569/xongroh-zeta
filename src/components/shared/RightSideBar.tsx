@@ -6,11 +6,25 @@ import { INavLink } from '@/types';
 import { useUserContext } from '@/context/AuthContext';
 import { useGetTopCreators } from '@/lib/tanstack-queries/usersQueries';
 import { useUnreadMessages } from '@/lib/tanstack-queries/conversationsQueries';
+import { useUnreadNotifications } from '@/lib/tanstack-queries/notificationQueries';
+import { getUserAccountId } from '@/lib/appwrite-apis/users';
+import React, { useEffect } from 'react';
 
 const RightSideBar = () => {
   const { data: creators, isLoading } = useGetTopCreators();
   const { user } = useUserContext();
   const { hasUnreadMessages } = useUnreadMessages(user?.id);
+  const [accountId, setAccountId] = React.useState<string>('');
+
+  useEffect(() => {
+    const fetchAccountId = async () => {
+      const id = await getUserAccountId(user?.id);
+      setAccountId(id);
+    };
+    fetchAccountId();
+  }, [user?.id]);
+
+  const { hasUnreadNotifications } = useUnreadNotifications(accountId);
 
   return (
     <div className="rightsidebar">
@@ -30,7 +44,11 @@ const RightSideBar = () => {
                   className="group-hover:invert-white w-7"
                 />
                 {link.label === 'Messages' && hasUnreadMessages && (
-                  <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-green-500 rounded-full" />
+                  <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-purple-500 rounded-full" />
+                )}
+
+                {link.label === 'Notifications' && hasUnreadNotifications && (
+                  <span className="absolute -top-0.5 -right-[1px] w-[12px] h-[12px] bg-purple-400 rounded-full" />
                 )}
               </div>
               {link.label}

@@ -2,6 +2,10 @@ import { ID, Query } from 'appwrite';
 import { appwriteConfig, databases, functions } from './config';
 import { deleteItemLike } from './interactions';
 import { getUserAccountId } from './users';
+import {
+  createCommentNotification,
+  createReplyNotification,
+} from './notification';
 
 // *** APPWRITE ***
 
@@ -83,6 +87,20 @@ export async function addComment(
     });
 
     await functions.createExecution(fn.commentPermissionId, payload, true);
+
+    const userAccountId = await getUserAccountId(userId);
+
+    // Create notification for post author
+    // note: authorId is actually the accountId of the post author
+    if (authorId !== userAccountId) {
+      await createCommentNotification({
+        receiverId: authorId,
+        senderId: userId,
+        type: 'comment',
+        resourceId: postId,
+        message: 'commented on your creation.',
+      });
+    }
 
     return { success: true };
   } catch (error) {
@@ -197,6 +215,20 @@ export async function addFeedback(
 
     await functions.createExecution(fn.feedbackPermissionId, payload, true);
 
+    const userAccountId = await getUserAccountId(userId);
+
+    // Create notification for post author
+    // note: authorId is actually the accountId of the post author
+    if (authorId !== userAccountId) {
+      await createCommentNotification({
+        receiverId: authorId,
+        senderId: userId,
+        type: 'feedback',
+        resourceId: postId,
+        message: 'gave feedback on your creation.',
+      });
+    }
+
     return { success: true };
   } catch (error) {
     console.error('Error adding feedback:', error);
@@ -288,9 +320,17 @@ export async function addCommentReply(
   parentId: string,
   authorId: string,
   userId: string,
-  content: string
+  content: string,
+  postId: string
 ): Promise<{ success: boolean; error?: unknown }> {
   try {
+    // fetch parent first
+    const parent = await databases.getDocument(
+      db.commentsId,
+      cl.commentId,
+      parentId
+    );
+
     const commentReply = await databases.createDocument(
       db.commentsId,
       cl.commentReplyId,
@@ -309,6 +349,21 @@ export async function addCommentReply(
     });
 
     await functions.createExecution(fn.commentReplyPermissionId, payload, true);
+
+    // Create notification for post author
+
+    if (parent.userId !== userId) {
+      // Convert item author's userId to accountId
+      const receiverAccountId = await getUserAccountId(parent.userId);
+
+      await createReplyNotification({
+        receiverId: receiverAccountId,
+        senderId: userId,
+        type: 'reply',
+        resourceId: postId,
+        message: 'replied to your comment.',
+      });
+    }
 
     return { success: true };
   } catch (error) {
@@ -387,7 +442,8 @@ export async function addFeedbackReply(
   postAuthorId: string,
   authorId: string,
   userId: string,
-  content: string
+  content: string,
+  postId: string
 ): Promise<{ success: boolean; error?: unknown }> {
   try {
     // Get parent feedback to identify creator
@@ -412,6 +468,9 @@ export async function addFeedbackReply(
       parentFeedback.documents[0].userId
     );
 
+    // fetch parent first
+    const parentuserId = parentFeedback.documents[0].userId;
+
     // Determine which permission function to use
     const isAuthorReplying = userId === postAuthorId;
     const functionId = isAuthorReplying
@@ -424,6 +483,18 @@ export async function addFeedbackReply(
     });
 
     await functions.createExecution(functionId, payload, true);
+
+    // Create notification for post author
+    // note: authorId is actually the accountId of the post author
+    if (parentuserId !== userId) {
+      await createReplyNotification({
+        receiverId: parentAuthorId,
+        senderId: userId,
+        type: 'reply',
+        resourceId: postId,
+        message: 'replied to your feedback.',
+      });
+    }
 
     return { success: true };
   } catch (error) {

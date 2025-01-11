@@ -317,7 +317,13 @@ const CommentItem = React.memo(
         </p>
         <div className="flex justify-between items-center ml-1">
           <div className="flex justify-start gap-3.5">
-            <LikedItems item={item} userId={user.id} authorId={authorId} />
+            <LikedItems
+              item={item}
+              userId={user.id}
+              authorId={authorId}
+              postId={postId}
+              itemType="comment"
+            />
             <div
               className={`${
                 user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
@@ -341,7 +347,8 @@ const CommentItem = React.memo(
             isFeedback={false}
             showReplyForm={showReplyForm}
             toggleReplyForm={toggleReplyForm}
-            authorId={authorId} 
+            authorId={authorId}
+            postId={postId}
           />
         </div>
       </div>
@@ -412,7 +419,13 @@ const FeedbackItem = React.memo(
         </p>
         <div className="flex justify-between items-center ml-1">
           <div className="flex justify-start gap-3.5">
-            <LikedItems item={item} userId={user.id} authorId={authorId} />
+            <LikedItems
+              item={item}
+              userId={user.id}
+              authorId={authorId}
+              postId={postId}
+              itemType="feedback"
+            />
             <div
               className={`${
                 user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
@@ -437,6 +450,7 @@ const FeedbackItem = React.memo(
             isFeedback={true}
             showReplyForm={showReplyForm}
             toggleReplyForm={toggleReplyForm}
+            postId={postId}
           />
         </div>
       </div>

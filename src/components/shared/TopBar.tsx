@@ -1,10 +1,24 @@
 import { Link } from 'react-router-dom';
 import { useUserContext } from '@/context/AuthContext';
 import { useUnreadMessages } from '@/lib/tanstack-queries/conversationsQueries';
+import { useUnreadNotifications } from '@/lib/tanstack-queries/notificationQueries';
+import { getUserAccountId } from '@/lib/appwrite-apis/users';
+import { useEffect, useState } from 'react';
 
 const Topbar = () => {
   const { user } = useUserContext();
+  const [accountId, setAccountId] = useState<string>('');
+
+  useEffect(() => {
+    const fetchAccountId = async () => {
+      const id = await getUserAccountId(user?.id);
+      setAccountId(id);
+    };
+    fetchAccountId();
+  }, [user?.id]);
+
   const { hasUnreadMessages } = useUnreadMessages(user?.id);
+  const { hasUnreadNotifications } = useUnreadNotifications(accountId);
 
   return (
     <section className="topbar">
@@ -22,7 +36,19 @@ const Topbar = () => {
                 className="h-7 w-7"
               />
               {hasUnreadMessages && (
-                <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-green-500 rounded-full" />
+                <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-purple-500 rounded-full" />
+              )}
+            </Link>
+          </div>
+          <div className="relative">
+            <Link to={'/notifications'}>
+              <img
+                src={'/assets/icons/notification.svg'}
+                alt="notifications"
+                className="h-7 w-7"
+              />
+              {hasUnreadNotifications && (
+                <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-purple-500 rounded-full" />
               )}
             </Link>
           </div>

@@ -208,13 +208,15 @@ export const useAddCommentReply = () => {
       authorId,
       userId,
       content,
+      postId,
     }: {
       parentId: string;
       authorId: string;
       userId: string;
       content: string;
       postAuthorId: string;
-    }) => addCommentReply(parentId, authorId, userId, content),
+      postId: string;
+    }) => addCommentReply(parentId, authorId, userId, content, postId),
     onSuccess: (_, { parentId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES, parentId],
@@ -267,13 +269,15 @@ export const useAddFeedbackReply = () => {
       authorId,
       userId,
       content,
+      postId
     }: {
       parentId: string;
       authorId: string;
       userId: string;
       content: string;
       postAuthorId: string;
-    }) => addFeedbackReply(parentId, postAuthorId, authorId, userId, content),
+      postId: string;
+    }) => addFeedbackReply(parentId, postAuthorId, authorId, userId, content, postId),
     onSuccess: (_, { parentId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, parentId],

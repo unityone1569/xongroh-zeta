@@ -64,7 +64,7 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
       if (isLiked) {
         await unlikePost({ postId, userId });
       } else {
-        await likePost({ postId, authorId, userId });
+        await likePost({ postId, authorId, userId, postType: 'creation' });
       }
     } catch (error) {
       // Revert on error

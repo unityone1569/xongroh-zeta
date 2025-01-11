@@ -33,6 +33,11 @@ export const rightbarLinks = [
     route: '/messages',
     label: 'Messages',
   },
+  {
+    imgURL: '/assets/icons/notification.svg',
+    route: '/notifications',
+    label: 'Notifications',
+  },
   
 ]
 

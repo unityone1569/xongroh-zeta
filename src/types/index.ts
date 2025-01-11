@@ -106,3 +106,12 @@ export interface Message {
 export interface EncryptedMessage extends Message {
   content: string; // Base64 encrypted content
 }
+
+export interface INotification {
+  receiverId: string; // User receiving the notification
+  senderId: string; // User who triggered the notification
+  type: 'like' | 'comment' | 'feedback' | 'reply';
+  resourceId: string; // ID of like/comment/etc
+  message: string;
+  isRead: boolean;
+}

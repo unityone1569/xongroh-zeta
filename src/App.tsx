@@ -19,6 +19,7 @@ import {
   ProjectDetails,
   ChatPage,
   Messages,
+  NotificationPage
 } from './_root/pages';
 
 import './globals.css';
@@ -33,6 +34,7 @@ import ResetPasswordForm from './_auth/forms/ResetPasswordForm';
 import TermsOfService from './_auth/TermsOfService';
 import PrivacyPolicy from './_auth/PrivacyPolicy';
 import CommunityGuidelines from './_auth/CommunityGuidelines';
+
 
 const App = () => {
   return (
@@ -74,6 +76,9 @@ const App = () => {
             {/* Messages */}
             <Route path="/messages" element={<Messages />} />
             <Route path="/chat/:id" element={<ChatPage />} />
+
+            {/* Notification */}
+            <Route path="/notifications" element={<NotificationPage />} />
           </Route>
         </Route>
 

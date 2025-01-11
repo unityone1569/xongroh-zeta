@@ -44,11 +44,13 @@ export const useLikePost = () => {
       postId,
       authorId,
       userId,
+      postType,
     }: {
       postId: string;
       authorId: string;
       userId: string;
-    }) => likePost(postId, authorId, userId),
+      postType: string;
+    }) => likePost(postId, authorId, userId, postType),
     onSuccess: (_, { postId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_CREATION_BY_ID, postId],
@@ -112,11 +114,15 @@ export const useLikeItem = () => {
       itemId,
       userId,
       authorId,
+      postId,
+      itemType,
     }: {
       itemId: string;
       userId: string;
       authorId: string;
-    }) => likeItem(itemId, userId, authorId),
+      postId: string;
+      itemType: string;
+    }) => likeItem(itemId, userId, authorId, postId, itemType),
     onSuccess: (_, { itemId, userId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.CHECK_ITEM_LIKE, itemId, userId],

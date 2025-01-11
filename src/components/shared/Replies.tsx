@@ -34,6 +34,7 @@ interface RepliesSectionProps {
   isFeedback: boolean;
   showReplyForm: boolean;
   toggleReplyForm: () => void;
+  postId: string;
 }
 
 interface ReplyFormValues {
@@ -60,6 +61,7 @@ const Replies = ({
   isFeedback,
   showReplyForm,
   toggleReplyForm,
+  postId,
 }: RepliesSectionProps) => {
   const { toast } = useToast();
   const { data: replies, isLoading: isRepliesLoading } = isFeedback
@@ -75,12 +77,21 @@ const Replies = ({
     defaultValues: { reply: '' },
   });
 
-  const { formState: { isSubmitting } } = replyForm;
+  const {
+    formState: { isSubmitting },
+  } = replyForm;
 
   const onSubmitReply = useCallback(
     async ({ reply }: ReplyFormValues) => {
       try {
-        await addReply({ parentId, authorId, userId, content: reply, postAuthorId });
+        await addReply({
+          parentId,
+          authorId,
+          userId,
+          content: reply,
+          postAuthorId,
+          postId,
+        });
         replyForm.reset();
         toast({
           description: 'Reply added successfully!',
@@ -113,6 +124,7 @@ const Replies = ({
               item={reply}
               isFeedback={isFeedback} // Pass isFeedback
               parentId={parentId} // Pass parentId
+              postId={postId}
             />
           ))
         )}
@@ -161,6 +173,7 @@ type ReplyItemProps = {
   toggleReplyForm: () => void;
   isFeedback: boolean; // Add isFeedback
   parentId: string; // Add parentId
+  postId: string;
 };
 
 const ReplyItem = React.memo(
@@ -174,6 +187,7 @@ const ReplyItem = React.memo(
     toggleReplyForm,
     isFeedback,
     parentId,
+    postId,
   }: ReplyItemProps) => {
     const { user } = useUserContext();
     const { data: userData } = useGetUserInfo(creatorId);
@@ -207,7 +221,13 @@ const ReplyItem = React.memo(
           {content}
         </p>
         <div className="flex justify-start gap-3.5 items-center ml-1">
-          <LikedItems item={item} userId={user.id} authorId={authorId} />
+          <LikedItems
+            item={item}
+            userId={user.id}
+            authorId={authorId}
+            postId={postId}
+            itemType="reply"
+          />
           <div
             className={`${
               user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'

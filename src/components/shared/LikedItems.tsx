@@ -12,9 +12,17 @@ type LikedItemsProps = {
   item: Models.Document;
   userId: string;
   authorId: string;
+  postId: string;
+  itemType: string;
 };
 
-const LikedItems = ({ item, userId, authorId }: LikedItemsProps) => {
+const LikedItems = ({
+  item,
+  userId,
+  authorId,
+  postId,
+  itemType,
+}: LikedItemsProps) => {
   const { toast } = useToast();
   const { $id: itemId } = item;
 
@@ -58,6 +66,8 @@ const LikedItems = ({ item, userId, authorId }: LikedItemsProps) => {
           itemId,
           userId,
           authorId,
+          postId,
+          itemType,
         });
       } else {
         await unlikeItem({

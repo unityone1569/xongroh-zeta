@@ -6,7 +6,7 @@ import {
   useCheckPostLike,
   useLikePost,
   useUnlikePost,
-  useGetPostLikesCount
+  useGetPostLikesCount,
 } from '@/lib/tanstack-queries/interactionsQueries';
 import { QUERY_KEYS } from '@/lib/tanstack-queries/queryKeys';
 
@@ -46,7 +46,12 @@ const ProjectStats = ({ project, userId, authorId }: ProjectStatsProps) => {
       if (isLiked) {
         await unlikePost({ postId: projectId, userId });
       } else {
-        await likePost({ postId: projectId, authorId, userId });
+        await likePost({
+          postId: projectId,
+          authorId,
+          userId,
+          postType: 'project',
+        });
       }
     } catch (error) {
       // Revert on error
@@ -64,7 +69,18 @@ const ProjectStats = ({ project, userId, authorId }: ProjectStatsProps) => {
         variant: 'destructive',
       });
     }
-  }, [projectId, userId, authorId, isLiked, isLiking, isUnliking, likePost, unlikePost, queryClient, toast]);
+  }, [
+    projectId,
+    userId,
+    authorId,
+    isLiked,
+    isLiking,
+    isUnliking,
+    likePost,
+    unlikePost,
+    queryClient,
+    toast,
+  ]);
 
   return (
     <div className="z-20">

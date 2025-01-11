@@ -24,6 +24,7 @@ interface AppwriteConfig {
     interactions: DatabaseConfig;
     communities: DatabaseConfig;
     conversations: DatabaseConfig;
+    notifications: DatabaseConfig;
     temps: DatabaseConfig;
   };
   functions: {
@@ -37,6 +38,7 @@ interface AppwriteConfig {
     commentReplyPermission: string;
     feedbackReplyPermission: string;
     feedbackReplyParentPermission: string;
+    notificationPermission: string;
   };
   storage: {
     creatorBucket: string;
@@ -113,6 +115,13 @@ export const appwriteConfig: AppwriteConfig = {
       },
     },
 
+    notifications: {
+      databaseId: import.meta.env.VITE_APPWRITE_NOTIFICATIONS_DATABASE_ID,
+      collections: {
+        notification: import.meta.env.VITE_APPWRITE_NOTIFICATION_COLLECTION_ID,
+      },
+    },
+
     temps: {
       databaseId: import.meta.env.VITE_APPWRITE_TEMPS_DATABASE_ID,
       collections: {
@@ -150,6 +159,9 @@ export const appwriteConfig: AppwriteConfig = {
 
     feedbackReplyParentPermission: import.meta.env
       .VITE_APPWRITE_FEEDBACK_REPLY_PARENT_PERMISSION_FUNCTION_ID,
+
+    notificationPermission: import.meta.env
+      .VITE_APPWRITE_NOTIFICATION_PERMISSION_FUNCTION_ID,
   },
 
   storage: {

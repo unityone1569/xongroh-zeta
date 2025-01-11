@@ -44,6 +44,10 @@ export enum QUERY_KEYS {
 
   SEARCH_USERS = 'searchUsers',
 
+  // NOTIFICATION KEYS
+  GET_USER_NOTIFICATIONS = 'getUserNotifications',
+  
+
   // MESSAGE KEYS
   GET_MESSAGE = 'getMessage',
   GET_MESSAGES = 'getMessages',

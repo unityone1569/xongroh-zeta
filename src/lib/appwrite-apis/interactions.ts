@@ -1,11 +1,19 @@
 import { ID, Query } from 'appwrite';
 import { appwriteConfig, databases, functions } from './config';
+import { createLikeNotification } from './notification';
+import { getUserAccountId } from './users';
+
+interface DbInfo {
+  databaseId: string;
+  collectionId: string;
+}
 
 // *** APPWRITE ***
 
 // Database
 const db = {
   interactionsId: appwriteConfig.databases.interactions.databaseId,
+  commentsId: appwriteConfig.databases.comments.databaseId,
 };
 
 // Collections
@@ -13,6 +21,10 @@ const cl = {
   postLikeId: appwriteConfig.databases.interactions.collections.postLike,
   itemLikeId: appwriteConfig.databases.interactions.collections.itemLike,
   saveId: appwriteConfig.databases.interactions.collections.save,
+  commentId: appwriteConfig.databases.comments.collections.comment,
+  feedbackId: appwriteConfig.databases.comments.collections.feedback,
+  commentReplyId: appwriteConfig.databases.comments.collections.commentReply,
+  feedbackReplyId: appwriteConfig.databases.comments.collections.feedbackReply,
 };
 
 // Functions
@@ -70,7 +82,8 @@ export async function checkPostLike(
 export async function likePost(
   postId: string,
   authorId: string,
-  userId: string
+  userId: string,
+  postType: string
 ): Promise<{ success: boolean; error?: unknown }> {
   if (!postId || !userId || !authorId) return { success: false };
 
@@ -93,6 +106,27 @@ export async function likePost(
     });
 
     await functions.createExecution(fn.postLikePermissionId, payload, true);
+
+    // Create notification for post author
+    // note: authorId is actually the accountId of the post author
+    const userAccountId = await getUserAccountId(userId);
+
+    if (authorId !== userAccountId) {
+      let notificationMessage = 'liked your post.'; // default message
+      if (postType === 'creation') {
+        notificationMessage = 'liked your creation.';
+      } else if (postType === 'project') {
+        notificationMessage = 'liked your project.';
+      }
+
+      await createLikeNotification({
+        receiverId: authorId,
+        senderId: userId,
+        type: 'like',
+        resourceId: postId,
+        message: notificationMessage,
+      });
+    }
 
     return {
       success: true,
@@ -232,13 +266,25 @@ export const getItemLikesCount = async (itemId: string): Promise<number> => {
 export async function likeItem(
   itemId: string,
   userId: string,
-  authorId: string
+  authorId: string,
+  postId: string,
+  itemType: string
 ): Promise<{ success: boolean; error?: unknown }> {
-  if (!itemId || !userId || !authorId) {
+  if (!itemId || !userId || !authorId || !postId) {
     return { success: false };
   }
 
   try {
+    // Get correct database and collection IDs
+    const dbInfo = await getDbInfoByItemType(itemId, itemType);
+
+    // Fetch item using correct database and collection
+    const item = await databases.getDocument(
+      dbInfo.databaseId,
+      dbInfo.collectionId,
+      itemId
+    );
+
     // Save like record in item likes collection
     const itemLike = await databases.createDocument(
       db.interactionsId,
@@ -247,6 +293,7 @@ export async function likeItem(
       {
         userId: userId,
         itemId,
+        postId,
       }
     );
 
@@ -257,6 +304,29 @@ export async function likeItem(
     });
 
     await functions.createExecution(fn.itemLikePermissionId, payload, true);
+
+    // Check if item author is different from liker
+    if (item.userId !== userId) {
+      let notificationMessage = 'liked your item.';
+      if (itemType === 'comment') {
+        notificationMessage = 'liked your comment.';
+      } else if (itemType === 'feedback') {
+        notificationMessage = 'liked your feedback.';
+      } else if (itemType === 'reply') {
+        notificationMessage = 'liked your reply.';
+      }
+
+      // Convert item author's userId to accountId
+      const receiverAccountId = await getUserAccountId(item.userId);
+
+      await createLikeNotification({
+        receiverId: receiverAccountId,
+        senderId: userId,
+        type: 'like',
+        resourceId: postId,
+        message: notificationMessage,
+      });
+    }
 
     return {
       success: true,
@@ -345,6 +415,51 @@ export async function deleteItemLike(
     );
     throw error;
   }
+}
+
+// Helper Fucntion
+
+async function getDbInfoByItemType(
+  itemId: string,
+  itemType: string
+): Promise<DbInfo> {
+  if (itemType === 'comment') {
+    return {
+      databaseId: appwriteConfig.databases.comments.databaseId,
+      collectionId: appwriteConfig.databases.comments.collections.comment,
+    };
+  }
+
+  if (itemType === 'feedback') {
+    return {
+      databaseId: appwriteConfig.databases.comments.databaseId,
+      collectionId: appwriteConfig.databases.comments.collections.feedback,
+    };
+  }
+
+  if (itemType === 'reply') {
+    const {
+      databaseId,
+      collections: { commentReply, feedbackReply },
+    } = appwriteConfig.databases.comments;
+
+    try {
+      const doc = await databases.getDocument(databaseId, commentReply, itemId);
+
+      return {
+        databaseId,
+        collectionId: doc ? commentReply : feedbackReply,
+      };
+    } catch (error) {
+      // If commentReply not found, use feedbackReply
+      return {
+        databaseId,
+        collectionId: feedbackReply,
+      };
+    }
+  }
+
+  throw new Error('Invalid item type');
 }
 
 // *** SAVE ***
@@ -492,3 +607,5 @@ export async function deleteAllPostSaves(postId: string) {
     throw error;
   }
 }
+
+//
