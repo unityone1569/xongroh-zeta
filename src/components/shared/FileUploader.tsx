@@ -26,7 +26,7 @@ type SingleFileUploaderProps = {
   docUrl: string;
 };
 
-const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
+const MAX_FILE_SIZE = 150 * 1024 * 1024; // 150MB
 const MAX_SINGLE_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 const FileUploader = ({ fieldChange, docUrl }: FileUploaderProps) => {
@@ -47,7 +47,7 @@ const FileUploader = ({ fieldChange, docUrl }: FileUploaderProps) => {
 
       // Check file size
       if (selectedFile.size > MAX_FILE_SIZE) {
-        alert('File is too large. Maximum size is 500 MB.');
+        alert('File is too large. Maximum size is 150 MB.');
         return;
       }
 
@@ -83,7 +83,7 @@ const FileUploader = ({ fieldChange, docUrl }: FileUploaderProps) => {
     onDropRejected: (fileRejections) => {
       const rejection = fileRejections[0];
       if (rejection.errors[0]?.code === 'file-too-large') {
-        setError('File is too large. Maximum size is 500 MB.');
+        setError('File is too large. Maximum size is 150 MB.');
       } else {
         setError(rejection.errors[0]?.message || 'Invalid file type');
       }
@@ -139,7 +139,7 @@ const FileUploader = ({ fieldChange, docUrl }: FileUploaderProps) => {
             Drag media here
           </h3>
           <p className="text-light-4 small-regular mb-6">
-            Images, Audio, Videos (max: 500 MB)
+            Images, Audio, Videos (max: 150 MB)
           </p>
           {error && <p className="text-red text-sm mb-4">{error}</p>}
           <Button type="button" className="shad-button_dark_4">
