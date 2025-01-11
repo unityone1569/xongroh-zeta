@@ -21,7 +21,6 @@ const PostCard = ({ post }: PostCardProps) => {
   const [isMediaLoading, setIsMediaLoading] = useState(true);
   const creatorId = post?.authorId;
   const [accountId, setAccountId] = useState<string>('');
-  
 
   // Fetch accountId when author data is available
   useEffect(() => {
@@ -44,9 +43,6 @@ const PostCard = ({ post }: PostCardProps) => {
   }, [post?.mediaUrl]);
 
   if (!post.authorId) return;
-
-
-  
 
   return (
     <div className="post-card">
@@ -83,7 +79,7 @@ const PostCard = ({ post }: PostCardProps) => {
       <Link to={`/creations/${post?.$id}`}>
         <div className="small-medium lg:base-medium ">
           {post?.mediaUrl?.length > 0 ? (
-            <p className="pl-0.5 whitespace-pre-line pt-5 pb-4 small-regular line-clamp-5 text-pretty">
+            <p className="pl-0.5 whitespace-pre-line pt-5 mb-4 small-regular line-clamp-5 text-pretty">
               {post?.content}
             </p>
           ) : (
