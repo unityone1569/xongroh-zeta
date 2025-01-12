@@ -178,6 +178,14 @@ const NotificationPage = () => {
     };
   }, [refetchNotifications]);
 
+  // Add useEffect for scroll management
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, [notificationsData]);
+
   return (
     <div className="common-container">
       <div className="flex-between w-full max-w-5xl">
