@@ -331,6 +331,9 @@ export async function addCommentReply(
       parentId
     );
 
+    // Convert item author's userId to accountId
+    const receiverAccountId = await getUserAccountId(parent.userId);
+
     const commentReply = await databases.createDocument(
       db.commentsId,
       cl.commentReplyId,
@@ -346,6 +349,7 @@ export async function addCommentReply(
     const payload = JSON.stringify({
       commentReplyId: commentReply.$id,
       authorId,
+      receiverAccountId,
     });
 
     await functions.createExecution(fn.commentReplyPermissionId, payload, true);
@@ -353,9 +357,6 @@ export async function addCommentReply(
     // Create notification for post author
 
     if (parent.userId !== userId) {
-      // Convert item author's userId to accountId
-      const receiverAccountId = await getUserAccountId(parent.userId);
-
       await createReplyNotification({
         receiverId: receiverAccountId,
         senderId: userId,

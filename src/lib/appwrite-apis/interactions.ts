@@ -285,6 +285,9 @@ export async function likeItem(
       itemId
     );
 
+    // Convert item author's userId to accountId
+    const receiverAccountId = await getUserAccountId(item.userId);
+
     // Save like record in item likes collection
     const itemLike = await databases.createDocument(
       db.interactionsId,
@@ -301,6 +304,7 @@ export async function likeItem(
     const payload = JSON.stringify({
       itemLikeId: itemLike.$id,
       authorId,
+      receiverAccountId,
     });
 
     await functions.createExecution(fn.itemLikePermissionId, payload, true);
@@ -315,9 +319,6 @@ export async function likeItem(
       } else if (itemType === 'reply') {
         notificationMessage = 'liked your reply.';
       }
-
-      // Convert item author's userId to accountId
-      const receiverAccountId = await getUserAccountId(item.userId);
 
       await createLikeNotification({
         receiverId: receiverAccountId,
@@ -607,5 +608,3 @@ export async function deleteAllPostSaves(postId: string) {
     throw error;
   }
 }
-
-//
