@@ -329,31 +329,26 @@ export async function getSearchCreations(searchTerm: string) {
       return { documents: [] };
     }
 
-    const creatorIds = [
-      ...new Set(creations.map((creation) => creation.creatorId)),
-    ];
-
-    // Handle case where creatorIds is empty
-    if (creatorIds.length === 0) {
-      return {
-        documents: creations.map((creation) => ({ ...creation, author: null })),
-      };
-    }
-
-    const { documents: authors } = await databases.listDocuments(
-      db.usersId,
-      cl.creatorId,
-      [Query.equal('$id', creatorIds)]
+    // Create user fetch promises
+    const userFetchPromises = creations.map((creation) =>
+      databases.getDocument(db.usersId, cl.creatorId, creation.authorId, [
+        Query.select(['name', 'dpUrl']),
+      ])
     );
 
-    const authorMap = new Map(authors.map((author) => [author.$id, author]));
+    // Fetch all users in parallel
+    const users = await Promise.all(userFetchPromises);
 
-    const creationsWithAuthors = creations.map((creation) => ({
+    // Combine creations with user details
+    const creationsWithUserDetails = creations.map((creation, index) => ({
       ...creation,
-      author: authorMap.get(creation.creatorId) || null,
+      author: {
+        name: users[index]?.name || '',
+        dpUrl: users[index]?.dpUrl || null,
+      },
     }));
 
-    return { documents: creationsWithAuthors };
+    return { documents: creationsWithUserDetails };
   } catch (error) {
     console.error('Error fetching creations:', error);
     throw error;
