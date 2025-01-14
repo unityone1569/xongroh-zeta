@@ -64,7 +64,7 @@ const GridPostMedia = ({ post }: { post: Models.Document }) => {
       );
     default:
       return (
-        <div className="w-full h-full p-5 pt-6">
+        <div className="w-full h-full p-5 pt-6 flex items-center justify-center">
           <p className="w-full whitespace-pre-line small-regular line-clamp-[11] text-pretty text-light-2">
             {post?.content}
           </p>
