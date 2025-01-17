@@ -31,6 +31,8 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
   const { $id: postId } = post;
   const location = useLocation();
   const queryClient = useQueryClient();
+  const isHomeRoute = location.pathname === '/';
+  const isProfileRoute = location.pathname.includes('/profile/');
 
   // Queries
   const { data: feedbacksCount = 0 } = useGetPostFeedbacksCount(post?.$id);
@@ -166,7 +168,7 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
   return (
     <div
       className={`flex justify-between items-center z-20 ${
-        location.pathname.startsWith('/profile') ? 'w-full' : ''
+        isProfileRoute ? 'w-full' : ''
       }`}
     >
       <div className="flex items-center gap-5">
@@ -187,22 +189,26 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
             </p>
           )}
         </div>
-        <div className="flex gap-1.5 items-center">
-          <Link to={`/creations/${post.$id}`}>
-            <img
-              src="/assets/icons/comment.svg"
-              alt="comments"
-              width={26}
-              className="cursor-pointer"
-            />
-          </Link>
-          {commentsCount + repliesCount > 0 && (
-            <p className="small-semibold lg:base-semibold text-light-4">
-              {commentsCount + repliesCount}
-            </p>
-          )}
-        </div>
-        {userId === post?.authorId && (
+
+        {(isHomeRoute || isProfileRoute) && (
+          <div className="flex gap-1.5 items-center">
+            <Link to={`/creations/${post.$id}`}>
+              <img
+                src="/assets/icons/comment.svg"
+                alt="comments"
+                width={26}
+                className="cursor-pointer"
+              />
+            </Link>
+            {commentsCount + repliesCount > 0 && (
+              <p className="small-semibold lg:base-semibold text-light-4">
+                {commentsCount + repliesCount}
+              </p>
+            )}
+          </div>
+        )}
+
+        {(isHomeRoute || isProfileRoute) && userId === post?.authorId && (
           <div className="flex gap-1.5 items-center">
             <Link to={`/creations/${post.$id}`}>
               <img

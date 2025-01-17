@@ -25,6 +25,7 @@ import {
   useAddFeedback,
   useGetComments,
   useGetFeedbacks,
+  useGetPostRepliesCount,
 } from '@/lib/tanstack-queries/commentsQueries';
 import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
 
@@ -75,6 +76,8 @@ const PostComments = ({
     useGetComments(postId);
   const { data: feedbacks, isLoading: isFeedbacksLoading } =
     useGetFeedbacks(postId);
+
+  const { data: repliesCount = 0 } = useGetPostRepliesCount(postId);
 
   const { mutateAsync: addComment } = useAddComment();
   const { mutateAsync: addFeedback } = useAddFeedback();
@@ -173,17 +176,37 @@ const PostComments = ({
   return (
     <div className="post-comments-container">
       <div className="tabs pt-1">
-        {['comments', 'feedbacks'].map((tab) => (
+        {[
+          {
+            name: 'comments',
+            label: 'Comments',
+            count: (comments?.length || 0) + repliesCount,
+          },
+          {
+            name: 'feedbacks',
+            label: 'Feedbacks',
+            count: visibleFeedbacks?.length || 0,
+          },
+        ].map((tab) => (
           <button
-            key={tab}
-            onClick={() => handleTabChange(tab as 'comments' | 'feedbacks')}
-            className={`small-medium md:base-medium ${
-              activeTab === tab
-                ? 'underline text-purple-300 lg:decoration-1 underline-offset-8'
-                : ''
-            }`}
+            key={tab.name}
+            onClick={() =>
+              handleTabChange(tab.name as 'comments' | 'feedbacks')
+            }
+            className="small-medium md:base-medium"
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            <span
+              className={
+                activeTab === tab.name
+                  ? 'underline text-purple-300 lg:decoration-1 underline-offset-8'
+                  : ''
+              }
+            >
+              {tab.label}
+            </span>
+            {tab.count > 0 && (
+              <span className="ml-1 text-light-3 subtle-comment">({tab.count})</span>
+            )}
           </button>
         ))}
       </div>
