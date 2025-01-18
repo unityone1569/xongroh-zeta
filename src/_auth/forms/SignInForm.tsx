@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Loader from '@/components/shared/Loader';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { SignInValidation } from '@/lib/validation';
 import { useUserContext } from '@/context/AuthContext';
 import { useState } from 'react';

@@ -4,7 +4,7 @@ import Loader from '@/components/shared/Loader';
 
 import { useUserContext } from '@/context/AuthContext';
 import { Navigate } from 'react-router-dom';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { sendVerificationEmail } from '@/lib/appwrite-apis/users';
 
 const VerifyEmail = () => {

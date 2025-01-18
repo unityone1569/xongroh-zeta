@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { SignUpFormSchema } from '@/lib/validation';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
