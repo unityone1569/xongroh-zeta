@@ -4,6 +4,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import {
+  deleteNotification,
   getUserNotifications,
   markNotificationAsRead,
 } from '../appwrite-apis/notification';
@@ -104,4 +105,18 @@ export const useUnreadNotifications = (userId: string) => {
   }, [notifications, userId]);
 
   return { hasUnreadNotifications };
+};
+
+// Use-Delete-Notification
+export const useDeleteNotification = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (notificationId: string) => deleteNotification(notificationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_NOTIFICATIONS],
+      });
+    },
+  });
 };

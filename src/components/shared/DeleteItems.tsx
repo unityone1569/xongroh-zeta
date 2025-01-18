@@ -24,6 +24,7 @@ import {
   useDeleteFeedbackReply,
 } from '@/lib/tanstack-queries/commentsQueries';
 import { useDeleteConversation } from '@/lib/tanstack-queries/conversationsQueries';
+import { useDeleteNotification } from '@/lib/tanstack-queries/notificationQueries';
 
 interface DeleteDialogProps {
   title: string;
@@ -354,6 +355,43 @@ const DeleteConversation = ({
   );
 };
 
+// Delete Notification Component
+const DeleteNotification = ({
+  notificationId,
+}: {
+  notificationId: string;
+}) => {
+  const { toast } = useToast();
+  const deleteNotificationMutation = useDeleteNotification();
+
+  const handleDelete = () => {
+    deleteNotificationMutation.mutate(notificationId, {
+      onSuccess: () => {
+        toast({ title: 'Notification deleted successfully' });
+      },
+      onError: () => {
+        toast({ title: 'Error deleting notification' });
+      },
+    });
+  };
+
+  if (deleteNotificationMutation.isPending) {
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
+  }
+
+  return (
+    <DeleteDialog
+      title="Delete Notification?"
+      description="This action cannot be undone. This notification will be permanently removed."
+      onDelete={handleDelete}
+    />
+  );
+};
+
 export {
   DeleteCreation,
   DeleteProject,
@@ -362,4 +400,5 @@ export {
   DeleteCommentReply,
   DeleteFeedbackReply,
   DeleteConversation,
+  DeleteNotification,
 };

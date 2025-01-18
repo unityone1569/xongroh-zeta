@@ -205,7 +205,9 @@ const PostComments = ({
               {tab.label}
             </span>
             {tab.count > 0 && (
-              <span className="ml-1 text-light-3 subtle-comment">({tab.count})</span>
+              <span className="ml-1 text-light-3 subtle-comment-semibold">
+                ({tab.count})
+              </span>
             )}
           </button>
         ))}

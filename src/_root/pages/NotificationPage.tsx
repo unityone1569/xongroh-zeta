@@ -12,6 +12,7 @@ import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
 import Loader from '@/components/shared/Loader';
 import { multiFormatDateString } from '@/lib/utils/utils';
 import { getUserAccountId } from '@/lib/appwrite-apis/users';
+import { DeleteNotification } from '@/components/shared/DeleteItems';
 
 // Database config
 const db = {
@@ -54,35 +55,38 @@ const NotificationItem = React.memo(
     }, [inView, notification.$id, notification.isRead, markAsRead]);
 
     return (
-      <Link
-        ref={ref}
-        to={`/creations/${notification.resourceId}`}
-        className={`flex items-center gap-3 p-3 sm:p-4 hover:bg-dark-4 rounded-lg transition-all ${
-          !notification.isRead ? 'bg-dark-3' : ''
-        }`}
-      >
-        <img
-          src={senderInfo?.dp || '/assets/icons/profile-placeholder.svg'}
-          alt="profile"
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover flex-shrink-0"
-        />
-        <div className="flex-1 min-w-0">
-          <div className="flex sm:items-center gap-1 sm:gap-1.5">
-            <span className="small-regular sm:base-medium text-light-3 line-clamp-2 sm:line-clamp-1">
-              <span className="text-light-2 small-medium sm:base-medium">
-                {getFirstName(senderInfo?.name) || 'User'}
-              </span>{' '}
-              {notification.message}
+      <div className="flex items-center gap-2">
+        <Link
+          ref={ref}
+          to={`/creations/${notification.resourceId}`}
+          className={`flex items-center gap-3 p-3 sm:p-4 hover:bg-dark-4 rounded-lg transition-all flex-grow ${
+            !notification.isRead ? 'bg-dark-3' : ''
+          }`}
+        >
+          <img
+            src={senderInfo?.dp || '/assets/icons/profile-placeholder.svg'}
+            alt="profile"
+            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover flex-shrink-0"
+          />
+          <div className="flex-1 min-w-0">
+            <div className="flex sm:items-center gap-1 sm:gap-1.5">
+              <span className="small-regular sm:base-medium text-light-3 line-clamp-2 sm:line-clamp-1">
+                <span className="text-light-2 small-medium sm:base-medium">
+                  {getFirstName(senderInfo?.name) || 'User'}
+                </span>{' '}
+                {notification.message}
+              </span>
+            </div>
+            <span className="subtle-normal text-light-4 pt-1.5 block">
+              {multiFormatDateString(notification.$createdAt)}
             </span>
           </div>
-          <span className="subtle-normal text-light-4 pt-1.5 block">
-            {multiFormatDateString(notification.$createdAt)}
-          </span>
-        </div>
-        {!notification.isRead && (
-          <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-purple-500 flex-shrink-0" />
-        )}
-      </Link>
+          {!notification.isRead && (
+            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-purple-500 flex-shrink-0" />
+          )}
+        </Link>
+        <DeleteNotification notificationId={notification.$id} />
+      </div>
     );
   }
 );
@@ -182,7 +186,7 @@ const NotificationPage = () => {
   useEffect(() => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   }, [notificationsData]);
 

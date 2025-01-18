@@ -76,6 +76,9 @@
   .subtle-comment {
     @apply text-[13px] font-normal leading-[140%];
   }
+  .subtle-comment-semibold {
+    @apply text-[13px] font-semibold leading-[140%];
+  }
   .subtle-normal {
     @apply text-[12px] font-normal leading-[140%];
   }

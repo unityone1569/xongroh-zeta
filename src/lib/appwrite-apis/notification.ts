@@ -116,7 +116,6 @@ export async function createReplyNotification(
 }
 
 // Get user notifications
-
 export async function getUserNotifications({
   pageParam,
   receiverId,
@@ -163,6 +162,21 @@ export async function markNotificationAsRead(notificationId: string) {
     );
   } catch (error) {
     console.error('Error marking notification as read:', error);
+    throw error;
+  }
+}
+
+// Delete notification
+export async function deleteNotification(notificationId: string) {
+  try {
+    await databases.deleteDocument(
+      db.notificationsId, 
+      cl.notificationId,
+      notificationId
+    );
+    return { status: 'Ok' };
+  } catch (error) {
+    console.error('Error deleting notification:', error);
     throw error;
   }
 }
