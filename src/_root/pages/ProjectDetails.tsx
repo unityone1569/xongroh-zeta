@@ -3,7 +3,7 @@ import Loader from '@/components/shared/Loader';
 import ProjectStats from '@/components/shared/ProjectStats';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContext } from '@/context/AuthContext';
-import { formatDateString } from '@/lib/utils/utils';
+import { formatDateString, updateMetaTags } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
@@ -30,10 +30,18 @@ const ProjectDetails = () => {
 
   const handleShare = useCallback(async () => {
     const urlToShare = window.location.href;
+    
+    // Update meta tags
+    updateMetaTags(
+      project?.title || 'Xongroh Project',
+      'Check out this project from Xongroh!',
+      project?.mediaUrl?.[0] || undefined
+    );
+  
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'Project',
+          title: project?.title || 'Project',
           text: 'Check out this project from Xongroh!',
           url: urlToShare,
         });
@@ -46,7 +54,7 @@ const ProjectDetails = () => {
     } catch (error) {
       toast({ title: 'Error sharing project', variant: 'destructive' });
     }
-  }, [toast]);
+  }, [project, toast]);
 
   const [mediaType, setMediaType] = useState<string>('unknown');
   const [isMediaLoading, setIsMediaLoading] = useState(true);

@@ -19,6 +19,7 @@ import {
   useGetPostFeedbacksCount,
   useGetPostRepliesCount,
 } from '@/lib/tanstack-queries/commentsQueries';
+import { updateMetaTags } from '@/lib/utils/utils';
 
 type PostStatsProps = {
   post: Models.Document;
@@ -147,23 +148,31 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
 
   const handleShare = useCallback(async () => {
     const shareUrl = `${window.location.origin}/creations/${post.$id}`;
+    
+    // Update meta tags before sharing
+    updateMetaTags(
+      'Xongroh Creation', 
+      post.content || 'Check out this creation from Xongroh!',
+      post.mediaUrl || undefined
+    );
+  
     try {
       if (navigator.share) {
         await navigator.share({
           title: 'Creation',
-          text: 'Check out this creation from Xongroh!',
+          text: post.content || 'Check out this creation from Xongroh!',
           url: shareUrl,
         });
       } else {
         await navigator.clipboard.writeText(
-          `Check out this creation from Xongroh! ${shareUrl}`
+          `${post.content || 'Check out this creation from Xongroh!'} ${shareUrl}`
         );
         toast({ title: 'Link copied to clipboard!' });
       }
     } catch (error) {
       toast({ title: 'Error sharing creation', variant: 'destructive' });
     }
-  }, [post.$id, toast]);
+  }, [post, toast]);
 
   return (
     <div
@@ -272,3 +281,5 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
 };
 
 export default PostStats;
+
+

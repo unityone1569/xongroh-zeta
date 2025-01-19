@@ -57,4 +57,15 @@ export const checkIsLiked = (likeList: string[], userId: string) => {
   return likeList.includes(userId);
 };
 
-
+export const updateMetaTags = (title: string, description: string, image?: string) => {
+  // Update OG title
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
+  
+  // Update OG description
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
+  
+  // Update OG image if provided
+  if (image) {
+    document.querySelector('meta[property="og:image"]')?.setAttribute('content', image);
+  }
+};
