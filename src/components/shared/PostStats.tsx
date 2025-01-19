@@ -149,7 +149,7 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
   const handleShare = useCallback(async () => {
     const shareUrl = `${window.location.origin}/creations/${post.$id}`;
     const imageUrl =
-      post.mediaUrl[0] ||
+      post.mediaUrl ||
       'https://api.xongroh.com/v1/storage/buckets/678c8e03002d41317909/files/678c96350038d0b750f0/view?project=66e2a98a00192795ca51';
     const description = formatShareDescription(post.content);
 

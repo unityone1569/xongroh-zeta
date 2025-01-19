@@ -30,7 +30,9 @@ const ProjectDetails = () => {
 
   const handleShare = useCallback(async () => {
     const shareUrl = window.location.href;
-    const imageUrl = project?.mediaUrl || '/assets/icons/logo.svg';
+    const imageUrl =
+      project?.mediaUrl ||
+      'https://api.xongroh.com/v1/storage/buckets/678c8e03002d41317909/files/678c96350038d0b750f0/view?project=66e2a98a00192795ca51';
     // Update meta tags
     updateMetaTags(
       project?.title || 'Xongroh Project',
