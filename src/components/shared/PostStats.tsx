@@ -19,7 +19,7 @@ import {
   useGetPostFeedbacksCount,
   useGetPostRepliesCount,
 } from '@/lib/tanstack-queries/commentsQueries';
-import { updateMetaTags } from '@/lib/utils/utils';
+import { formatShareDescription, updateMetaTags } from '@/lib/utils/utils';
 
 type PostStatsProps = {
   post: Models.Document;
@@ -149,13 +149,10 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
   const handleShare = useCallback(async () => {
     const shareUrl = `${window.location.origin}/creations/${post.$id}`;
     const imageUrl = post.mediaUrl || '/assets/icons/logo.svg';
+    const description = formatShareDescription(post.content);
+
     // Update meta tags before sharing
-    updateMetaTags(
-      'Xongroh Creation',
-      post.content || 'Check out this creation on Xongroh!',
-      imageUrl,
-      shareUrl
-    );
+    updateMetaTags('Xongroh Creation', description, imageUrl, shareUrl);
 
     try {
       if (navigator.share) {

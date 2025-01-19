@@ -64,13 +64,41 @@ export const updateMetaTags = (
   pageUrl: string
 ) => {
   // Open Graph
-  document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
-  document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
-  document.querySelector('meta[property="og:image"]')?.setAttribute('content', imageUrl);
-  document.querySelector('meta[property="og:url"]')?.setAttribute('content', pageUrl);
-  
+  document
+    .querySelector('meta[property="og:title"]')
+    ?.setAttribute('content', title);
+  document
+    .querySelector('meta[property="og:description"]')
+    ?.setAttribute('content', description);
+  document
+    .querySelector('meta[property="og:image"]')
+    ?.setAttribute('content', imageUrl);
+  document
+    .querySelector('meta[property="og:url"]')
+    ?.setAttribute('content', pageUrl);
+
   // Twitter
-  document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', title);
-  document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', description);
-  document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', imageUrl);
+  document
+    .querySelector('meta[name="twitter:title"]')
+    ?.setAttribute('content', title);
+  document
+    .querySelector('meta[name="twitter:description"]')
+    ?.setAttribute('content', description);
+  document
+    .querySelector('meta[name="twitter:image"]')
+    ?.setAttribute('content', imageUrl);
+};
+
+export const formatShareDescription = (content: string | undefined): string => {
+  if (!content) return 'Check out this creation on Xongroh!';
+
+  // Split content into lines and take first 2
+  const lines = content.split('\n').slice(0, 2);
+
+  // Limit each line to 60 characters
+  const truncatedLines = lines.map((line) =>
+    line.length > 60 ? line.substring(0, 57) + '...' : line
+  );
+
+  return `Check out this creation on Xongroh!\n\n${truncatedLines.join('\n')}`;
 };
