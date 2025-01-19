@@ -57,15 +57,20 @@ export const checkIsLiked = (likeList: string[], userId: string) => {
   return likeList.includes(userId);
 };
 
-export const updateMetaTags = (title: string, description: string, image?: string) => {
-  // Update OG title
+export const updateMetaTags = (
+  title: string,
+  description: string,
+  imageUrl: string,
+  pageUrl: string
+) => {
+  // Open Graph
   document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
-  
-  // Update OG description
   document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
+  document.querySelector('meta[property="og:image"]')?.setAttribute('content', imageUrl);
+  document.querySelector('meta[property="og:url"]')?.setAttribute('content', pageUrl);
   
-  // Update OG image if provided
-  if (image) {
-    document.querySelector('meta[property="og:image"]')?.setAttribute('content', image);
-  }
+  // Twitter
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', title);
+  document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', description);
+  document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', imageUrl);
 };

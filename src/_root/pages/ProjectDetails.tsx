@@ -29,25 +29,26 @@ const ProjectDetails = () => {
   const navigate = useNavigate();
 
   const handleShare = useCallback(async () => {
-    const urlToShare = window.location.href;
-    
+    const shareUrl = window.location.href;
+    const imageUrl = project?.mediaUrl || '/assets/icons/logo.svg';
     // Update meta tags
     updateMetaTags(
       project?.title || 'Xongroh Project',
-      'Check out this project from Xongroh!',
-      project?.mediaUrl?.[0] || undefined
+      project?.description || 'Check out this project from Xongroh!',
+      imageUrl,
+      shareUrl
     );
-  
+
     try {
       if (navigator.share) {
         await navigator.share({
           title: project?.title || 'Project',
           text: 'Check out this project from Xongroh!',
-          url: urlToShare,
+          url: shareUrl,
         });
       } else {
         await navigator.clipboard.writeText(
-          `Check out this project from Xongroh! ${urlToShare}`
+          `Check out this project from Xongroh! ${shareUrl}`
         );
         toast({ title: 'Link copied to clipboard!' });
       }

@@ -148,14 +148,15 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
 
   const handleShare = useCallback(async () => {
     const shareUrl = `${window.location.origin}/creations/${post.$id}`;
-    
+    const imageUrl = post.mediaUrl || '/assets/icons/logo.svg';
     // Update meta tags before sharing
     updateMetaTags(
-      'Xongroh Creation', 
-      post.content || 'Check out this creation from Xongroh!',
-      post.mediaUrl || undefined
+      'Xongroh Creation',
+      post.content || 'Check out this creation on Xongroh!',
+      imageUrl,
+      shareUrl
     );
-  
+
     try {
       if (navigator.share) {
         await navigator.share({
@@ -165,7 +166,9 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
         });
       } else {
         await navigator.clipboard.writeText(
-          `${post.content || 'Check out this creation from Xongroh!'} ${shareUrl}`
+          `${
+            post.content || 'Check out this creation from Xongroh!'
+          } ${shareUrl}`
         );
         toast({ title: 'Link copied to clipboard!' });
       }
@@ -281,5 +284,3 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
 };
 
 export default PostStats;
-
-
