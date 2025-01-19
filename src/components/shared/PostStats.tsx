@@ -158,15 +158,11 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
       if (navigator.share) {
         await navigator.share({
           title: 'Creation',
-          text: post.content || 'Check out this creation from Xongroh!',
+          text: description,
           url: shareUrl,
         });
       } else {
-        await navigator.clipboard.writeText(
-          `${
-            post.content || 'Check out this creation from Xongroh!'
-          } ${shareUrl}`
-        );
+        await navigator.clipboard.writeText(`${description} ${shareUrl}`);
         toast({ title: 'Link copied to clipboard!' });
       }
     } catch (error) {
