@@ -100,5 +100,7 @@ export const formatShareDescription = (content: string | undefined): string => {
     line.length > 60 ? line.substring(0, 57) + '...' : line
   );
 
-  return `Check out this creation on Xongroh!\n\n${truncatedLines.join('\n')}`;
+  return `Check out this creation on Xongroh!\n\n${truncatedLines.join(
+    '\n'
+  )}\n`;
 };

@@ -27,7 +27,7 @@ export default function AuthLayout() {
       </section>
 
       <img
-        src="https://cloud.appwrite.io/v1/storage/buckets/66eb8c5f0005ac84ff73/files/678294340033e5c35a86/view?project=66e2a98a00192795ca51"
+        src="https://api.xongroh.com/v1/storage/buckets/678c8e03002d41317909/files/678c902a003a135baa89/view?project=66e2a98a00192795ca51"
         alt="logo"
         className="hidden xl:block h-screen w-1/2 object-cover bg-no-repeat"
       />
