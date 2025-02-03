@@ -48,7 +48,7 @@ const PostCard = ({ post }: PostCardProps) => {
     <div className="post-card">
       <div className="flex-between">
         <div className="flex items-center gap-3">
-          <Link to={`/profile/${post?.authorId}`}>
+          <Link to={`/profile/${post?.authorId}`} className="flex-shrink-0">
             <LazyImage
               src={
                 post?.author?.dpUrl || '/assets/icons/profile-placeholder.svg'
@@ -58,11 +58,11 @@ const PostCard = ({ post }: PostCardProps) => {
             />
           </Link>
           <div className="flex flex-col">
-            <p className="base-medium lg:body-bold text-light-1">
+            <p className="base-medium lg:body-bold text-light-1 line-clamp-1">
               {post?.author?.name}
             </p>
             <div className="flex-start text-light-3 pt-0.5">
-              <p className="subtle-semibold lg:small-regular ">
+              <p className="subtle-semibold lg:small-regular line-clamp-1">
                 {multiFormatDateString(post?.$createdAt)}
               </p>
             </div>
