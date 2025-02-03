@@ -30,7 +30,7 @@ const TopicCard = ({ topic }: { topic: Models.Document }) => {
   const { data: pingCount = 0 } = useGetTopicPings(topic.$id, user.id);
 
   return (
-    <div className="flex flex-col p-6 bg-dark-2 rounded-xl border border-dark-4 w-full">
+    <div className="flex flex-col p-6 bg-dark-3 rounded-xl border border-dark-4 w-full">
       <div className="flex justify-between items-center">
         <Link to={`/topics/${topic.$id}`}>
           <h3 className="base-medium line-clamp-1">{topic.topicName}</h3>
@@ -46,7 +46,7 @@ const TopicCard = ({ topic }: { topic: Models.Document }) => {
 };
 
 const MemberCard = ({ member }: { member: Models.Document }) => (
-  <div className="user-card bg-dark-2">
+  <div className="user-card bg-dark-3">
     <div className="flex-shrink-0">
       <Link to={`/profile/${member.creatorId}`}>
         <LazyImage
@@ -184,7 +184,7 @@ const CommunityDetailsPage = () => {
 
       case 'rules':
         return (
-          <div className="flex flex-col gap-4 p-6 bg-dark-2 rounded-xl">
+          <div className="flex flex-col gap-4 p-6 bg-dark-3 rounded-xl">
             <h3 className="h4-bold">Community Rules</h3>
             <div className="base-regular whitespace-pre-line">
               {community?.rules || 'No rules have been set for this community.'}
