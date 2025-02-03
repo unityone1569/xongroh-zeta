@@ -107,6 +107,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           coverUrl: currentAccount.coverUrl || '',
           bio: currentAccount.bio || '',
           hasSeenWelcome: currentAccount.hasSeenWelcome || false,
+          verifiedUser: currentAccount.verifiedUser || false,
         },
       });
 

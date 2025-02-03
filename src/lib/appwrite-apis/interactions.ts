@@ -1,7 +1,11 @@
 import { ID, Query } from 'appwrite';
 import { appwriteConfig, databases, functions } from './config';
-import { createLikeNotification } from './notification';
+import {
+  createDiscussionLikeNotification,
+  createLikeNotification,
+} from './notification';
 import { getUserAccountId } from './users';
+import { getAdminAccountId } from './community';
 
 interface DbInfo {
   databaseId: string;
@@ -32,6 +36,10 @@ const fn = {
   postLikePermissionId: appwriteConfig.functions.postLikePermission,
   itemLikePermissionId: appwriteConfig.functions.itemLikePermission,
   savePermissionId: appwriteConfig.functions.savePermission,
+  discussionLikePermissionId: appwriteConfig.functions.discussionLikePermission,
+  discussionItemLikePermissionId:
+    appwriteConfig.functions.discussionItemLikePermission,
+  discussionSavePermissionId: appwriteConfig.functions.discussionSavePermission,
 };
 
 // *** POST-LIKE ***
@@ -383,42 +391,42 @@ export async function unlikeItem(
   }
 }
 
-// Delete-Item-Likes
-export async function deleteItemLike(
+// Delete-All-Item-Likes
+export async function deleteAllItemLikes(
   itemId: string
-): Promise<{ status: string; interactionLikeId?: string }> {
+): Promise<{ status: string; interactionLikeIds?: string[] }> {
   if (!itemId) return { status: 'Error: No itemId provided' };
 
   try {
-    const interactionLike = await databases.listDocuments(
+    const interactionLikes = await databases.listDocuments(
       db.interactionsId,
       cl.itemLikeId,
       [Query.equal('itemId', itemId), Query.select(['$id'])]
     );
 
-    if (!interactionLike.documents.length) {
+    if (!interactionLikes.documents.length) {
       return { status: 'Ok' }; // No documents to delete
     }
 
-    const interactionLikeId = interactionLike.documents[0].$id;
+    const interactionLikeIds = interactionLikes.documents.map(doc => doc.$id);
 
-    await databases.deleteDocument(
-      db.interactionsId,
-      cl.itemLikeId,
-      interactionLikeId
+    await Promise.all(
+      interactionLikeIds.map(id =>
+        databases.deleteDocument(db.interactionsId, cl.itemLikeId, id)
+      )
     );
 
-    return { status: 'Ok', interactionLikeId };
+    return { status: 'Ok', interactionLikeIds };
   } catch (error) {
     console.error(
-      `Error deleting interaction like with itemId: ${itemId}`,
+      `Error deleting interaction likes with itemId: ${itemId}`,
       error
     );
     throw error;
   }
 }
 
-// Helper Fucntion
+// Helper Function
 
 async function getDbInfoByItemType(
   itemId: string,
@@ -606,5 +614,212 @@ export async function deleteAllPostSaves(postId: string) {
   } catch (error) {
     console.error(`Error deleting saves for postId: ${postId}`, error);
     throw error;
+  }
+}
+
+// * ### COMMUNITY ### *
+
+//  * # Community Likes # *
+
+// Like-Discussion
+export async function discussionLike(
+  discussionId: string,
+  authorId: string,
+  userId: string,
+  communityId: string
+): Promise<{ success: boolean; error?: unknown }> {
+  if (!discussionId || !userId || !authorId || !communityId)
+    return { success: false };
+
+  try {
+    // Save like record in discussion likes collection
+    const discussionLike = await databases.createDocument(
+      db.interactionsId,
+      cl.postLikeId,
+      ID.unique(),
+      {
+        userId,
+        postId: discussionId,
+      }
+    );
+
+    // *# Note: We store AccountIds as adminIds in the community document directly. No need to convert it to accountId.
+    const adminId = await getAdminAccountId(communityId);
+
+    // TODO 1: update fn to add all adminIds permissions to the discussion
+
+    // Todo 2: Do not forget to update the AppWrite-Funtion to add all adminIds permissions to the discussion
+
+    // *# Note: This is a temporary solution to add only the first adminId
+    const payload = JSON.stringify({
+      postLikeId: discussionLike.$id,
+      authorId,
+      adminId,
+    });
+
+    await functions.createExecution(
+      fn.discussionLikePermissionId,
+      payload,
+      true
+    );
+
+    // Create notification for post author
+    // note: authorId is actually the accountId of the post author
+    const userAccountId = await getUserAccountId(userId);
+
+    // Create notification for discussion author
+    if (authorId !== userAccountId) {
+      await createDiscussionLikeNotification({
+        receiverId: authorId,
+        senderId: userId,
+        type: 'like',
+        resourceId: discussionId,
+        message: 'liked your discussion.',
+      });
+    }
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error('Error liking discussion:', error);
+    return { success: false, error };
+  }
+}
+
+// Discussion-Like-Item
+export async function discussionItemLike(
+  itemId: string,
+  userId: string,
+  authorId: string,
+  postId: string,
+  itemType: string,
+  communityId: string
+): Promise<{ success: boolean; error?: unknown }> {
+  if (!itemId || !userId || !authorId || !postId) {
+    return { success: false };
+  }
+
+  try {
+    // Get correct database and collection IDs
+    const dbInfo = await getDbInfoByItemType(itemId, itemType);
+
+    // Fetch item using correct database and collection
+    const item = await databases.getDocument(
+      dbInfo.databaseId,
+      dbInfo.collectionId,
+      itemId
+    );
+
+    // Convert item author's userId to accountId
+    const receiverAccountId = await getUserAccountId(item.userId);
+
+    // Save like record in item likes collection
+    const itemLike = await databases.createDocument(
+      db.interactionsId,
+      cl.itemLikeId,
+      ID.unique(),
+      {
+        userId: userId,
+        itemId,
+        postId,
+      }
+    );
+
+    // *# Note: We store AccountIds as adminIds in the community document directly. No need to convert it to accountId.
+    const adminId = await getAdminAccountId(communityId);
+
+    // TODO: update fn to add all adminIds permissions to the discussion
+
+    // *# Note: This is a temporary solution to add only the first adminId
+    const payload = JSON.stringify({
+      itemLikeId: itemLike.$id,
+      authorId,
+      receiverAccountId,
+      adminId,
+    });
+
+    await functions.createExecution(
+      fn.discussionItemLikePermissionId,
+      payload,
+      true
+    );
+
+    // Check if item author is different from liker
+    if (item.userId !== userId) {
+      let notificationMessage = 'liked your item.';
+      if (itemType === 'comment') {
+        notificationMessage = 'liked your comment.';
+      } else if (itemType === 'reply') {
+        notificationMessage = 'liked your reply.';
+      }
+
+      await createDiscussionLikeNotification({
+        receiverId: receiverAccountId,
+        senderId: userId,
+        type: 'like',
+        resourceId: postId,
+        message: notificationMessage,
+      });
+    }
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error('Error liking item:', error);
+    return {
+      success: false,
+      error,
+    };
+  }
+}
+
+// * # Community Saves # *
+
+// Save-Discussion
+export async function discussionSave(
+  discussionId: string,
+  authorId: string,
+  userId: string,
+  communityId: string
+): Promise<{ success: boolean; error?: unknown }> {
+  if (!discussionId || !userId || !authorId) return { success: false };
+
+  try {
+    // Save record in saves collection
+    const saveRecord = await databases.createDocument(
+      db.interactionsId,
+      cl.saveId,
+      ID.unique(),
+      {
+        userId,
+        postId: discussionId,
+      }
+    );
+
+    // *# Note: We store AccountIds as adminIds in the community document directly. No need to convert it to accountId.
+    const adminId = await getAdminAccountId(communityId);
+
+    // TODO: update fn to add all adminIds permissions to the discussion
+
+    // *# Note: This is a temporary solution to add only the first adminId
+    const payload = JSON.stringify({
+      saveId: saveRecord.$id,
+      authorId,
+      adminId,
+    });
+
+    await functions.createExecution(
+      fn.discussionSavePermissionId,
+      payload,
+      true
+    );
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error('Error saving post:', error);
+    return { success: false, error };
   }
 }

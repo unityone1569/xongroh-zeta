@@ -17,6 +17,7 @@ interface AppwriteConfig {
     id: string;
     url: string;
   };
+
   databases: {
     users: DatabaseConfig;
     posts: DatabaseConfig;
@@ -27,6 +28,7 @@ interface AppwriteConfig {
     notifications: DatabaseConfig;
     temps: DatabaseConfig;
   };
+
   functions: {
     conversationPermission: string;
     messagePermission: string;
@@ -38,18 +40,29 @@ interface AppwriteConfig {
     commentReplyPermission: string;
     feedbackReplyPermission: string;
     feedbackReplyParentPermission: string;
-    notificationPermission: string;
+    userNotificationPermission: string;
+    communityNotificationPermission: string;
+    communityDiscussionPermission: string;
+    discussionLikePermission: string;
+    discussionSavePermission: string;
+    discussionItemLikePermission: string;
+    discussionCommentPermission: string;
+    discussionCommentReplyPermission: string;
   };
+
   storage: {
     creatorBucket: string;
     creationBucket: string;
     projectBucket: string;
+    communityBucket: string;
+    discussionBucket: string;
   };
 
   oauth: {
     googleSuccessUrl: string;
     googleFailureUrl: string;
   };
+
   encryption: {
     messageEncryption: string;
   };
@@ -104,6 +117,10 @@ export const appwriteConfig: AppwriteConfig = {
         discussion: import.meta.env.VITE_APPWRITE_DISCUSSION_COLLECTION_ID,
         member: import.meta.env.VITE_APPWRITE_MEMBER_COLLECTION_ID,
         community: import.meta.env.VITE_APPWRITE_COMMUNITY_COLLECTION_ID,
+        topic: import.meta.env.VITE_APPWRITE_TOPIC_COLLECTION_ID,
+        ping: import.meta.env.VITE_APPWRITE_PING_COLLECTION_ID,
+        pinnedDiscussion: import.meta.env
+          .VITE_APPWRITE_PINNED_DISCUSSION_COLLECTION_ID,
       },
     },
 
@@ -118,7 +135,10 @@ export const appwriteConfig: AppwriteConfig = {
     notifications: {
       databaseId: import.meta.env.VITE_APPWRITE_NOTIFICATIONS_DATABASE_ID,
       collections: {
-        notification: import.meta.env.VITE_APPWRITE_NOTIFICATION_COLLECTION_ID,
+        userNotification: import.meta.env
+          .VITE_APPWRITE_USER_NOTIFICATION_COLLECTION_ID,
+        communityNotification: import.meta.env
+          .VITE_APPWRITE_COMMUNITY_NOTIFICATION_COLLECTION_ID,
       },
     },
 
@@ -160,14 +180,37 @@ export const appwriteConfig: AppwriteConfig = {
     feedbackReplyParentPermission: import.meta.env
       .VITE_APPWRITE_FEEDBACK_REPLY_PARENT_PERMISSION_FUNCTION_ID,
 
-    notificationPermission: import.meta.env
-      .VITE_APPWRITE_NOTIFICATION_PERMISSION_FUNCTION_ID,
+    userNotificationPermission: import.meta.env
+      .VITE_APPWRITE_USER_NOTIFICATION_PERMISSION_FUNCTION_ID,
+
+    communityNotificationPermission: import.meta.env
+      .VITE_APPWRITE_COMMUNITY_NOTIFICATION_PERMISSION_FUNCTION_ID,
+
+    communityDiscussionPermission: import.meta.env
+      .VITE_APPWRITE_COMMUNITY_DISCUSSION_PERMISSION_FUNCTION_ID,
+
+    discussionLikePermission: import.meta.env
+      .VITE_APPWRITE_DISCUSSION_LIKE_PERMISSION_FUNCTION_ID,
+
+    discussionSavePermission: import.meta.env
+      .VITE_APPWRITE_DISCUSSION_SAVE_PERMISSION_FUNCTION_ID,
+
+    discussionItemLikePermission: import.meta.env
+      .VITE_APPWRITE_DISCUSSION_ITEM_LIKE_PERMISSION_FUNCTION_ID,
+
+    discussionCommentPermission: import.meta.env
+      .VITE_APPWRITE_DISCUSSION_COMMENT_PERMISSION_FUNCTION_ID,
+
+    discussionCommentReplyPermission: import.meta.env
+      .VITE_APPWRITE_DISCUSSION_COMMENT_REPLY_PERMISSION_FUNCTION_ID,
   },
 
   storage: {
     creatorBucket: import.meta.env.VITE_APPWRITE_CREATOR_BUCKET_ID,
     creationBucket: import.meta.env.VITE_APPWRITE_CREATION_BUCKET_ID,
     projectBucket: import.meta.env.VITE_APPWRITE_PROJECT_BUCKET_ID,
+    communityBucket: import.meta.env.VITE_APPWRITE_COMMUNITY_BUCKET_ID,
+    discussionBucket: import.meta.env.VITE_APPWRITE_DISCUSSION_BUCKET_ID,
   },
 
   oauth: {

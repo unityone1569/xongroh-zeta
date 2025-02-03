@@ -1,7 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Loader from '@/components/shared/Loader';
 import PostCard from '@/components/shared/PostCard';
-
 import { Models } from 'appwrite';
 import { useUserContext } from '@/context/AuthContext';
 import {

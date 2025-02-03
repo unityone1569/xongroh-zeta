@@ -4,7 +4,7 @@ import GridSearchList from './GridSearchList';
 type SearchResultsProps = {
   isSearchFetching: boolean;
   searchedItems: any;
-  type: 'post' | 'user';
+  type: 'post' | 'user' | 'community';
 };
 
 const SearchResult = ({

@@ -3,6 +3,8 @@ import { QUERY_KEYS } from './queryKeys';
 import {
   addComment,
   addCommentReply,
+  addDiscussionComment,
+  addDiscussionCommentReply,
   addFeedback,
   addFeedbackReply,
   deleteComment,
@@ -269,7 +271,7 @@ export const useAddFeedbackReply = () => {
       authorId,
       userId,
       content,
-      postId
+      postId,
     }: {
       parentId: string;
       authorId: string;
@@ -277,7 +279,15 @@ export const useAddFeedbackReply = () => {
       content: string;
       postAuthorId: string;
       postId: string;
-    }) => addFeedbackReply(parentId, postAuthorId, authorId, userId, content, postId),
+    }) =>
+      addFeedbackReply(
+        parentId,
+        postAuthorId,
+        authorId,
+        userId,
+        content,
+        postId
+      ),
     onSuccess: (_, { parentId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, parentId],
@@ -303,6 +313,87 @@ export const useDeleteFeedbackReply = () => {
     onSuccess: (_, { feedbackId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, feedbackId],
+      });
+    },
+  });
+};
+
+// *** DISCUSSION-COMMENT-QUERIES ***
+
+// Use-Add-Discussion-Comment
+export const useAddDiscussionComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      discussionId,
+      authorId,
+      userId,
+      content,
+      communityId,
+    }: {
+      discussionId: string;
+      authorId: string;
+      userId: string;
+      content: string;
+      communityId: string;
+    }) =>
+      addDiscussionComment(
+        discussionId,
+        authorId,
+        userId,
+        content,
+        communityId
+      ),
+    onSuccess: (_, { discussionId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_COMMENTS, discussionId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_COMMENTS_COUNT, discussionId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES_COUNT, discussionId],
+      });
+    },
+  });
+};
+
+// Use-Add-Discussion-Comment-Reply
+export const useAddDiscussionCommentReply = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      parentId,
+      authorId,
+      userId,
+      content,
+      discussionId,
+      communityId,
+    }: {
+      parentId: string;
+      authorId: string;
+      postAuthorId: string;
+      userId: string;
+      content: string;
+      discussionId: string;
+      communityId: string;
+    }) =>
+      addDiscussionCommentReply(
+        parentId,
+        authorId,
+        userId,
+        content,
+        discussionId,
+        communityId
+      ),
+    onSuccess: (_, { parentId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES, parentId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_INFO],
       });
     },
   });

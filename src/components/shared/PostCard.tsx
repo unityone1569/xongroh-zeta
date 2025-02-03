@@ -68,12 +68,17 @@ const PostCard = ({ post }: PostCardProps) => {
             </div>
           </div>
         </div>
-        <Link
-          to={`/update-creation/${post?.$id}`}
-          className={`${user.id !== post?.authorId && 'hidden'}`}
-        >
-          <img src="/assets/icons/edit.svg" alt="edit" width={20} />
-        </Link>
+        <div className="flex items-center gap-5">
+          <div className="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-violet-400">
+            Creation
+          </div>
+          <Link
+            to={`/update-creation/${post?.$id}`}
+            className={`${user.id !== post?.authorId && 'hidden'}`}
+          >
+            <img src="/assets/icons/edit.svg" alt="edit" width={20} />
+          </Link>
+        </div>
       </div>
 
       <Link to={`/creations/${post?.$id}`}>

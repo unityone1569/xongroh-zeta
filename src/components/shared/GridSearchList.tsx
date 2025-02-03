@@ -8,7 +8,7 @@ import LazyImage from './LazyImage';
 
 type GridSearchListProps = {
   items: Models.Document[];
-  type: 'post' | 'user';
+  type: 'post' | 'user' | 'community';
 };
 
 const GridPostMedia = ({ post }: { post: Models.Document }) => {
@@ -156,6 +156,42 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                 </div>
                 <p className="subtle-normal line-clamp-1 lg:subtle-comment">
                   {user?.hometown || 'Earth'}
+                </p>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  if (type === 'community') {
+    return (
+      <ul className="grid-container overflow-hidden">
+        {items.map((community) => (
+          <li key={community.$id} className="user-card flex flex-start gap-4">
+            <div className="flex-shrink-0">
+              <Link to={`/communities/${community.$id}`}>
+                <LazyImage
+                  src={
+                    community.imageUrl ||
+                    '/assets/icons/community-placeholder.svg'
+                  }
+                  alt={community.name}
+                  className="w-12 h-12 object-cover rounded-full"
+                />
+              </Link>
+            </div>
+            <div className="w-full flex-col">
+              <Link to={`/communities/${community.$id}`}>
+                <h3 className="base-bold line-clamp-1">{community.name}</h3>
+              </Link>
+              {/* <p className="subtle-normal line-clamp-2 lg:subtle-comment">
+                {community.about}
+              </p> */}
+              <div className="flex gap-2 pt-1 justify-start items-center">
+                <p className="subtle-normal line-clamp-1 lg:subtle-comment text-light-3">
+                  Members: {community.membersCount || 0}
                 </p>
               </div>
             </div>

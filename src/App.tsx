@@ -19,7 +19,12 @@ import {
   ProjectDetails,
   ChatPage,
   Messages,
-  NotificationPage
+  NotificationPage,
+  CommunityDetailsPage,
+  TopicPage,
+  AddDiscussion,
+  EditDiscussion,
+  DiscussionDetailsPage,
 } from './_root/pages';
 
 import './globals.css';
@@ -34,7 +39,6 @@ import ResetPasswordForm from './_auth/forms/ResetPasswordForm';
 import TermsOfService from './_auth/TermsOfService';
 import PrivacyPolicy from './_auth/PrivacyPolicy';
 import CommunityGuidelines from './_auth/CommunityGuidelines';
-
 
 const App = () => {
   return (
@@ -79,6 +83,19 @@ const App = () => {
 
             {/* Notification */}
             <Route path="/notifications" element={<NotificationPage />} />
+
+            {/* Communities */}
+            <Route path="/communities/:id" element={<CommunityDetailsPage />} />
+            <Route path="/topics/:id" element={<TopicPage />} />
+            <Route
+              path="/topics/:id/add-discussion"
+              element={<AddDiscussion />}
+            />
+            <Route path="/update-discussion/:id" element={<EditDiscussion />} />
+            <Route
+              path="/discussions/:id"
+              element={<DiscussionDetailsPage />}
+            />
           </Route>
         </Route>
 

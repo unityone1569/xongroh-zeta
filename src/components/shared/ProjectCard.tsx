@@ -68,6 +68,9 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <div className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+            Project
+          </div>
           <ProjectStats project={project} userId={user.id} authorId={project.authorId} />
         </div>
       </div>

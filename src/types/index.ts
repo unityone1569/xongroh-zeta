@@ -21,6 +21,7 @@ export type INewCreation = {
   file: File[];
   tags?: string;
 };
+
 export type INewProject = {
   authorId: string;
   title: string;
@@ -28,6 +29,16 @@ export type INewProject = {
   file: File[];
   links?: string | string[];
   tags?: string;
+};
+
+export type INewDiscussion = {
+  $id: string;
+  topicId: string;
+  authorId: string;
+  content: string;
+  file: File[];
+  tags?: string;
+  type: 'discussion' | 'help' | 'poll';
 };
 
 export type IUpdateCreation = {
@@ -50,6 +61,15 @@ export type IUpdateProject = {
   tags?: string;
 };
 
+export type IUpdateDiscussion = {
+  discussionId: string;
+  content: string;
+  mediaId: string;
+  mediaUrl: URL;
+  file: File[];
+  tags?: string;
+};
+
 export type IUser = {
   id: string;
   accountId: string;
@@ -62,6 +82,7 @@ export type IUser = {
   coverUrl: string;
   bio: string;
   hasSeenWelcome?: boolean;
+  verifiedUser?: boolean;
 };
 
 export type INewUser = {

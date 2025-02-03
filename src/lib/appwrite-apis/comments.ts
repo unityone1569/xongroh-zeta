@@ -1,11 +1,14 @@
 import { ID, Query } from 'appwrite';
 import { appwriteConfig, databases, functions } from './config';
-import { deleteItemLike } from './interactions';
+import { deleteAllItemLikes } from './interactions';
 import { getUserAccountId } from './users';
 import {
   createCommentNotification,
+  createDiscussionCommentNotification,
+  createDiscussionReplyNotification,
   createReplyNotification,
 } from './notification';
+import { getAdminAccountId } from './community';
 
 // *** APPWRITE ***
 
@@ -30,6 +33,10 @@ const fn = {
   feedbackReplyPermissionId: appwriteConfig.functions.feedbackReplyPermission,
   feedbackReplyParentPermissionId:
     appwriteConfig.functions.feedbackReplyParentPermission,
+  discussionCommentPermissionId:
+    appwriteConfig.functions.discussionCommentPermission,
+  discussionCommentReplyPermissionId:
+    appwriteConfig.functions.discussionCommentReplyPermission,
 };
 
 // *** COMMENTS ***
@@ -124,7 +131,7 @@ export async function deleteComment(commentId: string, postId: string) {
 
     await deleteAllCommentReplies(commentId);
 
-    await deleteItemLike(commentId);
+    await deleteAllItemLikes(commentId);
 
     return { status: 'Ok', postId };
   } catch (error) {
@@ -251,7 +258,7 @@ export async function deleteFeedback(feedbackId: string, postId: string) {
 
     await deleteAllFeedbackReplies(feedbackId);
 
-    await deleteItemLike(feedbackId);
+    await deleteAllItemLikes(feedbackId);
 
     return { status: 'Ok', postId };
   } catch (error) {
@@ -389,7 +396,7 @@ export async function deleteCommentReply(
 
     if (!statusCode) throw Error;
 
-    await deleteItemLike(commentReplyId);
+    await deleteAllItemLikes(commentReplyId);
 
     return { status: 'Ok', commentId };
   } catch (error) {
@@ -520,7 +527,7 @@ export async function deleteFeedbackReply(
 
     if (!statusCode) throw Error;
 
-    await deleteItemLike(feedbackReplyId);
+    await deleteAllItemLikes(feedbackReplyId);
 
     return { status: 'Ok', feedbackId };
   } catch (error) {
@@ -548,5 +555,140 @@ export async function deleteAllFeedbackReplies(feedbackId: string) {
   } catch (error) {
     console.log(error);
     throw error;
+  }
+}
+
+// *### COMMUNITY ###*
+
+// *# Community Comments #*
+
+// create-Discussion-Comment
+export async function addDiscussionComment(
+  discussionId: string,
+  authorId: string,
+  userId: string,
+  content: string,
+  communityId: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    const comment = await databases.createDocument(
+      db.commentsId,
+      cl.commentId,
+      ID.unique(),
+      {
+        postId: discussionId,
+        userId,
+        content,
+      }
+    );
+
+    // *# Note: We store AccountIds as adminIds in the community document directly. No need to convert it to accountId.
+    const adminId: string = await getAdminAccountId(communityId);
+
+    // TODO: update fn to add all adminIds permissions to the discussion
+
+    // *# Note: This is a temporary solution to add only the first adminId
+    const payload = JSON.stringify({
+      commentId: comment.$id,
+      authorId,
+      adminId,
+    });
+
+    console.log('Payload:', payload);
+
+    await functions.createExecution(
+      fn.discussionCommentPermissionId,
+      payload,
+      true
+    );
+
+    const userAccountId = await getUserAccountId(userId);
+
+    // Create notification for post author
+    // note: authorId is actually the accountId of the post author
+    if (authorId !== userAccountId) {
+      await createDiscussionCommentNotification({
+        receiverId: authorId,
+        senderId: userId,
+        type: 'comment',
+        resourceId: discussionId,
+        message: 'commented on your discussion.',
+      });
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    return { success: false, error };
+  }
+}
+
+// *# Community Comment Replies #*
+
+// Add-Discussion-Comment-Reply
+export async function addDiscussionCommentReply(
+  parentId: string,
+  authorId: string,
+  userId: string,
+  content: string,
+  discussionId: string,
+  communityId: string
+): Promise<{ success: boolean; error?: unknown }> {
+  try {
+    // fetch parent first
+    const parent = await databases.getDocument(
+      db.commentsId,
+      cl.commentId,
+      parentId
+    );
+
+    // Convert item author's userId to accountId
+    const receiverAccountId = await getUserAccountId(parent.userId);
+
+    const commentReply = await databases.createDocument(
+      db.commentsId,
+      cl.commentReplyId,
+      ID.unique(),
+      {
+        commentId: parentId,
+        userId,
+        content,
+      }
+    );
+
+    // *# Note: We store AccountIds as adminIds in the community document directly. No need to convert it to accountId.
+    const adminId = await getAdminAccountId(communityId);
+
+    // TODO: update fn to add all adminIds permissions to the discussion
+
+    // *# Note: This is a temporary solution to add only the first adminId
+    const payload = JSON.stringify({
+      commentReplyId: commentReply.$id,
+      authorId,
+      receiverAccountId,
+      adminId,
+    });
+
+    await functions.createExecution(
+      fn.discussionCommentReplyPermissionId,
+      payload,
+      true
+    );
+
+    // Create notification for post author
+    if (parent.userId !== userId) {
+      await createDiscussionReplyNotification({
+        receiverId: receiverAccountId,
+        senderId: userId,
+        type: 'reply',
+        resourceId: discussionId,
+        message: 'replied to your comment.',
+      });
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error adding comment reply:', error);
+    return { success: false, error };
   }
 }

@@ -128,6 +128,9 @@ const PostDetails = () => {
                 </div>
               </Link>
               <div className="flex-center gap-5">
+                <div className="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-violet-400">
+                  Creation
+                </div>
                 <div className={`${user?.id !== post?.authorId && 'hidden'}`}>
                   <Link to={`/update-creation/${post?.$id}`}>
                     <img src="/assets/icons/edit.svg" alt="edit" width={22} />

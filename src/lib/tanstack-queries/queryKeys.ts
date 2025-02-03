@@ -46,7 +46,25 @@ export enum QUERY_KEYS {
 
   // NOTIFICATION KEYS
   GET_USER_NOTIFICATIONS = 'getUserNotifications',
+  GET_COMMUNITY_NOTIFICATIONS = 'getCommunityNotifications',
   
+  // COMMUNITY KEYS
+  GET_COMMUNITIES = 'getCommunities',
+  GET_COMMUNITY_BY_ID = 'getCommunityById',
+  GET_USER_COMMUNITIES = 'getUserCommunities',
+  GET_COMMUNITY_MEMBERS = 'getCommunityMembers',
+  GET_COMMUNITY_TOPICS = 'getCommunityTopics',
+  GET_SEARCH_COMMUNITIES = 'getSearchCommunities',
+  CHECK_MEMBERSHIP_STATUS = 'checkMembershipStatus',
+  GET_TOPIC_BY_ID = 'getTopicById',
+  GET_DISCUSSIONS = 'getDiscussions',
+  GET_DISCUSSION_BY_ID = 'getDiscussionById',
+  GET_USER_DISCUSSIONS = 'getUserDiscussions',
+  GET_USER_SAVED_DISCUSSIONS = 'getUserSavedDiscussions',
+  GET_SEARCH_DISCUSSIONS = 'getSearchDiscussions',
+  GET_TOPIC_PINGS = 'getTopicPings',
+  GET_COMMUNITY_PINGS = 'getCommunityPings',
+  GET_USER_PINGS = 'getUserPings',
 
   // MESSAGE KEYS
   GET_MESSAGE = 'getMessage',

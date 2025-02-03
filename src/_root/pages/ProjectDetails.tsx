@@ -149,6 +149,9 @@ const ProjectDetails = () => {
                 </div>
               </Link>
               <div className="flex-center gap-5">
+                <div className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+                  Project
+                </div>
                 <div
                   className={`pr-1 ${
                     user?.id !== project?.authorId && 'hidden'

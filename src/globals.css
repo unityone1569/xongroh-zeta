@@ -180,7 +180,7 @@
 
   /* Post Details */
   .post_details-container {
-    @apply flex flex-col flex-1 gap-10 overflow-scroll py-28  px-5 md:p-14 custom-scrollbar items-center;
+    @apply flex flex-col flex-1 gap-10 overflow-scroll py-28  px-5 lg:p-14 custom-scrollbar items-center;
   }
 
   .post_details-card {
@@ -270,7 +270,7 @@
   }
 
   .leftsidebar-link {
-    @apply rounded-lg base-medium hover:bg-gradient-to-r from-purple-500 to-purple-400 transition;
+    @apply rounded-lg base-medium hover:bg-gradient-to-r from-light-4 to-dark-4 transition;
   }
 
   /* Right sidebar */

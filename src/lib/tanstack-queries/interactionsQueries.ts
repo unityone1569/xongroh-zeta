@@ -13,6 +13,9 @@ import {
   unlikeItem,
   unlikePost,
   unsavePost,
+  discussionLike,
+  discussionItemLike,
+  discussionSave,
 } from '../appwrite-apis/interactions';
 
 // *** POST-LIKE-QUERIES ***
@@ -89,8 +92,8 @@ export const useGetItemsLikesCount = (itemId: string) => {
     queryKey: [QUERY_KEYS.GET_ITEMS_LIKE_COUNT, itemId],
     queryFn: () => getItemLikesCount(itemId),
     enabled: Boolean(itemId),
-    staleTime: 1000 * 30,
-    gcTime: 1000 * 60 * 5,
+    // staleTime: 1000 * 30,
+    // gcTime: 1000 * 60 * 5,
   });
 };
 
@@ -100,8 +103,8 @@ export const useCheckItemLike = (itemId: string, userId: string) => {
     queryKey: [QUERY_KEYS.CHECK_ITEM_LIKE, itemId, userId],
     queryFn: () => checkItemLike(itemId, userId),
     enabled: Boolean(itemId && userId),
-    staleTime: 1000 * 60, // 1 minute
-    gcTime: 1000 * 60 * 5, // 5 minutes
+    // staleTime: 1000 * 60, // 1 minute
+    // gcTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 
@@ -231,6 +234,107 @@ export const useUnsavePost = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_SAVES_COUNT, postId],
+      });
+    },
+  });
+};
+
+// *** DISCUSSION-INTERACTION-QUERIES ***
+
+// Use-Discussion-Like
+export const useDiscussionLike = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      discussionId,
+      authorId,
+      userId,
+      communityId,
+    }: {
+      discussionId: string;
+      authorId: string;
+      userId: string;
+      communityId: string;
+    }) => discussionLike(discussionId, authorId, userId, communityId),
+    onSuccess: (_, { discussionId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_DISCUSSION_BY_ID, discussionId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.CHECK_POST_LIKE],
+      });
+    },
+  });
+};
+
+// Use-Discussion-Item-Like
+export const useDiscussionItemLike = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      itemId,
+      userId,
+      authorId,
+      postId,
+      itemType,
+      communityId,
+    }: {
+      itemId: string;
+      userId: string;
+      authorId: string;
+      postId: string;
+      itemType: string;
+      communityId: string;
+    }) =>
+      discussionItemLike(
+        itemId,
+        userId,
+        authorId,
+        postId,
+        itemType,
+        communityId
+      ),
+    onSuccess: (_, { itemId, userId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.CHECK_ITEM_LIKE, itemId, userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ITEMS_LIKE_COUNT, itemId],
+      });
+    },
+  });
+};
+
+// Use-Discussion-Save
+export const useDiscussionSave = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      discussionId,
+      authorId,
+      userId,
+      communityId,
+    }: {
+      discussionId: string;
+      authorId: string;
+      userId: string;
+      communityId: string;
+    }) => discussionSave(discussionId, authorId, userId, communityId),
+    onSuccess: (_, { discussionId, userId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_DISCUSSION_BY_ID, discussionId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.CHECK_POST_SAVE],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_SAVED_POST_DETAILS, userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_SAVES_COUNT, discussionId],
       });
     },
   });

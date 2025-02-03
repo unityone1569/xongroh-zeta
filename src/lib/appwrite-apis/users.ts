@@ -550,6 +550,7 @@ export async function getUserInfo(accountId: string) {
       projectsCount: user.projectsCount,
       creationsCount: user.creationsCount,
       supportingCount: user.supportingCount,
+      verifiedUser: user.verifiedUser,
     };
   } catch (error) {
     console.error('Error fetching user info:', error);

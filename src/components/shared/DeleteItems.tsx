@@ -25,6 +25,7 @@ import {
 } from '@/lib/tanstack-queries/commentsQueries';
 import { useDeleteConversation } from '@/lib/tanstack-queries/conversationsQueries';
 import { useDeleteNotification } from '@/lib/tanstack-queries/notificationQueries';
+import { useDeleteDiscussion } from '@/lib/tanstack-queries/communityQueries';
 
 interface DeleteDialogProps {
   title: string;
@@ -149,6 +150,52 @@ const DeleteProject = ({
     <DeleteDialog
       title="Delete Project?"
       description="This action cannot be undone. Your project will be permanently removed."
+      onDelete={handleDelete}
+    />
+  );
+};
+
+// Delete Discussion Component
+const DeleteDiscussion = ({
+  discussionId,
+  mediaId,
+  authorId,
+}: {
+  discussionId: string;
+  mediaId: string | '';
+  authorId: string;
+}) => {
+  const { toast } = useToast();
+  const deleteDiscussionMutation = useDeleteDiscussion();
+  const navigate = useNavigate();
+
+  const handleDelete = () => {
+    deleteDiscussionMutation.mutate(
+      { discussionId, mediaId, authorId },
+      {
+        onSuccess: () => {
+          toast({ title: 'Discussion deleted successfully' });
+          navigate(-1);
+        },
+        onError: () => {
+          toast({ title: 'Error deleting discussion' });
+        },
+      }
+    );
+  };
+
+  if (deleteDiscussionMutation.isPending) {
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
+  }
+
+  return (
+    <DeleteDialog
+      title="Delete Discussion?"
+      description="This action cannot be undone. This discussion will be permanently removed."
       onDelete={handleDelete}
     />
   );
@@ -356,13 +403,17 @@ const DeleteConversation = ({
 };
 
 // Delete Notification Component
-const DeleteNotification = ({
-  notificationId,
-}: {
+
+
+const DeleteNotification = ({ 
+  notificationId, 
+  type = 'user' 
+}: { 
   notificationId: string;
+  type?: 'user' | 'community';
 }) => {
   const { toast } = useToast();
-  const deleteNotificationMutation = useDeleteNotification();
+  const deleteNotificationMutation = useDeleteNotification(type);
 
   const handleDelete = () => {
     deleteNotificationMutation.mutate(notificationId, {
@@ -376,11 +427,7 @@ const DeleteNotification = ({
   };
 
   if (deleteNotificationMutation.isPending) {
-    return (
-      <div>
-        <Loader />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
@@ -392,10 +439,12 @@ const DeleteNotification = ({
   );
 };
 
+
 export {
   DeleteCreation,
   DeleteProject,
   DeleteComment,
+  DeleteDiscussion,
   DeleteFeedback,
   DeleteCommentReply,
   DeleteFeedbackReply,

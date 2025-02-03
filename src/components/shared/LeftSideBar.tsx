@@ -3,6 +3,7 @@ import { INavLink, IUser } from '@/types';
 import { memo, useMemo } from 'react';
 import { useUserContext } from '@/context/AuthContext';
 import { sidebarLinks } from '@/constants';
+import { useGetUserPings } from '@/lib/tanstack-queries/communityQueries';
 
 const ProfileSection = memo(
   ({
@@ -48,6 +49,8 @@ const ProfileSection = memo(
 const LeftSidebar = () => {
   const { pathname } = useLocation();
   const { user } = useUserContext();
+  // Get community pings for current user
+  const { data: pingCount = 0 } = useGetUserPings(user?.id);
 
   return (
     <nav className="leftsidebar">
@@ -80,6 +83,10 @@ const LeftSidebar = () => {
                     }`}
                   />
                   {link.label}
+
+                  {link.label === 'Community' && pingCount > 0 && (
+                    <span className=" -top-1 -right-[1px] w-2.5 h-2.5 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
+                  )}
                 </NavLink>
               </li>
             );

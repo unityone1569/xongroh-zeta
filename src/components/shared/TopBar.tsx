@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useUserContext } from '@/context/AuthContext';
 import { useUnreadMessages } from '@/lib/tanstack-queries/conversationsQueries';
-import { useUnreadNotifications } from '@/lib/tanstack-queries/notificationQueries';
+import {
+  useUnreadNotifications,
+  useUnreadCommunityNotifications,
+} from '@/lib/tanstack-queries/notificationQueries';
 import { getUserAccountId } from '@/lib/appwrite-apis/users';
 import { useEffect, useState } from 'react';
 
@@ -19,6 +22,9 @@ const Topbar = () => {
 
   const { hasUnreadMessages } = useUnreadMessages(user?.id);
   const { hasUnreadNotifications } = useUnreadNotifications(accountId);
+  const { hasUnreadCommunityNotifications } = useUnreadCommunityNotifications(
+    user?.id
+  );
 
   return (
     <section className="topbar">
@@ -36,7 +42,7 @@ const Topbar = () => {
                 className="h-7 w-7"
               />
               {hasUnreadMessages && (
-                <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-purple-500 rounded-full" />
+                <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
               )}
             </Link>
           </div>
@@ -47,8 +53,8 @@ const Topbar = () => {
                 alt="notifications"
                 className="h-7 w-7"
               />
-              {hasUnreadNotifications && (
-                <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-purple-500 rounded-full" />
+              {(hasUnreadNotifications || hasUnreadCommunityNotifications) && (
+                <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
               )}
             </Link>
           </div>

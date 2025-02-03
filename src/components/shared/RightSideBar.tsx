@@ -1,4 +1,4 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Models } from 'appwrite';
 import Loader from './Loader';
 import { rightbarLinks } from '@/constants';
@@ -6,11 +6,15 @@ import { INavLink } from '@/types';
 import { useUserContext } from '@/context/AuthContext';
 import { useGetTopCreators } from '@/lib/tanstack-queries/usersQueries';
 import { useUnreadMessages } from '@/lib/tanstack-queries/conversationsQueries';
-import { useUnreadNotifications } from '@/lib/tanstack-queries/notificationQueries';
+import {
+  useUnreadNotifications,
+  useUnreadCommunityNotifications,
+} from '@/lib/tanstack-queries/notificationQueries';
 import { getUserAccountId } from '@/lib/appwrite-apis/users';
 import React, { useEffect } from 'react';
 
 const RightSideBar = () => {
+  const { pathname } = useLocation();
   const { data: creators, isLoading } = useGetTopCreators();
   const { user } = useUserContext();
   const { hasUnreadMessages } = useUnreadMessages(user?.id);
@@ -25,36 +29,50 @@ const RightSideBar = () => {
   }, [user?.id]);
 
   const { hasUnreadNotifications } = useUnreadNotifications(accountId);
+  const { hasUnreadCommunityNotifications } = useUnreadCommunityNotifications(
+    user?.id
+  );
 
   return (
     <div className="rightsidebar">
-      {/* Message Navigation Section */}
-
       <ul className="flex flex-col gap-6">
-        {rightbarLinks.map((link: INavLink) => (
-          <li key={link.label} className="rightsidebar-link group">
-            <NavLink
-              to={link.route}
-              className="flex gap-3 items-center pl-0 p-3 relative"
-            >
-              <div className="relative">
-                <img
-                  src={link.imgURL}
-                  alt={link.label}
-                  className="group-hover:invert-white w-7"
-                />
-                {link.label === 'Messages' && hasUnreadMessages && (
-                  <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-purple-500 rounded-full" />
-                )}
+        {rightbarLinks.map((link: INavLink) => {
+          const isActive = pathname === link.route;
 
-                {link.label === 'Notifications' && hasUnreadNotifications && (
-                  <span className="absolute -top-0.5 -right-[1px] w-[12px] h-[12px] bg-purple-400 rounded-full" />
-                )}
-              </div>
-              {link.label}
-            </NavLink>
-          </li>
-        ))}
+          return (
+            <li
+              key={link.label}
+              className={`leftsidebar-link group ${
+                isActive && 'bg-gradient-to-r from-light-4 to-dark-4-600'
+              }`}
+            >
+              <NavLink
+                to={link.route}
+                className="flex gap-3 items-center  p-3 relative"
+              >
+                <div className="relative">
+                  <img
+                    src={link.imgURL}
+                    alt={link.label}
+                    className={`group-hover:invert-white w-7 ${
+                      isActive && 'invert-white'
+                    }`}
+                  />
+                  {link.label === 'Messages' && hasUnreadMessages && (
+                    <span className="absolute -top-1 -right-[1px] w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
+                  )}
+
+                  {link.label === 'Notifications' &&
+                    (hasUnreadNotifications ||
+                      hasUnreadCommunityNotifications) && (
+                      <span className="absolute -top-0.5 -right-[1px] w-[12px] h-[12px] bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
+                    )}
+                </div>
+                {link.label}
+              </NavLink>
+            </li>
+          );
+        })}
       </ul>
 
       {/* Top Creators Section */}
