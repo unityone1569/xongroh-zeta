@@ -62,8 +62,15 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             />
           </Link>
           <div className="flex flex-col">
-            <p className="small-medium lg:base-medium text-light-1">
+            <p className="small-medium lg:base-medium text-light-1 flex items-center gap-1">
               {project?.author?.name}
+              {project?.author?.verifiedUser && (
+                <img 
+                  src="/assets/icons/verified.svg" 
+                  alt="verified" 
+                  className="w-3.5 h-3.5" 
+                />
+              )}
             </p>
           </div>
         </div>

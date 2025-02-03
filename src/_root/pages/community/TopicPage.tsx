@@ -29,8 +29,9 @@ type DiscussionDocument = Models.Document & {
   type: 'Discussion' | 'Help' | 'Poll';
   likesCount: number;
   author: {
-    name: any;
+    name: string;
     dpUrl: any;
+    verifiedUser: string;
   };
 };
 

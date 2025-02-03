@@ -100,8 +100,15 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                     alt={post?.author?.name || 'Creator'}
                     className="w-8 h-8 rounded-full object-cover"
                   />
-                  <p className="truncate small-medium">
+                  <p className="line-clamp-1 small-medium flex items-center gap-1.5">
                     {post?.author?.name || 'Creator'}
+                    {post?.author?.verifiedUser && (
+                      <img
+                        src="/assets/icons/verified.svg"
+                        alt="verified"
+                        className="w-5 h-5"
+                      />
+                    )}
                   </p>
                 </div>
               </div>
@@ -128,8 +135,15 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
             </div>
             <div className="w-full flex-col">
               <Link to={`/profile/${user.$id}`}>
-                <h3 className="base-bold line-clamp-1">
+                <h3 className="base-bold line-clamp-1 flex items-center gap-1.5">
                   {user.name || 'Unknown User'}
+                  {user?.verifiedUser && (
+                    <img
+                      src="/assets/icons/verified.svg"
+                      alt="verified"
+                      className="w-5 h-5"
+                    />
+                  )}
                 </h3>
               </Link>
 

@@ -105,7 +105,16 @@ const CreatorCard = ({ creator }: { creator: Models.Document }) => {
         className="w-12 h-12 rounded-full object-cover"
       />
       <div className="mt-2 w-full">
-        <p className="small-bold text-light-1 line-clamp-1">{creator.name}</p>
+        <div className="small-bold text-light-1 line-clamp-1 flex items-center justify-center gap-1.5">
+          {creator.name}
+          {creator.verifiedUser && (
+            <img
+              src="/assets/icons/verified.svg"
+              alt="verified"
+              className="w-5 h-5 flex-shrink-0"
+            />
+          )}
+        </div>
         <p className="subtle-normal text-light-3 pt-1 line-clamp-1">
           {creator.profession || 'Creator'}
         </p>

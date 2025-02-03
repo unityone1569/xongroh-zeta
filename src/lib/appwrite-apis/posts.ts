@@ -74,7 +74,7 @@ export async function getRecentCreations({
     // Create user fetch promises
     const userFetchPromises = creations.map((creation) =>
       databases.getDocument(db.usersId, cl.creatorId, creation.authorId, [
-        Query.select(['name', 'dpUrl']),
+        Query.select(['name', 'dpUrl', 'verifiedUser']),
       ])
     );
 
@@ -87,6 +87,7 @@ export async function getRecentCreations({
       author: {
         name: users[index]?.name || '',
         dpUrl: users[index]?.dpUrl || null,
+        verifiedUser: users[index]?.verifiedUser || false,
       },
     }));
 
@@ -332,7 +333,7 @@ export async function getSearchCreations(searchTerm: string) {
     // Create user fetch promises
     const userFetchPromises = creations.map((creation) =>
       databases.getDocument(db.usersId, cl.creatorId, creation.authorId, [
-        Query.select(['name', 'dpUrl']),
+        Query.select(['name', 'dpUrl', 'verifiedUser']),
       ])
     );
 
@@ -345,6 +346,7 @@ export async function getSearchCreations(searchTerm: string) {
       author: {
         name: users[index]?.name || '',
         dpUrl: users[index]?.dpUrl || null,
+        verifiedUser: users[index]?.verifiedUser || false,
       },
     }));
 
@@ -390,7 +392,7 @@ export async function getInfiniteCreations({
     // Create user fetch promises
     const userFetchPromises = creations.map((creation) =>
       databases.getDocument(db.usersId, cl.creatorId, creation.authorId, [
-        Query.select(['name', 'dpUrl']),
+        Query.select(['name', 'dpUrl', 'verifiedUser']),
       ])
     );
 
@@ -403,6 +405,7 @@ export async function getInfiniteCreations({
       author: {
         name: users[index]?.name || '',
         dpUrl: users[index]?.dpUrl || null,
+        verifiedUser: users[index]?.verifiedUser || false,
       },
     }));
 

@@ -21,6 +21,8 @@ const PostCard = ({ post }: PostCardProps) => {
   const [isMediaLoading, setIsMediaLoading] = useState(true);
   const creatorId = post?.authorId;
   const [accountId, setAccountId] = useState<string>('');
+  console.log(post);
+  
 
   // Fetch accountId when author data is available
   useEffect(() => {
@@ -58,8 +60,15 @@ const PostCard = ({ post }: PostCardProps) => {
             />
           </Link>
           <div className="flex flex-col">
-            <p className="base-medium lg:body-bold text-light-1 line-clamp-1">
+            <p className="base-medium lg:body-bold text-light-1 flex items-center gap-1.5">
               {post?.author?.name}
+              {post?.author?.verifiedUser && (
+                <img 
+                  src="/assets/icons/verified.svg" 
+                  alt="verified" 
+                  className="w-5 h-5"
+                />
+              )}
             </p>
             <div className="flex-start text-light-3 pt-0.5">
               <p className="subtle-semibold lg:small-regular line-clamp-1">

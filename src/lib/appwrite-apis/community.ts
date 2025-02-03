@@ -253,7 +253,7 @@ export async function getCommunityMembers({
     // Create user fetch promises
     const userFetchPromises = members.map((member) =>
       databases.getDocument(db.usersId, cl.creatorId, member.creatorId, [
-        Query.select(['name', 'dpUrl']),
+        Query.select(['name', 'dpUrl', 'verifiedUser']),
       ])
     );
 
@@ -266,6 +266,7 @@ export async function getCommunityMembers({
       user: {
         name: users[index]?.name || '',
         dpUrl: users[index]?.dpUrl || null,
+        verifiedUser: users[index]?.verifiedUser || false,
       },
     }));
 
@@ -475,7 +476,7 @@ export async function getDiscussions({
       Promise.all(
         discussions.map((discussion) =>
           databases.getDocument(db.usersId, cl.creatorId, discussion.authorId, [
-            Query.select(['name', 'dpUrl']),
+            Query.select(['name', 'dpUrl', 'verifiedUser']),
           ])
         )
       ),
@@ -490,6 +491,7 @@ export async function getDiscussions({
       author: {
         name: users[index]?.name || '',
         dpUrl: users[index]?.dpUrl || null,
+        verifiedUser: users[index]?.verifiedUser || false,
       },
       likesCount: likeCounts[index],
     }));
@@ -573,7 +575,7 @@ export async function getUserDiscussions({
     // Create user fetch promises
     const userFetchPromises = discussions.map((discussion) =>
       databases.getDocument(db.usersId, cl.creatorId, discussion.authorId, [
-        Query.select(['name', 'dpUrl']),
+        Query.select(['name', 'dpUrl', 'verifiedUser']),
       ])
     );
 
@@ -586,6 +588,7 @@ export async function getUserDiscussions({
       author: {
         name: users[index]?.name || '',
         dpUrl: users[index]?.dpUrl || null,
+        verifiedUser: users[index]?.verifiedUser || false,
       },
     }));
 
@@ -652,7 +655,7 @@ export async function getUserSavedDiscussions({
 
     const userFetchPromises = discussions.map((discussion) =>
       databases.getDocument(db.usersId, cl.creatorId, discussion.authorId, [
-        Query.select(['name', 'dpUrl']),
+        Query.select(['name', 'dpUrl', 'verifiedUser']),
       ])
     );
 
@@ -665,6 +668,7 @@ export async function getUserSavedDiscussions({
         author: {
           name: users[index]?.name || '',
           dpUrl: users[index]?.dpUrl || null,
+          verifiedUser: users[index]?.verifiedUser || false,
         },
         saveId: save?.$id,
       };

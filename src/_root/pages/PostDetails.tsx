@@ -108,7 +108,7 @@ const PostDetails = () => {
             <div className="flex-between w-full">
               <Link
                 to={`/profile/${post?.authorId}`}
-                className="flex items-center gap-3"
+                className="flex items-center gap-3 flex-shrink-0"
               >
                 <LazyImage
                   src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
@@ -117,11 +117,18 @@ const PostDetails = () => {
                 />
 
                 <div className="flex flex-col ">
-                  <p className="base-medium lg:body-bold text-light-1">
+                  <p className="base-medium lg:body-bold text-light-1 line-clamp-1 flex items-center gap-1.5">
                     {author?.name}
+                    {author?.verifiedUser && (
+                      <img
+                        src="/assets/icons/verified.svg"
+                        alt="verified"
+                        className="w-5 h-5"
+                      />
+                    )}
                   </p>
                   <div className="flex-start pt-1 text-light-3">
-                    <p className="subtle-semibold lg:small-regular ">
+                    <p className="subtle-semibold lg:small-regular line-clamp-1">
                       {formatDateString(post?.$createdAt)}
                     </p>
                   </div>

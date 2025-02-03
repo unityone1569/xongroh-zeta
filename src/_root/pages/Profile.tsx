@@ -21,6 +21,7 @@ interface ProfileCardItemProps {
   hometown: string;
   profession: string;
   creationsCount: string;
+  isVerified: boolean;
   isCurrentUser: boolean;
   userId: string;
 }
@@ -34,6 +35,7 @@ const ProfileCardItem = ({
   bio,
   hometown,
   profession,
+  isVerified,
   creationsCount,
   isCurrentUser,
   userId,
@@ -98,7 +100,16 @@ const ProfileCardItem = ({
                 </div>
               </div>
             </div>
-            <div className="text-xl font-bold lg:text-2xl">{name}</div>
+            <div className="text-xl font-bold lg:text-2xl flex items-center gap-1.5">
+              {name}
+              {isVerified && (
+                <img
+                  src="/assets/icons/verified.svg"
+                  alt="verified"
+                  className="w-5 h-5"
+                />
+              )}
+            </div>
             <p className="pt-3 max-w-xl text-pretty small-regular font-light">
               {bio}
             </p>
@@ -278,6 +289,7 @@ const Profile = () => {
       hometown: profileUser?.hometown,
       profession: profileUser?.profession,
       supportingCount: profileUser?.supportingCount || '0',
+      isVerified: profileUser?.verifiedUser || false,
     }),
     [profileUser]
   );

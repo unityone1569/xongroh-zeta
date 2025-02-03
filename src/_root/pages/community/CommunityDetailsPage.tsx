@@ -58,7 +58,16 @@ const MemberCard = ({ member }: { member: Models.Document }) => (
     </div>
     <div className="flex-1">
       <Link to={`/profile/${member.creatorId}`}>
-        <h3 className="base-medium line-clamp-1">{member.user.name}</h3>
+        <h3 className="base-medium line-clamp-1 flex items-center gap-1.5">
+          {member.user.name}
+          {member.user.verifiedUser && (
+            <img
+              src="/assets/icons/verified.svg"
+              alt="verified"
+              className="w-5 h-5"
+            />
+          )}
+        </h3>
       </Link>
       <p className="small-regular text-light-4 pt-0.5">{member.role}</p>
     </div>

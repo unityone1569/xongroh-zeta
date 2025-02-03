@@ -83,7 +83,10 @@ const DiscussionDetailsPage = () => {
           <div className="post_details-info">
             <div className="flex-between w-full">
               <div className="flex items-center gap-3">
-                <Link to={`/profile/${discussion?.authorId}`} className='flex-shrink-0'>
+                <Link
+                  to={`/profile/${discussion?.authorId}`}
+                  className="flex-shrink-0"
+                >
                   <LazyImage
                     src={
                       author?.dpUrl || '/assets/icons/profile-placeholder.svg'
@@ -93,8 +96,15 @@ const DiscussionDetailsPage = () => {
                   />
                 </Link>
                 <div className="flex flex-col">
-                  <p className="base-medium lg:body-bold text-light-1 line-clamp-1">
+                  <p className="base-medium lg:body-bold text-light-1 line-clamp-1 flex items-center gap-1.5">
                     {author?.name}
+                    {author?.verifiedUser && (
+                      <img
+                        src="/assets/icons/verified.svg"
+                        alt="verified"
+                        className="w-5 h-5 flex-shrink-0"
+                      />
+                    )}
                   </p>
                   <div className="flex-start gap-2 text-light-3 pt-1">
                     <p className="subtle-semibold lg:small-regular line-clamp-1">

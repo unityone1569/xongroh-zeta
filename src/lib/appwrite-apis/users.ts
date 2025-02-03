@@ -747,7 +747,14 @@ export async function getInfiniteUsers({ pageParam }: { pageParam: number }) {
     Query.orderDesc('$updatedAt'),
     Query.equal('hasSeenWelcome', true),
     Query.limit(10),
-    Query.select(['$id', 'name', 'profession', 'hometown', 'dpUrl']),
+    Query.select([
+      '$id',
+      'name',
+      'profession',
+      'hometown',
+      'dpUrl',
+      'verifiedUser',
+    ]),
   ];
 
   if (pageParam) {
@@ -812,6 +819,7 @@ export async function getUserCreations({
       author: {
         name: users[index]?.name || '',
         dpUrl: users[index]?.dpUrl || null,
+        verifiedUser: users[index]?.verifiedUser || false,
       },
     }));
     return { documents: creationsWithAuthorDetails };
