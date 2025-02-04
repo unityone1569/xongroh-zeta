@@ -379,7 +379,16 @@ const ChatPage = () => {
             className="w-11 h-11 lg:h-14 lg:w-14 object-cover rounded-full"
           />
           <div className="flex flex-col">
-            <h2 className="text-xl font-semibold">{receiverData?.name}</h2>
+            <h2 className="text-xl font-semibold flex items-center gap-1.5">
+              {receiverData?.name}
+              {receiverData?.verifiedUser && (
+                <img
+                  src="/assets/icons/verified.svg"
+                  alt="verified"
+                  className="w-4 h-4"
+                />
+              )}
+            </h2>
             <p className="subtle-normal text-light-3">
               {receiverData?.profession || 'Creator'}
             </p>

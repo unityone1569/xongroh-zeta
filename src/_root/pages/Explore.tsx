@@ -3,22 +3,33 @@ import Loader from '@/components/shared/Loader';
 import SearchResult from '@/components/shared/SearchResult';
 import { Input } from '@/components/ui/input';
 import useDebounce from '@/hooks/useDebounce';
-import { useGetInfiniteCreations, useGetSearchCreations } from '@/lib/tanstack-queries/postsQueries';
-import { useGetUsers, useSearchUsers } from '@/lib/tanstack-queries/usersQueries';
-import { useGetCommunities, useGetSearchCommunities } from '@/lib/tanstack-queries/communityQueries';
+import {
+  useGetInfiniteCreations,
+  useGetSearchCreations,
+} from '@/lib/tanstack-queries/postsQueries';
+import {
+  useGetUsers,
+  useSearchUsers,
+} from '@/lib/tanstack-queries/usersQueries';
+import {
+  useGetCommunities,
+  useGetSearchCommunities,
+} from '@/lib/tanstack-queries/communityQueries';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 const Explore = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [activeTab, setActiveTab] = useState<'post' | 'user' | 'community'>('post');
+  const [activeTab, setActiveTab] = useState<'post' | 'user' | 'community'>(
+    'post'
+  );
 
   const tabs = useMemo(
     () => [
       { name: 'post', label: 'Creations' },
-      { name: 'user', label: 'Creators' },
       { name: 'community', label: 'Communities' },
+      { name: 'user', label: 'Creators' },
     ],
     []
   );
@@ -66,7 +77,14 @@ const Explore = () => {
       if (activeTab === 'user') fetchNextUsers();
       if (activeTab === 'community') fetchNextCommunities();
     }
-  }, [loadMoreInView, searchValue, activeTab, fetchNextPosts, fetchNextUsers, fetchNextCommunities]);
+  }, [
+    loadMoreInView,
+    searchValue,
+    activeTab,
+    fetchNextPosts,
+    fetchNextUsers,
+    fetchNextCommunities,
+  ]);
 
   const renderContent = () => {
     if (activeTab === 'post') {
@@ -201,7 +219,9 @@ const Explore = () => {
           {tabs.map((tab) => (
             <button
               key={tab.name}
-              onClick={() => setActiveTab(tab.name as 'post' | 'user' | 'community')}
+              onClick={() =>
+                setActiveTab(tab.name as 'post' | 'user' | 'community')
+              }
               className={`p-2 px-3 font-semibold ${
                 activeTab === tab.name
                   ? 'underline text-primary-500 underline-offset-8'

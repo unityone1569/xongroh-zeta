@@ -111,7 +111,7 @@ const CreatorCard = ({ creator }: { creator: Models.Document }) => {
             <img
               src="/assets/icons/verified.svg"
               alt="verified"
-              className="w-5 h-5 flex-shrink-0"
+              className="w-4 h-4 flex-shrink-0"
             />
           )}
         </div>

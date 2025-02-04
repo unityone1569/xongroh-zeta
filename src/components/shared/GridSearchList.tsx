@@ -106,7 +106,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                       <img
                         src="/assets/icons/verified.svg"
                         alt="verified"
-                        className="w-5 h-5"
+                        className="w-4 h-4"
                       />
                     )}
                   </p>
@@ -141,7 +141,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                     <img
                       src="/assets/icons/verified.svg"
                       alt="verified"
-                      className="w-5 h-5"
+                      className="w-4 h-4"
                     />
                   )}
                 </h3>

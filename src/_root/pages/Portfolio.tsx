@@ -13,6 +13,7 @@ interface PortfolioCardItemProps {
   name: string;
   dp: string;
   about: string;
+  verifiedUser: boolean;
   userId: string;
   isCurrentUser: boolean;
   projectsCount: string;
@@ -23,6 +24,7 @@ const PortfolioCardItem = ({
   dp,
   about,
   projectsCount,
+  verifiedUser,
   userId,
   isCurrentUser,
 }: PortfolioCardItemProps) => (
@@ -37,7 +39,16 @@ const PortfolioCardItem = ({
         alt="Profile"
       />
       <div>
-        <p className="text-xl body-bold lg:h3-bold">{name}</p>
+        <p className="text-xl body-bold lg:h3-bold flex items-center gap-1.5">
+          {name}
+          {verifiedUser && (
+            <img
+              src="/assets/icons/verified.svg"
+              alt="verified"
+              className="w-4 h-4"
+            />
+          )}{' '}
+        </p>
         <p className="small-regular lg:base-regular pt-1">
           Projects:{' '}
           <span className="small-medium lg:base-medium">{projectsCount}</span>
@@ -118,6 +129,7 @@ const Portfolio = () => {
       dp: profileUser?.dp || '/assets/icons/profile-placeholder.svg',
       about: profileUser?.about || '',
       projectsCount: profileUser?.projectsCount || '0',
+      verifiedUser: profileUser?.verifiedUser || false,
     }),
     [profileUser]
   );

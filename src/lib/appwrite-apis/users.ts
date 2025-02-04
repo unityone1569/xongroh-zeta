@@ -873,6 +873,7 @@ export async function getUserProjects({
       author: {
         name: users[index]?.name || '',
         dpUrl: users[index]?.dpUrl || null,
+        verifiedUser: users[index]?.verifiedUser || false,
       },
     }));
     return { documents: projectsWithAuthorDetails };

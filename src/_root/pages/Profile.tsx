@@ -106,7 +106,7 @@ const ProfileCardItem = ({
                 <img
                   src="/assets/icons/verified.svg"
                   alt="verified"
-                  className="w-5 h-5"
+                  className="w-4 h-4"
                 />
               )}
             </div>

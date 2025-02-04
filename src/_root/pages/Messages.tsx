@@ -103,8 +103,15 @@ const ConversationCard = ({
           </div>
           <div className="flex-1 flex flex-col gap-1">
             <div className="flex justify-between items-center">
-              <h3 className="small-semibold line-clamp-1 lg:base-bold text-light-1">
+              <h3 className="small-semibold line-clamp-1 lg:base-bold text-light-1 flex items-center gap-1.5">
                 {userData?.name || 'Unknown User'}
+                {userData?.verifiedUser && (
+                  <img
+                    src="/assets/icons/verified.svg"
+                    alt="verified"
+                    className="w-4 h-4"
+                  />
+                )}
               </h3>
             </div>
             <div className="flex items-center gap-2">

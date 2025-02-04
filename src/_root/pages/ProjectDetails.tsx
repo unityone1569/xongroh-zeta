@@ -138,8 +138,15 @@ const ProjectDetails = () => {
                 />
 
                 <div className="flex flex-col">
-                  <p className="base-medium lg:body-bold text-light-1">
+                  <p className="base-medium lg:body-bold text-light-1 flex items-center gap-1.5">
                     {author?.name}
+                    {author?.verifiedUser && (
+                      <img
+                        src="/assets/icons/verified.svg"
+                        alt="verified"
+                        className="w-4 h-4"
+                      />
+                    )}
                   </p>
                   <div className="flex-start pt-1 text-light-3">
                     <p className="subtle-semibold lg:small-regular ">
@@ -178,7 +185,7 @@ const ProjectDetails = () => {
             <hr className="border w-full my-2 border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
               <p className="body-bold text-pretty px-1">{project?.title}</p>
-              <p className="small-regular whitespace-pre-line text-pretty pt-3 px-1">
+              <p className="small-regular whitespace-pre-line text-pretty pt-3 px-1 text-light-3">
                 {project?.description}
               </p>
               {project?.tags &&

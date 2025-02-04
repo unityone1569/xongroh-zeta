@@ -68,10 +68,17 @@ const NotificationItem = React.memo(
           />
           <div className="flex-1 min-w-0">
             <span className="small-regular sm:base-medium text-light-3 line-clamp-2 sm:line-clamp-1">
-              <span className="text-light-2 small-medium sm:base-medium">
+              <span className="flex items-center gap-1.5">
                 {firstName}
-              </span>{' '}
-              {notification.message}
+                {senderInfo?.verifiedUser && (
+                  <img
+                    src="/assets/icons/verified.svg"
+                    alt="verified"
+                    className="w-4 h-4"
+                  />
+                )}{' '}
+                {notification.message}
+              </span>
             </span>
             <time className="subtle-normal text-light-4 pt-1.5 block">
               {multiFormatDateString(notification.$createdAt)}
