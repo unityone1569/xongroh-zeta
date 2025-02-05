@@ -512,6 +512,7 @@ export async function getDiscussionById(discussionId: string) {
       'topicId',
       'content',
       'mediaUrl',
+      'mediaId',
       'tags',
       'type',
       '$createdAt',
