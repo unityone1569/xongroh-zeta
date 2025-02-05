@@ -10,15 +10,14 @@ export const sidebarLinks = [
     label: 'Explore',
   },
   {
-    imgURL: '/assets/icons/marketplace.svg',
-    route: '/marketplace',
-    label: 'Marketplace',
-  },
-
-  {
     imgURL: '/assets/icons/community.svg',
     route: '/community',
     label: 'Community',
+  },
+  {
+    imgURL: '/assets/icons/marketplace.svg',
+    route: '/marketplace',
+    label: 'Marketplace',
   },
   {
     imgURL: '/assets/icons/add.svg',
@@ -38,8 +37,7 @@ export const rightbarLinks = [
     route: '/notifications',
     label: 'Notifications',
   },
-  
-]
+];
 
 export const bottombarLinks = [
   {
@@ -53,16 +51,15 @@ export const bottombarLinks = [
     label: 'Explore',
   },
   {
-    imgURL: '/assets/icons/marketplace.svg',
-    route: '/marketplace',
-    label: 'Marketplace',
-  },
-  {
     imgURL: '/assets/icons/community.svg',
     route: '/community',
     label: 'Community',
   },
-
+  {
+    imgURL: '/assets/icons/marketplace.svg',
+    route: '/marketplace',
+    label: 'Marketplace',
+  },
   {
     imgURL: '/assets/icons/add.svg',
     route: '/add-creation',

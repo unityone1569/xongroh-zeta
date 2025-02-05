@@ -180,9 +180,14 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
   }
 
   if (type === 'community') {
+    // Sort communities by membersCount in descending order
+    const sortedCommunities = [...items].sort((a, b) => 
+      (b.membersCount || 0) - (a.membersCount || 0)
+    );
+
     return (
       <ul className="grid-container overflow-hidden">
-        {items.map((community) => (
+        {sortedCommunities.map((community) => (
           <li key={community.$id} className="user-card flex flex-start gap-4">
             <div className="flex-shrink-0">
               <Link to={`/communities/${community.$id}`}>
@@ -200,9 +205,6 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
               <Link to={`/communities/${community.$id}`}>
                 <h3 className="base-bold line-clamp-1">{community.name}</h3>
               </Link>
-              {/* <p className="subtle-normal line-clamp-2 lg:subtle-comment">
-                {community.about}
-              </p> */}
               <div className="flex gap-2 pt-1 justify-start items-center">
                 <p className="subtle-normal line-clamp-1 lg:subtle-comment text-light-3">
                   Members: {community.membersCount || 0}
