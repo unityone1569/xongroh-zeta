@@ -55,6 +55,12 @@ export function WelcomeDialog({ open, onOpenChange }: WelcomeDialogProps) {
               <span className="font-semibold text-violet-300">Feedbacks</span>{' '}
               with Creators.
             </li>
+            <li role="listitem">
+              • Join our{' '}
+              <span className="font-semibold text-violet-300">Communities</span>{' '}
+              , take part in discussions and share your thoughts, experiences &
+              ideas.
+            </li>
           </ul>
 
           <h4 className="small-semibold mb-2 mt-9 flex items-center gap-2">
@@ -65,26 +71,21 @@ export function WelcomeDialog({ open, onOpenChange }: WelcomeDialogProps) {
             <li role="listitem" className="text-light-2">
               •{' '}
               <span className="font-semibold text-violet-300">Marketplace</span>{' '}
-              - Earn by selling rights, commissions and services
-            </li>
-            <li role="listitem" className="text-light-2">
-              • <span className="font-semibold text-violet-300">Community</span>{' '}
-              - Share Ideas and Collaborate.
+              - Earn by selling rights, commissions, goods and services
             </li>
             <li role="listitem" className="text-light-2">
               •{' '}
               <span className="font-semibold text-violet-300">MasterClass</span>{' '}
-              - Learn from the Experts.
+              - Learn from the industry Experts.
             </li>
             <li role="listitem" className="text-light-2">
-              •{' '}
-              <span className="font-semibold text-violet-300">Events</span> -
+              • <span className="font-semibold text-violet-300">Events</span> -
               Discover Events and get Tickets for your fav Creators.
             </li>
-            {/* <li role="listitem" className="text-light-2">
-              ♦ <span className="font-semibold text-violet-300">Patrons</span> -
+            <li role="listitem" className="text-light-2">
+              • <span className="font-semibold text-violet-300">Tribe</span> -
               Build a supportive fan base.
-            </li> */}
+            </li>
           </ul>
         </div>
         <DialogFooter>
