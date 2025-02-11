@@ -21,14 +21,14 @@ import { useInView } from 'react-intersection-observer';
 
 const Explore = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [activeTab, setActiveTab] = useState<'post' | 'user' | 'community'>(
+  const [activeTab, setActiveTab] = useState<'post' | 'user' | 'circle'>(
     'post'
   );
 
   const tabs = useMemo(
     () => [
       { name: 'post', label: 'Creations' },
-      { name: 'community', label: 'Communities' },
+      { name: 'circle', label: 'Circles' },
       { name: 'user', label: 'Creators' },
     ],
     []
@@ -75,7 +75,7 @@ const Explore = () => {
     if (loadMoreInView && !searchValue) {
       if (activeTab === 'post') fetchNextPosts();
       if (activeTab === 'user') fetchNextUsers();
-      if (activeTab === 'community') fetchNextCommunities();
+      if (activeTab === 'circle') fetchNextCommunities();
     }
   }, [
     loadMoreInView,
@@ -159,7 +159,7 @@ const Explore = () => {
       );
     }
 
-    if (activeTab === 'community') {
+    if (activeTab === 'circle') {
       const isSearchActive = searchValue.trim() !== '';
       const noCommunities =
         !isSearchActive &&
@@ -171,7 +171,7 @@ const Explore = () => {
             <SearchResult
               isSearchFetching={isSearchFetchingCommunities}
               searchedItems={searchedCommunities}
-              type="community"
+              type="circle"
             />
           ) : noCommunities ? (
             <p className="text-light-4 text-center pl-1 w-full">
@@ -182,7 +182,7 @@ const Explore = () => {
               <GridSearchList
                 key={`page-${index}`}
                 items={page.documents}
-                type="community"
+                type="circle"
               />
             ))
           )}
@@ -220,7 +220,7 @@ const Explore = () => {
             <button
               key={tab.name}
               onClick={() =>
-                setActiveTab(tab.name as 'post' | 'user' | 'community')
+                setActiveTab(tab.name as 'post' | 'user' | 'circle')
               }
               className={`p-2 px-3 font-semibold ${
                 activeTab === tab.name

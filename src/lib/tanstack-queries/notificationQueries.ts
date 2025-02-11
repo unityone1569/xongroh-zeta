@@ -106,7 +106,7 @@ export const useUnreadNotifications = (accountId: string) => {
 };
 
 // Use-Delete-Notification
-export const useDeleteNotification = (type: 'user' | 'community') => {
+export const useDeleteNotification = (type: 'user' | 'circle') => {
   const queryClient = useQueryClient();
 
   return useMutation({

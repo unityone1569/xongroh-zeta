@@ -177,7 +177,7 @@ const TopicPage = () => {
         <div className="w-full mt-16 lg:mt-0">
           <div className="flex flex-col gap-4">
             <Link
-              to={`/communities/${communityId}`}
+              to={`/circles/${communityId}`}
               className="flex items-center gap-1 p-1 mb-5 text-light-3 subtle-semibold hover:text-primary-500"
             >
               <img

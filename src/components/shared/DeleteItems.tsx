@@ -410,7 +410,7 @@ const DeleteNotification = ({
   type = 'user' 
 }: { 
   notificationId: string;
-  type?: 'user' | 'community';
+  type?: 'user' | 'circle';
 }) => {
   const { toast } = useToast();
   const deleteNotificationMutation = useDeleteNotification(type);

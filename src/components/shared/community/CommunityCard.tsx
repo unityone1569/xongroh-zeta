@@ -15,7 +15,7 @@ const CommunityCard = ({ community }: CommunityCardProps) => {
   return (
     <div className="user-card flex flex-start gap-4 bg-dark-2">
       <div className="flex-shrink-0">
-        <Link to={`/communities/${community.$id}`}>
+        <Link to={`/circles/${community.$id}`}>
           <LazyImage
             src={community.imageUrl || '/assets/icons/profile-placeholder.svg'}
             alt={community.name}
@@ -25,7 +25,7 @@ const CommunityCard = ({ community }: CommunityCardProps) => {
       </div>
 
       <div className="w-full flex-col">
-        <Link to={`/communities/${community.$id}`}>
+        <Link to={`/circles/${community.$id}`}>
           <div className="flex items-center gap-2">
             <h3 className="base-medium line-clamp-1">{community.name}</h3>
           </div>

@@ -60,7 +60,7 @@ const App = () => {
           <Route element={<RootLayout />}>
             <Route index element={<Home />} />
             <Route path="/explore" element={<Explore />} />
-            <Route path="/community" element={<Community />} />
+            <Route path="/circle" element={<Community />} />
             <Route path="/marketplace" element={<Marketplace />} />
 
             <Route path="/profile/:id/*" element={<Profile />} />
@@ -84,8 +84,8 @@ const App = () => {
             {/* Notification */}
             <Route path="/notifications" element={<NotificationPage />} />
 
-            {/* Communities */}
-            <Route path="/communities/:id" element={<CommunityDetailsPage />} />
+            {/* Circles */}
+            <Route path="/circles/:id" element={<CommunityDetailsPage />} />
             <Route path="/topics/:id" element={<TopicPage />} />
             <Route
               path="/topics/:id/add-discussion"

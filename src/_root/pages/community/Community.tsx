@@ -11,14 +11,14 @@ import {
 } from '@/lib/tanstack-queries/communityQueries';
 
 const tabs = [
-  { name: 'communities', label: 'Communities' },
+  { name: 'circles', label: 'Circles' },
   { name: 'discussions', label: 'Discussions' },
   { name: 'saved', label: 'Saved' },
 ];
 
 const Community = () => {
   const { user } = useUserContext();
-  const [activeTab, setActiveTab] = useState('communities');
+  const [activeTab, setActiveTab] = useState('circles');
 
   // Query hooks
   const {
@@ -66,28 +66,28 @@ const Community = () => {
   // Intersection Observer for infinite scroll
   useEffect(() => {
     const currentRef =
-      activeTab === 'communities'
+      activeTab === 'circles'
         ? communitiesRef
         : activeTab === 'discussions'
         ? discussionsRef
         : savedDiscussionsRef;
 
     const hasNext =
-      activeTab === 'communities'
+      activeTab === 'circles'
         ? hasNextCommunitiesPage
         : activeTab === 'discussions'
         ? hasNextDiscussionsPage
         : hasNextSavedPage;
 
     const isFetching =
-      activeTab === 'communities'
+      activeTab === 'circles'
         ? isFetchingNextCommunitiesPage
         : activeTab === 'discussions'
         ? isFetchingNextDiscussionsPage
         : isFetchingNextSavedPage;
 
     const fetchNext =
-      activeTab === 'communities'
+      activeTab === 'circles'
         ? fetchNextCommunitiesPage
         : activeTab === 'discussions'
         ? fetchNextDiscussionsPage
@@ -122,7 +122,7 @@ const Community = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'communities':
+      case 'circles':
         if (isCommunitiesLoading) {
           return <Loader />;
         }
@@ -130,7 +130,7 @@ const Community = () => {
           <div className="w-full">
             {!communities || communities.length === 0 ? (
               <p className="text-light-4 text-center md:text-start md:pl-5">
-                No communities joined yet
+                No circles joined yet
               </p>
             ) : (
               <>
@@ -227,7 +227,7 @@ const Community = () => {
     <div className="flex-col flex-1 flex-center overflow-scroll py-10 px-6 md:p-14 custom-scrollbar">
       <div className="max-w-3xl flex flex-col w-full h-full gap-6 md:gap-9">
         <h2 className="h3-bold md:h2-bold w-full mt-16 lg:mt-0">
-          My Community
+          My Circle
         </h2>
 
         {/* Tabs */}

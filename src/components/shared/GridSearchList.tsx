@@ -8,7 +8,7 @@ import LazyImage from './LazyImage';
 
 type GridSearchListProps = {
   items: Models.Document[];
-  type: 'post' | 'user' | 'community';
+  type: 'post' | 'user' | 'circle';
 };
 
 const GridPostMedia = ({ post }: { post: Models.Document }) => {
@@ -179,10 +179,10 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
     );
   }
 
-  if (type === 'community') {
+  if (type === 'circle') {
     // Sort communities by membersCount in descending order
-    const sortedCommunities = [...items].sort((a, b) => 
-      (b.membersCount || 0) - (a.membersCount || 0)
+    const sortedCommunities = [...items].sort(
+      (a, b) => (b.membersCount || 0) - (a.membersCount || 0)
     );
 
     return (
@@ -190,7 +190,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
         {sortedCommunities.map((community) => (
           <li key={community.$id} className="user-card flex flex-start gap-4">
             <div className="flex-shrink-0">
-              <Link to={`/communities/${community.$id}`}>
+              <Link to={`/circles/${community.$id}`}>
                 <LazyImage
                   src={
                     community.imageUrl ||
@@ -202,7 +202,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
               </Link>
             </div>
             <div className="w-full flex-col">
-              <Link to={`/communities/${community.$id}`}>
+              <Link to={`/circles/${community.$id}`}>
                 <h3 className="base-bold line-clamp-1">{community.name}</h3>
               </Link>
               <div className="flex gap-2 pt-1 justify-start items-center">

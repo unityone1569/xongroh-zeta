@@ -19,7 +19,7 @@ import { DeleteNotification } from '@/components/shared/DeleteItems';
 // Move constants outside component
 const TABS = [
   { name: 'user', label: 'User' },
-  { name: 'community', label: 'Community' },
+  { name: 'circle', label: 'Circle' },
 ] as const;
 
 type TabType = (typeof TABS)[number]['name'];
@@ -54,7 +54,7 @@ const NotificationItem = React.memo(
       <div className="flex items-center gap-2">
         <Link
           ref={ref}
-          to={`/${type === 'community' ? 'discussions' : 'creations'}/${
+          to={`/${type === 'circle' ? 'discussions' : 'creations'}/${
             notification.resourceId
           }`}
           className={`flex items-center gap-3 p-3 sm:p-4 hover:bg-dark-4 rounded-lg transition-all flex-grow ${
@@ -112,7 +112,7 @@ const NotificationPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [unreadCounts, setUnreadCounts] = useState({
     user: 0,
-    community: 0,
+    circle: 0,
   });
 
   // Fetch account ID
@@ -178,7 +178,7 @@ const NotificationPage = () => {
   useEffect(() => {
     setUnreadCounts({
       user: countUnreadNotifications(userNotifications),
-      community: countUnreadNotifications(communityNotifications),
+      circle: countUnreadNotifications(communityNotifications),
     });
   }, [userNotifications, communityNotifications]);
 

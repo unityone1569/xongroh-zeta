@@ -11,8 +11,8 @@ export const sidebarLinks = [
   },
   {
     imgURL: '/assets/icons/community.svg',
-    route: '/community',
-    label: 'Community',
+    route: '/circle',
+    label: 'Circle',
   },
   {
     imgURL: '/assets/icons/marketplace.svg',
@@ -52,7 +52,7 @@ export const bottombarLinks = [
   },
   {
     imgURL: '/assets/icons/community.svg',
-    route: '/community',
+    route: '/circle',
     label: 'Community',
   },
   {
