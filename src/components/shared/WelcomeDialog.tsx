@@ -53,7 +53,7 @@ export function WelcomeDialog({ open, onOpenChange }: WelcomeDialogProps) {
             <li role="listitem">
               • Give constructive{' '}
               <span className="font-semibold text-violet-300">Feedbacks</span>{' '}
-              with Creators.
+              to Creators.
             </li>
             <li role="listitem">
               • Join our{' '}
