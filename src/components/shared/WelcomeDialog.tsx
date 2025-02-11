@@ -40,15 +40,15 @@ export function WelcomeDialog({ open, onOpenChange }: WelcomeDialogProps) {
               • Share your{' '}
               <span className="font-semibold text-violet-300">Creations</span>{' '}
               and{' '}
-              <span className="font-semibold text-violet-300">Projects</span>
+              <span className="font-semibold text-violet-300">Projects</span>.
             </li>
             <li role="listitem">
               • Connect and Grow with other{' '}
-              <span className="font-semibold text-violet-300">Creators</span>
+              <span className="font-semibold text-violet-300">Creators</span>.
             </li>
             <li role="listitem">
               • Make a Professional{' '}
-              <span className="font-semibold text-violet-300">Portfolio</span>
+              <span className="font-semibold text-violet-300">Portfolio</span>.
             </li>
             <li role="listitem">
               • Give constructive{' '}
@@ -71,7 +71,7 @@ export function WelcomeDialog({ open, onOpenChange }: WelcomeDialogProps) {
             <li role="listitem" className="text-light-2">
               •{' '}
               <span className="font-semibold text-violet-300">Marketplace</span>{' '}
-              - Earn by selling rights, commissions, goods and services
+              - Earn by selling rights, commissions, goods and services.
             </li>
             <li role="listitem" className="text-light-2">
               •{' '}
