@@ -57,8 +57,8 @@ export function WelcomeDialog({ open, onOpenChange }: WelcomeDialogProps) {
             </li>
             <li role="listitem">
               • Join our{' '}
-              <span className="font-semibold text-violet-300">Communities</span>{' '}
-              , take part in discussions and share your thoughts, experiences &
+              <span className="font-semibold text-violet-300">Circles</span>
+              , take part in discussions, collabs and share your thoughts, experiences &
               ideas.
             </li>
           </ul>
