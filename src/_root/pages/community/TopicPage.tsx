@@ -10,6 +10,7 @@ import {
   useGetTopicsById,
   useMarkPingAsRead,
   useGetTopicPings,
+  useGetCommunityById, // Import the community query
 } from '@/lib/tanstack-queries/communityQueries';
 import { useUserContext } from '@/context/AuthContext';
 import { getCommunityIdFromTopicId } from '@/lib/appwrite-apis/community';
@@ -18,6 +19,7 @@ import { getCommunityIdFromTopicId } from '@/lib/appwrite-apis/community';
 const FILTER_TABS = [
   { name: 'new', label: 'New' },
   { name: 'popular', label: 'Popular' },
+  { name: 'collab', label: 'Collab' }, // Add new tab
   { name: 'discussion', label: 'Discussion' },
   { name: 'help', label: 'Help' },
 ] as const;
@@ -26,7 +28,7 @@ type FilterTab = (typeof FILTER_TABS)[number]['name'];
 
 // Update type for discussion document
 type DiscussionDocument = Models.Document & {
-  type: 'Discussion' | 'Help' | 'Poll';
+  type: 'Discussion' | 'Help' | 'Poll' | 'Collab'; // Add Collab type
   likesCount: number;
   author: {
     name: string;
@@ -52,6 +54,8 @@ const filterDiscussions = (
       return discussions.filter((disc) => disc.type === 'Discussion');
     case 'help':
       return discussions.filter((disc) => disc.type === 'Help');
+    case 'collab': // Add collab case
+      return discussions.filter((disc) => disc.type === 'Collab');
     default:
       return discussions;
   }
@@ -114,6 +118,9 @@ const TopicPage = () => {
     fetchCommunityId();
   }, [id]);
 
+  // Add this query to get community details
+  const { data: community } = useGetCommunityById(communityId || '');
+
   // Handle infinite scroll
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -174,36 +181,45 @@ const TopicPage = () => {
     <div className="flex-col flex-1 flex-center overflow-scroll py-10 px-6 md:p-14 custom-scrollbar relative">
       <div className="max-w-3xl flex flex-col w-full h-full gap-6 md:gap-9">
         {/* Header - remove Add button */}
-        <div className="w-full mt-16 lg:mt-0">
+        <div className="w-full mt-16 lg:mt-0 mb-5">
           <div className="flex flex-col gap-4">
-            <Link
-              to={`/circles/${communityId}`}
-              className="flex items-center gap-1 p-1 mb-5 text-light-3 subtle-semibold hover:text-primary-500"
-            >
-              <img
-                src="/assets/icons/back.svg"
-                alt="back"
-                className="w-5 h-5 lg:w-6 lg:h-6"
-              />
-              <p className="pt-1 lg:small-medium">Back</p>
-            </Link>
-            <h2 className="h3-bold md:h2-bold">
-              {topic?.topicName || 'Topic'}
-            </h2>
+            <div className="flex items-center gap-2 text-light-3">
+              <Link
+                to={`/circles/${communityId}`}
+                className=" flex gap-1.5 items-center"
+              >
+                <img
+                  src="/assets/icons/back.svg"
+                  alt="back"
+                  className="w-4 h-4"
+                />
+                <p className="hover:text-primary-500 transition-colors base-regular md:body-regular line-clamp-1">
+                  {community?.name || 'Community'}
+                </p>
+              </Link>
+              <span className="base-regular md:body-regular ">&gt;</span>
+              <h2 className="base-regular md:body-regular text-light-1 line-clamp-1">
+                {topic?.topicName || 'Topic'}
+              </h2>
+            </div>
           </div>
         </div>
 
         {/* Filter tabs */}
-        <div className="flex-start w-full">
-          {FILTER_TABS.map((tab) => (
-            <FilterTabButton
-              key={tab.name}
-              label={tab.label}
-              isActive={activeTab === tab.name}
-              onClick={() => setActiveTab(tab.name)}
-              notificationCount={tab.name === 'new' ? pingCount : undefined}
-            />
-          ))}
+        <div className="w-full">
+          <div className="w-full overflow-x-auto overflow-y-hidden custom-scrollbar">
+            <div className="flex-start w-full gap-2">
+              {FILTER_TABS.map((tab) => (
+                <FilterTabButton
+                  key={tab.name}
+                  label={tab.label}
+                  isActive={activeTab === tab.name}
+                  onClick={() => setActiveTab(tab.name)}
+                  notificationCount={tab.name === 'new' ? pingCount : undefined}
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Content */}

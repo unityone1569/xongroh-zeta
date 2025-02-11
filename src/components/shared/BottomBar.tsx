@@ -15,7 +15,8 @@ const BottomBar = () => {
     (link) =>
       link.route === pathname ||
       pathname.startsWith('/profile') ||
-      pathname === '/messages'
+      pathname === '/messages' ||
+      pathname.startsWith('/circles')
   );
 
   if (!shouldShowBottomBar) return null;

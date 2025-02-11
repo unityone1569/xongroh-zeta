@@ -14,7 +14,7 @@ import { getCommunityIdFromTopicId } from '@/lib/appwrite-apis/community';
 
 interface DiscussionCardProps {
   discussion: Models.Document & {
-    type: 'Discussion' | 'Help' | 'Poll';
+    type: 'Discussion' | 'Help' | 'Poll' | 'Collab';
   };
   onClick?: () => void;
 }
@@ -109,6 +109,8 @@ const DiscussionCard = ({ discussion, onClick }: DiscussionCardProps) => {
                   ? 'bg-yellow-500/20 text-yellow-400'
                   : discussion.type === 'Help'
                   ? 'bg-lime-500/20 text-lime-400'
+                  : discussion.type === 'Collab'
+                  ? 'bg-rose-500/20 text-rose-400'
                   : 'bg-green-500/20 text-green-400'
               }
             `}

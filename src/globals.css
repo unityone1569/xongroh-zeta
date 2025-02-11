@@ -57,6 +57,9 @@
   .body-medium {
     @apply text-[18px] font-medium leading-[140%];
   }
+  .body-regular {
+    @apply text-[18px] font-normal leading-[140%];
+  }
 
   .small-semibold {
     @apply text-[14px] font-semibold leading-[140%] tracking-tighter;

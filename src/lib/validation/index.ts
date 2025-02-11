@@ -138,11 +138,10 @@ export const NewPasswordValidation = z.object({
     .min(8, { message: 'Password must be at least 8 characters.' }),
 });
 
-
 // Add type to validation schema
 export const DiscussionValidation = z.object({
   content: z.string().min(1),
   file: z.array(z.any()),
   tags: z.string(),
-  type: z.enum(["Discussion", "Help"])
+  type: z.enum(['Discussion', 'Help', 'Collab']),
 });
