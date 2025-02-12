@@ -126,6 +126,8 @@ const DiscussionDetailsPage = () => {
                             ? 'bg-yellow-500/20 text-yellow-400'
                             : discussion.type === 'Help'
                             ? 'bg-purple-500/20 text-purple-400'
+                            : discussion.type === 'Collab'
+                            ? 'bg-orange-500/20 text-orange-400'
                             : 'bg-green-500/20 text-green-400'
                         }`}
                   >

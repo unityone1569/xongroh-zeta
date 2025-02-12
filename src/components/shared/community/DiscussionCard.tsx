@@ -110,7 +110,7 @@ const DiscussionCard = ({ discussion, onClick }: DiscussionCardProps) => {
                   : discussion.type === 'Help'
                   ? 'bg-lime-500/20 text-lime-400'
                   : discussion.type === 'Collab'
-                  ? 'bg-rose-500/20 text-rose-400'
+                  ? 'bg-orange-500/20 text-orange-400'
                   : 'bg-green-500/20 text-green-400'
               }
             `}

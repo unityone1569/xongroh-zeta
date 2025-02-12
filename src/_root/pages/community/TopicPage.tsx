@@ -183,17 +183,17 @@ const TopicPage = () => {
         {/* Header - remove Add button */}
         <div className="w-full mt-16 lg:mt-0 mb-5">
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2 text-light-3">
+            <div className="flex items-center gap-2">
               <Link
                 to={`/circles/${communityId}`}
                 className=" flex gap-1.5 items-center"
               >
-                <img
+                {/* <img
                   src="/assets/icons/back.svg"
                   alt="back"
                   className="w-4 h-4"
-                />
-                <p className="hover:text-primary-500 transition-colors base-regular md:body-regular line-clamp-1">
+                /> */}
+                <p className="text-primary-500 transition-colors base-regular md:body-regular line-clamp-1">
                   {community?.name || 'Community'}
                 </p>
               </Link>
@@ -208,7 +208,7 @@ const TopicPage = () => {
         {/* Filter tabs */}
         <div className="w-full">
           <div className="w-full overflow-x-auto overflow-y-hidden custom-scrollbar">
-            <div className="flex-start w-full gap-2">
+            <div className="flex-start w-full gap-2 h-14">
               {FILTER_TABS.map((tab) => (
                 <FilterTabButton
                   key={tab.name}
