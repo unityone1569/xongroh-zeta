@@ -20,4 +20,5 @@ export { default as LikedPosts } from './LikedPosts';
 export { default as Messages } from './Messages';
 export { default as ChatPage } from './ChatPage';
 export { default as NotificationPage } from './NotificationPage';
+export { default as BadgeDetailsPage } from './BadgeDetailsPage';
 export { default as PageNotFound } from './PageNotFound';

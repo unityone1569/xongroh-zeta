@@ -38,6 +38,7 @@ export const INITIAL_USER: IUser = {
   coverUrl: '',
   bio: '',
   hasSeenWelcome: false,
+  badges: [],
 };
 
 const initialState: AuthState = {
@@ -108,6 +109,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           bio: currentAccount.bio || '',
           hasSeenWelcome: currentAccount.hasSeenWelcome || false,
           verifiedUser: currentAccount.verifiedUser || false,
+          badges: currentAccount.badges || [],
         },
       });
 

@@ -83,6 +83,7 @@ export type IUser = {
   bio: string;
   hasSeenWelcome?: boolean;
   verifiedUser?: boolean;
+  badges?: string[];
 };
 
 export type INewUser = {

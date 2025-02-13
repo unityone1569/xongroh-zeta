@@ -551,6 +551,7 @@ export async function getUserInfo(accountId: string) {
       creationsCount: user.creationsCount,
       supportingCount: user.supportingCount,
       verifiedUser: user.verifiedUser,
+      badges: user.badges,
     };
   } catch (error) {
     console.error('Error fetching user info:', error);

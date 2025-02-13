@@ -22,6 +22,7 @@ interface ProfileCardItemProps {
   profession: string;
   creationsCount: string;
   isVerified: boolean;
+  badges: string[];
   isCurrentUser: boolean;
   userId: string;
 }
@@ -36,6 +37,7 @@ const ProfileCardItem = ({
   hometown,
   profession,
   isVerified,
+  badges,
   creationsCount,
   isCurrentUser,
   userId,
@@ -113,6 +115,7 @@ const ProfileCardItem = ({
             <p className="pt-3 max-w-xl text-pretty small-regular font-light">
               {bio}
             </p>
+
             <div className="pt-3">
               {profession && (
                 <div className="flex gap-2 pt-3 justify-start items-center">
@@ -134,6 +137,29 @@ const ProfileCardItem = ({
                     className="w-5 h-5 md:w-6 md:h-6 opacity-65"
                   />
                   <p className="text-sm lg:text-base font-light">{hometown}</p>
+                </div>
+              )}
+              {badges && badges.length > 0 && (
+                <div className="flex flex-col gap-3.5 pt-9 pl-0.5">
+                  <div className="flex gap-2 justify-start items-center">
+                    <h2 className="base-bold lg:body-bold text-light-3">
+                      BADGES
+                    </h2>
+                  </div>
+                  <div className="overflow-x-auto scrollbar-hide">
+                    <div className="flex gap-3 min-w-max">
+                      {badges.map((badgeCode, index) => (
+                        <Link key={index} to={`/badges/${badgeCode}`}>
+                          <img
+                            src={`/assets/icons/${badgeCode}.svg`}
+                            alt={`Badge ${index + 1}`}
+                            className="w-11 h-11 md:w-14 md:h-14 object-contain"
+                            loading="lazy"
+                          />
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -290,6 +316,7 @@ const Profile = () => {
       profession: profileUser?.profession,
       supportingCount: profileUser?.supportingCount || '0',
       isVerified: profileUser?.verifiedUser || false,
+      badges: profileUser?.badges || [],
     }),
     [profileUser]
   );

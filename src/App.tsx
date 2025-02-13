@@ -25,6 +25,7 @@ import {
   AddDiscussion,
   EditDiscussion,
   DiscussionDetailsPage,
+  BadgeDetailsPage,
 } from './_root/pages';
 
 import './globals.css';
@@ -103,6 +104,7 @@ const App = () => {
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/guidelines" element={<CommunityGuidelines />} />
+        <Route path="/badges/:id" element={<BadgeDetailsPage />} />
         <Route path="/reset-password" element={<ResetPasswordForm />} />
         <Route path="/new-password" element={<NewPasswordForm />} />
         <Route path="/verify-success" element={<VerifySuccess />} />
