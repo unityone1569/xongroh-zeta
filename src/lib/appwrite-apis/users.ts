@@ -255,6 +255,7 @@ export async function createUserAccount(
       dpUrl: avatarUrl,
       username: username, // Add the generated username
       agreeUserAgreements: agreedUserAgreements,
+      badges: ['B9001'],
     });
 
     return newUser;
@@ -297,6 +298,7 @@ export async function createUserAccountWithGoogle(
       dpUrl: avatars.getInitials(session.name),
       username: username,
       agreeUserAgreements: agreedUserAgreements,
+      badges: ['B9001'],
     });
 
     return newUser;
@@ -352,6 +354,7 @@ async function saveUserToDB(user: {
   email: string;
   dpUrl: URL;
   agreeUserAgreements: Boolean;
+  badges?: string[];
 }): Promise<Models.Document> {
   try {
     // Save the user to the database
