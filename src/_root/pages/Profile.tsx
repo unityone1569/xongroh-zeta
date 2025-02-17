@@ -139,31 +139,34 @@ const ProfileCardItem = ({
                   <p className="text-sm lg:text-base font-light">{hometown}</p>
                 </div>
               )}
-              {badges && badges.length > 0 && (
-                <div className="flex flex-col gap-3.5 pt-9 pl-0.5">
+              {Array.isArray(badges) && badges.some((badge) => badge) && (
+                <div className="flex flex-col gap-4 pt-9 pl-0.5">
                   <div className="flex gap-2 justify-start items-center">
-                    <h2 className="base-bold lg:body-bold text-light-3">
-                      BADGES
+                    <h2 className="base-bold lg:body-bold text-primary-500">
+                      Badges
                     </h2>
                   </div>
                   <div className="overflow-x-auto scrollbar-hide">
-                    <div className="flex gap-3 min-w-max">
-                      {badges.map((badgeCode, index) => (
-                        <Link key={index} to={`/badges/${badgeCode}`}>
-                          <img
-                            src={`/assets/icons/${badgeCode}.svg`}
-                            alt={`Badge ${index + 1}`}
-                            className="w-11 h-11 md:w-14 md:h-14 object-contain"
-                            loading="lazy"
-                          />
-                        </Link>
-                      ))}
+                    <div className="flex gap-3.5 min-w-max">
+                      {badges.map(
+                        (badgeCode, index) =>
+                          badgeCode && (
+                            <Link key={index} to={`/badges/${badgeCode}`}>
+                              <img
+                                src={`/assets/icons/${badgeCode}.svg`}
+                                alt={`Badge ${index + 1}`}
+                                className="w-11 h-11 md:w-14 md:h-14 object-contain ml-1"
+                                loading="lazy"
+                              />
+                            </Link>
+                          )
+                      )}
                     </div>
                   </div>
                 </div>
               )}
             </div>
-            <div className="flex w-full justify-start gap-3.5 lg:gap-6 pt-9 lg:pt-12">
+            <div className="flex w-full justify-start gap-3.5 lg:gap-6 pt-11 lg:pt-12">
               {isCurrentUser ? (
                 <Link to={`/update-profile/${userId}`}>
                   <Button className="font-semibold shad-button_dark_4">
