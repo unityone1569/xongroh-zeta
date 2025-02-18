@@ -1,5 +1,5 @@
 import { useUserContext } from '@/context/AuthContext';
-import { multiFormatDateString } from '@/lib/utils/utils';
+import { multiFormatDateStringNoTime } from '@/lib/utils/utils';
 import { Models } from 'appwrite';
 import { Link } from 'react-router-dom';
 import PostStats from './PostStats';
@@ -70,7 +70,7 @@ const PostCard = ({ post }: PostCardProps) => {
             </p>
             <div className="flex-start text-light-3 pt-0.5">
               <p className="subtle-semibold lg:small-regular line-clamp-1">
-                {multiFormatDateString(post?.$createdAt)}
+                {multiFormatDateStringNoTime(post?.$createdAt)}
               </p>
             </div>
           </div>
@@ -81,7 +81,9 @@ const PostCard = ({ post }: PostCardProps) => {
           </div>
           <Link
             to={`/update-creation/${post?.$id}`}
-            className={`${user.id !== post?.authorId && 'hidden'}`}
+            className={`${
+              user.id !== post?.authorId && 'hidden'
+            } flex-shrink-0`}
           >
             <img src="/assets/icons/edit.svg" alt="edit" width={20} />
           </Link>

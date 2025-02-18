@@ -57,17 +57,24 @@ const PostDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-1 p-2 mt-3 mb-5 text-light-2 subtle-semibold"
-          >
-            <img
-              src="/assets/icons/back.svg"
-              alt="back"
-              className="w-5 h-5 lg:w-6 lg:h-6"
-            />
-            <p className="pt-1 lg:small-medium">Back</p>
-          </button>
+          <div className="flex-between">
+            <div>
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-1 p-2 mt-3 mb-5 text-light-2 subtle-semibold"
+              >
+                <img
+                  src="/assets/icons/back.svg"
+                  alt="back"
+                  className="w-5 h-5 lg:w-6 lg:h-6"
+                />
+                <p className="pt-1 lg:small-medium">Back</p>
+              </button>
+            </div>
+            <div className="px-2.5 py-1 mr-3.5 rounded-full text-xs font-medium bg-purple-500/20 text-violet-400">
+              Creation
+            </div>
+          </div>
           {post?.mediaUrl && (
             <>
               {isMediaLoading ? (
@@ -135,16 +142,21 @@ const PostDetails = () => {
                 </div>
               </Link>
               <div className="flex-center gap-5">
-                <div className="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-violet-400">
-                  Creation
-                </div>
-                <div className={`${user?.id !== post?.authorId && 'hidden'}`}>
+                <div
+                  className={`${
+                    user?.id !== post?.authorId && 'hidden'
+                  } flex-shrink-0`}
+                >
                   <Link to={`/update-creation/${post?.$id}`}>
                     <img src="/assets/icons/edit.svg" alt="edit" width={22} />
                   </Link>
                 </div>
 
-                <div className={`${user?.id !== post?.authorId && 'hidden'}`}>
+                <div
+                  className={`${
+                    user?.id !== post?.authorId && 'hidden'
+                  } flex-shrink-0`}
+                >
                   <DeleteCreation
                     creationId={postId}
                     mediaId={mediaId}

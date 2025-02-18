@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import { useUserContext } from '@/context/AuthContext';
-
-import { multiFormatDateString } from '@/lib/utils/utils';
+import { multiFormatDateStringNoTime } from '@/lib/utils/utils';
 import Loader from '@/components/shared/Loader';
 import { Models } from 'appwrite';
 import { DeleteConversation } from '@/components/shared/DeleteItems';
@@ -103,16 +102,16 @@ const ConversationCard = ({
           </div>
           <div className="flex-1 flex flex-col gap-1">
             <div className="flex justify-between items-center">
-              <h3 className="small-semibold line-clamp-1 lg:base-bold text-light-1 flex items-center gap-1.5">
+              <h3 className="small-semibold line-clamp-1 lg:base-bold text-light-1  items-center gap-1.5 ">
                 {userData?.name || 'Unknown User'}
-                {userData?.verifiedUser && (
-                  <img
-                    src="/assets/icons/verified.svg"
-                    alt="verified"
-                    className="w-4 h-4"
-                  />
-                )}
               </h3>
+              {userData?.verifiedUser && (
+                <img
+                  src="/assets/icons/verified.svg"
+                  alt="verified"
+                  className="w-4 h-4 ml-1.5"
+                />
+              )}
             </div>
             <div className="flex items-center gap-2">
               <p className="subtle-semibold text-light-3 lg:small-semibold line-clamp-1">
@@ -157,8 +156,8 @@ const ConversationCard = ({
               </span>
             )}
             {message?.$createdAt && (
-              <span className="tiny-medium text-nowrap text-light-3">
-                {multiFormatDateString(conversation?.$updatedAt)}
+              <span className="tiny-medium text-light-3 line-clamp-1">
+                {multiFormatDateStringNoTime(conversation?.$updatedAt)}
               </span>
             )}
           </div>

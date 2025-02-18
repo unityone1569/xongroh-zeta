@@ -28,7 +28,7 @@ export default function AuthLayout() {
 
       <img
         src="https://api.xongroh.com/v1/storage/buckets/678c8e03002d41317909/files/678c902a003a135baa89/view?project=66e2a98a00192795ca51"
-        alt="logo"
+        alt="cover"
         className="hidden xl:block h-screen w-1/2 object-cover bg-no-repeat"
       />
     </>

@@ -1,8 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
+import { useGetTopCreators } from '@/lib/tanstack-queries/usersQueries';
 
 const BadgeDetailsPage = () => {
   const navigate = useNavigate();
+  const { data: creators } = useGetTopCreators();
+
+  // Calculate remaining spots
+  const totalSpots = 500;
+  const takenSpots = creators?.total || 0;
+  const remainingSpots = Math.max(0, totalSpots - takenSpots);
 
   return (
     <div className="flex-col flex-1 flex-center overflow-scroll py-10 px-6 md:p-14 custom-scrollbar">
@@ -149,11 +156,27 @@ const BadgeDetailsPage = () => {
           </div>
         </div>
         {/* Call to Action */}
-        <div className="flex flex-col items-center gap-4 mt-4 bg-dark-3 p-6 rounded-xl">
-          <p className="h4-bold text-center flex items-center gap-2">
-            Only available to the first 500 creators!
-          </p>
-          <p className="text-light-2 text-center pb-1">
+        <div className="flex flex-col items-center gap-4 mt-4 bg-dark-3 p-6 rounded-xl border-light-4 border">
+          <div className="flex flex-col items-center gap-2">
+            <p className="h4-bold text-center pb-3">
+              Only <span className="text-primary-500">{remainingSpots}</span>{' '}
+              spots left!
+            </p>
+            <div className="w-full max-w-xs bg-dark-4 rounded-full h-2.5">
+              <div
+                className="bg-primary-500 h-2.5 rounded-full transition-all duration-500"
+                style={{
+                  width: `${Math.min(100, (takenSpots / totalSpots) * 100)}%`,
+                }}
+              />
+            </div>
+            <p className="text-light-3 text-sm text-center">
+              {takenSpots} of {totalSpots}{' '}
+              <span className="font-bold">Founding Creator Badges</span> taken
+              already...
+            </p>
+          </div>
+          <p className="text-light-2 text-center pb-1 pt-6">
             Don't miss your chance to be an OG.
           </p>
           <Button className="shad-button_primary mb-1" asChild>

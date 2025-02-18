@@ -22,6 +22,7 @@ import { useUserContext } from '@/context/AuthContext';
 import {
   useCreateUserAccount,
   useLoginWithGoogle,
+  useGetTopCreators,
 } from '@/lib/tanstack-queries/usersQueries';
 
 const SignUpForm = () => {
@@ -33,6 +34,7 @@ const SignUpForm = () => {
   const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateUserAccount();
   const { mutateAsync: loginWithGoogle } = useLoginWithGoogle();
+  const { data: creators } = useGetTopCreators();
   // const { mutateAsync: SignInAccount, isPending: isSigningInUser } =
   //   useSignInAccount();
 
@@ -117,16 +119,53 @@ const SignUpForm = () => {
     }
   };
 
+  const totalSpots = 500;
+  const takenSpots = creators?.total || 0;
+  const remainingSpots = Math.max(0, totalSpots - takenSpots);
+
   return (
     <Form {...form}>
       <div className="py-16 w-80 sm:w-420 flex-col overflow-y-auto p-4 no-scrollbar">
         <div className="flex-center flex-col">
           <img className="h-14" src="/assets/icons/logo.svg" alt="logo" />
           <h2 className="h3-bold md:h2-bold pt-6 sm:pt-8">Create account</h2>
-          <p className=" text-light-3 small-medium md:base-regular mt-2 mb-5">
+          <p className="text-light-3 small-medium md:base-regular mt-2">
             A fresh journey is just getting underway!
           </p>
         </div>
+
+        {/* Founding Creator Section */}
+        <div className="flex flex-col items-center gap-4 my-9 bg-dark-3 p-6 rounded-xl border-light-4 border">
+          <div className="flex flex-col items-center gap-2">
+            <p className="h4-bold text-center pb-3">
+              Only <span className="text-primary-500">{remainingSpots}</span>{' '}
+              spots left!
+            </p>
+            <div className="w-full max-w-xs bg-dark-4 rounded-full h-2.5">
+              <div
+                className="bg-primary-500 h-2.5 rounded-full transition-all duration-500"
+                style={{
+                  width: `${Math.min(100, (takenSpots / totalSpots) * 100)}%`,
+                }}
+              />
+            </div>
+            <p className="text-light-3 text-sm text-center">
+              {takenSpots} of {totalSpots}{' '}
+              <span className="font-bold">Founding Creator Badges</span> taken
+              already...
+            </p>
+          </div>
+          <p className="text-light-2 text-center text-sm">
+            Don't miss your chance to be an OG and unlock{' '}
+            <Link
+              to="/badges/B9001"
+              className="text-primary-500 underline underline-offset-4 md:no-underline md:hover:underline"
+            >
+              Exclusive Perks!
+            </Link>
+          </p>
+        </div>
+
         <form
           onSubmit={(e) => {
             if (!termsAccepted) {
