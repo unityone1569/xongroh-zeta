@@ -172,8 +172,8 @@ const BadgeDetailsPage = () => {
             </div>
             <p className="text-light-3 text-sm text-center">
               {takenSpots} of {totalSpots}{' '}
-              <span className="font-bold">Founding Creator Badges</span> taken
-              already...
+              <span className="font-bold">Founding Creator Badges</span> claimed
+              already!
             </p>
           </div>
           <p className="text-light-2 text-center pb-1 pt-6">
