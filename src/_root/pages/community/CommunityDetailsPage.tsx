@@ -69,7 +69,7 @@ const MemberCard = ({ member }: { member: Models.Document }) => (
           )}
         </h3>
       </Link>
-      <p className="small-regular text-light-4 pt-0.5">{member.role}</p>
+      <p className="small-semibold text-light-4 pt-0.5">{member.role}</p>
     </div>
   </div>
 );
