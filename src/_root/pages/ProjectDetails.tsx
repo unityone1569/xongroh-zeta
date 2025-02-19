@@ -77,17 +77,24 @@ const ProjectDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-1 p-2 mt-3 mb-5 text-light-2 subtle-semibold"
-          >
-            <img
-              src="/assets/icons/back.svg"
-              alt="back"
-              className="w-5 h-5 lg:w-6 lg:h-6"
-            />
-            <p className="pt-1 lg:small-medium">Back</p>
-          </button>
+          <div className="flex-between">
+            <div>
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-1 p-2 mt-3 mb-5 text-light-2 subtle-semibold"
+              >
+                <img
+                  src="/assets/icons/back.svg"
+                  alt="back"
+                  className="w-5 h-5 lg:w-6 lg:h-6"
+                />
+                <p className="pt-1 lg:small-medium">Back</p>
+              </button>
+            </div>
+            <div className="px-2.5 py-1 mr-3.5 rounded-full text-xs font-medium  bg-green-500/20 text-green-400">
+              Project
+            </div>
+          </div>
           {project?.mediaUrl && (
             <>
               {isMediaLoading ? (
@@ -156,9 +163,6 @@ const ProjectDetails = () => {
                 </div>
               </Link>
               <div className="flex-center gap-5">
-                <div className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
-                  Project
-                </div>
                 <div
                   className={`pr-1 ${
                     user?.id !== project?.authorId && 'hidden'
