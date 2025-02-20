@@ -90,15 +90,15 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                 <GridPostMedia post={post} />
               </div>
 
-              <div className="p-3.5 mt-auto z-10">
-                <div className="flex items-center gap-2 ">
+              <div className="p-3.5 mt-auto z-10 ">
+                <div className="inline-flex items-center gap-2 shadow-md p-2 pl-3.5 pr-4 rounded-full bg-dark-4 bg-opacity-60">
                   <LazyImage
                     src={
                       post?.author?.dpUrl ||
                       '/assets/icons/profile-placeholder.svg'
                     }
                     alt={post?.author?.name || 'Creator'}
-                    className="w-8 h-8 rounded-full object-cover"
+                    className="w-6 h-6 rounded-full object-cover"
                   />
                   <p className="line-clamp-1 small-medium flex items-center gap-1.5">
                     {post?.author?.name || 'Creator'}
