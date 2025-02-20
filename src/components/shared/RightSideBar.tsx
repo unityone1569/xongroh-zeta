@@ -43,7 +43,8 @@ const RightSideBar = () => {
             <li
               key={link.label}
               className={`leftsidebar-link group ${
-                isActive && 'bg-gradient-to-r from-light-4 to-dark-4-600'
+                isActive &&
+                'bg-gradient-to-r from-light-4 to-dark-4 border-[1px] border-light-4'
               }`}
             >
               <NavLink
@@ -97,7 +98,7 @@ const CreatorCard = ({ creator }: { creator: Models.Document }) => {
   return (
     <Link
       to={`/profile/${creator.$id}`}
-      className="creator-card flex-col items-center text-center"
+      className="creator-card flex-col items-center text-center "
     >
       <img
         src={creator.dpUrl || '/assets/icons/profile-placeholder.svg'}

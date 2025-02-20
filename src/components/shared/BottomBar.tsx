@@ -32,7 +32,7 @@ const BottomBar = () => {
             key={link.label}
             className={`relative ${
               isActive &&
-              'bg-gradient-to-r from-light-4 to-dark-4 transition rounded-full'
+              'bg-gradient-to-r from-light-4 to-dark-4 transition rounded-full border-[1.5px] border-light-4 '
             } flex-center flex-col gap-1 p-3 transition`}
           >
             <div className="relative">

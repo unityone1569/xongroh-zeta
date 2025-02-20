@@ -80,7 +80,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
         {items.map((post) => (
           <div
             key={post?.$id}
-            className="rounded-xl border border-dark-4 overflow-hidden flex flex-col h-[320px]"
+            className="rounded-xl border border-light-4 border-opacity-50 bg-dark-3 overflow-hidden flex flex-col h-[320px]"
           >
             <Link
               to={`/creations/${post?.$id}`}
@@ -91,7 +91,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
               </div>
 
               <div className="p-3.5 mt-auto z-10 ">
-                <div className="inline-flex items-center gap-2 shadow-md p-2 pl-3.5 pr-4 rounded-full bg-dark-4 bg-opacity-60">
+                <div className="inline-flex items-center gap-2 shadow-md p-2 pl-3.5 pr-4 rounded-full bg-dark-4 bg-opacity-60  ">
                   <LazyImage
                     src={
                       post?.author?.dpUrl ||
@@ -123,7 +123,10 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
     return (
       <ul className="grid-container overflow-hidden">
         {items.map((user) => (
-          <li key={user.$id} className="user-card flex flex-start gap-4">
+          <li
+            key={user.$id}
+            className="user-card flex flex-start gap-4 bg-dark-3"
+          >
             <div className="flex-shrink-0">
               <Link to={`/profile/${user.$id}`}>
                 <LazyImage
@@ -188,7 +191,10 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
     return (
       <ul className="grid-container overflow-hidden">
         {sortedCommunities.map((community) => (
-          <li key={community.$id} className="user-card flex flex-start gap-4">
+          <li
+            key={community.$id}
+            className="user-card flex flex-start gap-4 bg-dark-3"
+          >
             <div className="flex-shrink-0">
               <Link to={`/circles/${community.$id}`}>
                 <LazyImage

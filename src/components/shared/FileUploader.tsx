@@ -202,7 +202,7 @@ const SingleFileUploader = ({
   return (
     <div
       {...getRootProps()}
-      className="flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer"
+      className="flex flex-center flex-col bg-dark-3 border border-light-4 border-opacity-50 rounded-xl cursor-pointer"
     >
       <input {...getInputProps()} className="cursor-pointer" />
 

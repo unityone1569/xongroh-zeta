@@ -137,7 +137,20 @@ const Portfolio = () => {
   return (
     <div className="portfolio-container">
       <div className="portfolio-inner_container">
-        <h2 className="h3-bold md:h2-bold text-left w-full pt-16 md:pt-0 pb-9 md:pb-16">
+        {/* Add back button */}
+        <button
+          onClick={() => window.history.back()}
+          className="flex items-center gap-1 pt-16 lg:pt-0 mb-11 text-light-2 subtle-semibold w-full"
+        >
+          <img
+            src="/assets/icons/back.svg"
+            alt="back"
+            className="w-5 h-5 lg:w-6 lg:h-6"
+          />
+          <p className="pt-1 small-semibold sm:base-semibold">Back</p>
+        </button>
+
+        <h2 className="h3-bold md:h2-bold text-left w-full pb-9 md:pb-16">
           Portfolio
         </h2>
         <PortfolioCardItem

@@ -203,7 +203,7 @@ const Explore = () => {
         <h2 className="h3-bold md:h2-bold mt-16 lg:mt-0 w-full">Explore</h2>
 
         {/* Search Bar */}
-        <div className="flex items-center gap-2 px-4 w-full rounded-lg bg-dark-4">
+        <div className="flex items-center gap-2 px-4 w-full rounded-lg bg-dark-4 border border-light-4 border-opacity-50 ">
           <img src="/assets/icons/search.svg" width={24} alt="search" />
           <Input
             type="text"

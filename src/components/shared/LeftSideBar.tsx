@@ -17,7 +17,7 @@ const ProfileSection = memo(
     const profileClassName = useMemo(() => {
       return `leftsidebar-link group ${
         pathname === `/profile/${user?.id}`
-          ? 'bg-gradient-to-r from-violet-600 to-indigo-600'
+          ? 'bg-gradient-to-r from-violet-600 to-indigo-600 border-[1px] border-light-4'
           : ''
       }`;
     }, [pathname, user?.id]);
@@ -68,7 +68,8 @@ const LeftSidebar = () => {
               <li
                 key={link.label}
                 className={`leftsidebar-link group ${
-                  isActive && 'bg-gradient-to-r from-violet-600 to-indigo-600'
+                  isActive &&
+                  'bg-gradient-to-r from-violet-600 to-indigo-600 border-[1px] border-light-4'
                 }`}
               >
                 <NavLink
