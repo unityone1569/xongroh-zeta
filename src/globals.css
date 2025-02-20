@@ -474,11 +474,11 @@
 
   /* Button */
   .shad-button_primary {
-    @apply h-10 bg-gradient-to-r from-purple-500 to-purple-400 hover:bg-violet-600 text-light-1 flex gap-2 !important;
+    @apply h-10 bg-gradient-to-r from-purple-500 to-purple-400 hover:bg-violet-600 text-light-1 border border-light-2 flex gap-2 !important;
   }
 
   .shad-button_dark_4 {
-    @apply h-10 bg-dark-4 px-5 text-light-1 flex gap-2 !important;
+    @apply h-10 bg-dark-4 px-5 text-light-1 border border-light-4 flex gap-2 !important;
   }
   .shad-button_dark_3 {
     @apply h-11 bg-dark-4 px-9 w-28 rounded-full text-light-1 flex gap-2 !important;
