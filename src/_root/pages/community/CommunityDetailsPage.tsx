@@ -30,7 +30,7 @@ const TopicCard = ({ topic }: { topic: Models.Document }) => {
   const { data: pingCount = 0 } = useGetTopicPings(topic.$id, user.id);
 
   return (
-    <div className="flex flex-col p-6 bg-dark-3 rounded-xl border border-dark-4 w-full">
+    <div className="flex flex-col p-6 bg-dark-3 rounded-xl border border-light-4 border-opacity-50 w-full">
       <div className="flex justify-between items-center">
         <Link to={`/topics/${topic.$id}`}>
           <h3 className="base-medium line-clamp-1">{topic.topicName}</h3>
