@@ -9,9 +9,12 @@ import { formatDateString } from '@/lib/utils/utils';
 import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
 import { Models } from 'appwrite';
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import LazyImage from '@/components/shared/LazyImage';
-import { useGetDiscussionById } from '@/lib/tanstack-queries/communityQueries';
+import {
+  useGetDiscussionById,
+  useGetTopicsById,
+} from '@/lib/tanstack-queries/communityQueries';
 import { useGetAuthorById } from '@/lib/tanstack-queries/postsQueries';
 import { DeleteDiscussion } from '@/components/shared/DeleteItems';
 import DiscussionComments from '@/components/shared/community/DiscussionComments';
@@ -24,12 +27,11 @@ const DiscussionDetailsPage = () => {
 
   const { id } = useParams();
   const { data: discussion, isPending } = useGetDiscussionById(id || '');
+  const { data: topic } = useGetTopicsById(discussion?.topicId || '');
   const { user } = useUserContext();
   const { data: author } = useGetAuthorById(discussion?.authorId);
   const authorId = discussion?.authorId;
   const topicId = discussion?.topicId;
-
-  const navigate = useNavigate();
 
   // Fetch accountId when author data is available
   useEffect(() => {
@@ -68,17 +70,20 @@ const DiscussionDetailsPage = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-1 p-2 mt-3 mb-5 text-light-2 subtle-semibold"
-          >
-            <img
-              src="/assets/icons/back.svg"
-              alt="back"
-              className="w-5 h-5 lg:w-6 lg:h-6"
-            />
-            <p className="pt-1 lg:small-medium">Back</p>
-          </button>
+          <div className="flex items-center gap-2 mt-3 mb-5">
+            <Link
+              to={`/topics/${discussion?.topicId}`}
+              className="text-light-2 subtle-semibold hover:text-primary-500"
+            >
+              <p className="text-primary-500 transition-colors base-regular md:body-regular line-clamp-1 pl-3.5">
+                {topic?.topicName || 'Topic'}
+              </p>
+            </Link>
+            <span className="base-regular md:body-regular ">&gt;</span>
+            <h2 className="base-regular md:body-regular text-light-1 line-clamp-1">
+              {discussion?.type || 'Discussion'}
+            </h2>
+          </div>
 
           <div className="post_details-info">
             <div className="flex-between w-full">
@@ -125,7 +130,7 @@ const DiscussionDetailsPage = () => {
                             : discussion.type === 'Poll'
                             ? 'bg-yellow-500/20 text-yellow-400'
                             : discussion.type === 'Help'
-                            ? 'bg-purple-500/20 text-purple-400'
+                            ? 'bg-lime-500/20 text-lime-400'
                             : discussion.type === 'Collab'
                             ? 'bg-orange-500/20 text-orange-400'
                             : 'bg-green-500/20 text-green-400'

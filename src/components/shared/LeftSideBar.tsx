@@ -1,9 +1,12 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { INavLink, IUser } from '@/types';
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useEffect } from 'react';
 import { useUserContext } from '@/context/AuthContext';
 import { sidebarLinks } from '@/constants';
 import { useGetUserPings } from '@/lib/tanstack-queries/communityQueries';
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/lib/tanstack-queries/queryKeys';
+import { appwriteConfig, client } from '@/lib/appwrite-apis/config';
 
 const ProfileSection = memo(
   ({
@@ -49,8 +52,37 @@ const ProfileSection = memo(
 const LeftSidebar = () => {
   const { pathname } = useLocation();
   const { user } = useUserContext();
-  // Get community pings for current user
+  const queryClient = useQueryClient();
   const { data: pingCount = 0 } = useGetUserPings(user?.id);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const unsubscribe = client.subscribe(
+      `databases.${appwriteConfig.databases.communities.databaseId}.collections.${appwriteConfig.databases.communities.collections.ping}.documents`,
+      (response) => {
+        if (
+          response.events.includes(
+            'databases.*.collections.*.documents.*.create'
+          ) ||
+          response.events.includes(
+            'databases.*.collections.*.documents.*.update'
+          ) ||
+          response.events.includes(
+            'databases.*.collections.*.documents.*.delete'
+          )
+        ) {
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.GET_USER_PINGS, user.id],
+          });
+        }
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [user?.id, queryClient]);
 
   return (
     <nav className="leftsidebar">
@@ -68,8 +100,7 @@ const LeftSidebar = () => {
               <li
                 key={link.label}
                 className={`leftsidebar-link group ${
-                  isActive &&
-                  'bg-gradient-to-r from-violet-600 to-indigo-600'
+                  isActive && 'bg-gradient-to-r from-violet-600 to-indigo-600'
                 }`}
               >
                 <NavLink
