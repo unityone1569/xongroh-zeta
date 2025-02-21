@@ -32,7 +32,7 @@ const BottomBar = () => {
             key={link.label}
             className={`relative ${
               isActive &&
-              'bg-gradient-to-r from-light-4 to-dark-4 transition rounded-full border-[1.5px]'
+              'bg-gradient-to-r from-light-4 to-dark-4 transition rounded-full'
             } flex-center flex-col gap-1 p-3 transition`}
           >
             <div className="relative">
@@ -44,7 +44,7 @@ const BottomBar = () => {
                   isActive && 'invert-white'
                 }`}
               />
-              {link.label === 'Community' && pingCount > 0 && (
+              {link.label === 'Circle' && pingCount > 0 && (
                 <span className="absolute -top-2.5 -right-[6px] w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
               )}
             </div>

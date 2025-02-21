@@ -53,7 +53,7 @@ export const bottombarLinks = [
   {
     imgURL: '/assets/icons/community.svg',
     route: '/circle',
-    label: 'Community',
+    label: 'Circle',
   },
   {
     imgURL: '/assets/icons/marketplace.svg',

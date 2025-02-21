@@ -44,7 +44,7 @@ const RightSideBar = () => {
               key={link.label}
               className={`leftsidebar-link group ${
                 isActive &&
-                'bg-gradient-to-r from-light-4 to-dark-4 border-[1px]'
+                'bg-gradient-to-r from-light-4 to-dark-4'
               }`}
             >
               <NavLink

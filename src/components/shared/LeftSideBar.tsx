@@ -17,7 +17,7 @@ const ProfileSection = memo(
     const profileClassName = useMemo(() => {
       return `leftsidebar-link group ${
         pathname === `/profile/${user?.id}`
-          ? 'bg-gradient-to-r from-violet-600 to-indigo-600 border-[1px]'
+          ? 'bg-gradient-to-r from-violet-600 to-indigo-600'
           : ''
       }`;
     }, [pathname, user?.id]);
@@ -69,7 +69,7 @@ const LeftSidebar = () => {
                 key={link.label}
                 className={`leftsidebar-link group ${
                   isActive &&
-                  'bg-gradient-to-r from-violet-600 to-indigo-600 border-[1px]'
+                  'bg-gradient-to-r from-violet-600 to-indigo-600'
                 }`}
               >
                 <NavLink
@@ -85,7 +85,7 @@ const LeftSidebar = () => {
                   />
                   {link.label}
 
-                  {link.label === 'Community' && pingCount > 0 && (
+                  {link.label === 'Circle' && pingCount > 0 && (
                     <span className=" -top-1 -right-[1px] w-2.5 h-2.5 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
                   )}
                 </NavLink>
