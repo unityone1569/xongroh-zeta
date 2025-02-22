@@ -29,6 +29,7 @@ import {
   leaveCommunity,
   checkMembershipStatus,
   getUserPings,
+  markAllPingsAsRead,
 } from '../appwrite-apis/community';
 
 // *** COMMUNITIES QUERIES ***
@@ -241,7 +242,8 @@ export const useGetUserDiscussions = (userId: string) => {
 export const useGetUserSavedDiscussions = (userId: string) => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_USER_SAVED_DISCUSSIONS, userId],
-    queryFn: ({ pageParam }: { pageParam: string | null }) => getUserSavedDiscussions({ userId, pageParam }),
+    queryFn: ({ pageParam }: { pageParam: string | null }) =>
+      getUserSavedDiscussions({ userId, pageParam }),
     initialPageParam: null,
     getNextPageParam: (lastPage) => {
       if (!lastPage?.savedPosts?.length) return null;
@@ -412,12 +414,35 @@ export const useGetCommunityPings = (communityId: string, userId: string) => {
   });
 };
 
-
-// use-Get-User-Pings 
+// use-Get-User-Pings
 export const useGetUserPings = (userId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_USER_PINGS, userId],
     queryFn: () => getUserPings(userId),
     enabled: !!userId,
+  });
+};
+
+export const useMarkAllPingsAsRead = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      communityId,
+      topicId,
+    }: {
+      userId: string;
+      communityId: string;
+      topicId: string;
+    }) => markAllPingsAsRead({ userId, communityId, topicId }),
+    onSuccess: (_, { topicId, communityId }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_TOPIC_PINGS, topicId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_COMMUNITY_PINGS, communityId],
+      });
+    },
   });
 };

@@ -12,14 +12,21 @@ import VideoPlayer from '../VideoPlayer';
 import DiscussionStats from './DiscussionStats';
 import { getCommunityIdFromTopicId } from '@/lib/appwrite-apis/community';
 
-interface DiscussionCardProps {
-  discussion: Models.Document & {
-    type: 'Discussion' | 'Help' | 'Poll' | 'Collab';
-  };
-  onClick?: () => void;
+interface DiscussionDocument extends Models.Document {
+  type: 'Discussion' | 'Help' | 'Poll' | 'Collab';
 }
 
-const DiscussionCard = ({ discussion, onClick }: DiscussionCardProps) => {
+interface DiscussionCardProps {
+  discussion: DiscussionDocument;
+  showNotificationDot?: boolean;
+  onClick?: () => void; // Add this line to make onClick optional
+}
+
+const DiscussionCard = ({
+  discussion,
+  showNotificationDot = false,
+  onClick,
+}: DiscussionCardProps) => {
   const { user } = useUserContext();
   const [mediaType, setMediaType] = useState<string>('unknown');
   const [isMediaLoading, setIsMediaLoading] = useState(true);
@@ -61,9 +68,14 @@ const DiscussionCard = ({ discussion, onClick }: DiscussionCardProps) => {
   if (!discussion.authorId) return;
 
   return (
-    <div className="post-card" onClick={onClick}>
+    <div className="post-card relative" onClick={onClick}>
+      {/* Notification dot positioned in top-right */}
+      {showNotificationDot && (
+        <span className="absolute top-3 right-3 bg-gradient-to-r from-purple-500 to-purple-400 w-2 h-2 rounded-full z-10" />
+      )}
       <div className="flex-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 relative">
+          {/* Remove the notification dot from here */}
           <Link
             to={`/profile/${discussion?.authorId}`}
             className="flex-shrink-0"
@@ -100,20 +112,20 @@ const DiscussionCard = ({ discussion, onClick }: DiscussionCardProps) => {
           {discussion?.type && (
             <div
               className={`
-              px-2.5 py-1 rounded-full
-              text-xs font-medium
-              ${
-                discussion.type === 'Discussion'
-                  ? 'bg-blue-500/20 text-blue-400'
-                  : discussion.type === 'Poll'
-                  ? 'bg-yellow-500/20 text-yellow-400'
-                  : discussion.type === 'Help'
-                  ? 'bg-lime-500/20 text-lime-400'
-                  : discussion.type === 'Collab'
-                  ? 'bg-orange-500/20 text-orange-400'
-                  : 'bg-green-500/20 text-green-400'
-              }
-            `}
+                px-2.5 py-1 rounded-full
+                text-xs font-medium
+                ${
+                  discussion.type === 'Discussion'
+                    ? 'bg-blue-500/20 text-blue-400'
+                    : discussion.type === 'Poll'
+                    ? 'bg-yellow-500/20 text-yellow-400'
+                    : discussion.type === 'Help'
+                    ? 'bg-lime-500/20 text-lime-400'
+                    : discussion.type === 'Collab'
+                    ? 'bg-orange-500/20 text-orange-400'
+                    : 'bg-green-500/20 text-green-400'
+                }
+              `}
             >
               {discussion.type.charAt(0).toUpperCase() +
                 discussion.type.slice(1)}

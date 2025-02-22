@@ -11,6 +11,7 @@ import {
   useMarkPingAsRead,
   useGetTopicPings,
   useGetCommunityById, // Import the community query
+  useMarkAllPingsAsRead, // Add to imports
 } from '@/lib/tanstack-queries/communityQueries';
 import { useUserContext } from '@/context/AuthContext';
 import { getCommunityIdFromTopicId } from '@/lib/appwrite-apis/community';
@@ -40,16 +41,27 @@ type DiscussionDocument = Models.Document & {
 // Separate filter logic for better maintainability
 const filterDiscussions = (
   discussions: DiscussionDocument[],
-  filter: FilterTab
+  filter: FilterTab,
+  pingCount: number
 ) => {
   switch (filter) {
     case 'new':
-      return [...discussions].sort(
+      return [...discussions]
+        .sort(
+          (a, b) =>
+            new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime()
+        )
+        .slice(0, pingCount);
+    case 'popular':
+      // First sort by creation date to identify newest posts
+      const sortedByDate = [...discussions].sort(
         (a, b) =>
           new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime()
       );
-    case 'popular':
-      return [...discussions].sort((a, b) => b.likesCount - a.likesCount);
+      // Remove the newest pingCount posts
+      const olderPosts = sortedByDate.slice(pingCount);
+      // Sort remaining posts by likes
+      return olderPosts.sort((a, b) => b.likesCount - a.likesCount);
     case 'discussion':
       return discussions.filter((disc) => disc.type === 'Discussion');
     case 'help':
@@ -121,6 +133,19 @@ const TopicPage = () => {
   // Add this query to get community details
   const { data: community } = useGetCommunityById(communityId || '');
 
+  const { mutate: markAllAsRead, isPending: isMarkingAllAsRead } =
+    useMarkAllPingsAsRead();
+
+  const handleMarkAllAsRead = () => {
+    if (communityId && pingCount > 0) {
+      markAllAsRead({
+        userId: user.id,
+        communityId: communityId,
+        topicId: id || '',
+      });
+    }
+  };
+
   // Handle infinite scroll
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -140,16 +165,11 @@ const TopicPage = () => {
   const filteredDiscussions = useMemo(() => {
     if (!discussions.length) return [];
 
-    let filtered = filterDiscussions(discussions, activeTab);
+    let filtered = filterDiscussions(discussions, activeTab, pingCount);
 
     // Return empty array if pingCount is 0 and activeTab is 'new'
     if (activeTab === 'new' && pingCount === 0) {
       return [];
-    }
-
-    // Show only pingCount number of latest discussions for 'new' tab
-    if (activeTab === 'new') {
-      filtered = filtered.slice(0, pingCount);
     }
 
     return filtered;
@@ -220,6 +240,20 @@ const TopicPage = () => {
               ))}
             </div>
           </div>
+          {activeTab === 'new' && pingCount > 0 && (
+            <div className="mt-2 w-full flex justify-end">
+              <Button
+                onClick={handleMarkAllAsRead}
+                variant="ghost"
+                className="text-primary-500 hover:text-primary-600 text-sm"
+                disabled={isMarkingAllAsRead}
+              >
+                {isMarkingAllAsRead
+                  ? 'Marking all as read...'
+                  : 'Mark all as read'}
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Content */}
@@ -235,7 +269,11 @@ const TopicPage = () => {
                   key={discussion.$id}
                   onClick={() => handleDiscussionClick(discussion)}
                 >
-                  <DiscussionCard discussion={discussion} />
+                  <DiscussionCard
+                    discussion={discussion}
+                    showNotificationDot={activeTab === 'new'}
+                    onClick={() => handleDiscussionClick(discussion)}
+                  />
                 </div>
               ))}
               {hasNextPage && activeTab !== 'new' && (

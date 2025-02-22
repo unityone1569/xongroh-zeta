@@ -1030,6 +1030,42 @@ export async function markAsReadPing({
   }
 }
 
+// mark-all-Pings-as-read
+export async function markAllPingsAsRead({
+  userId,
+  communityId,
+  topicId,
+}: {
+  userId: string;
+  communityId: string;
+  topicId: string;
+}) {
+  try {
+    // Find all existing pings for this user in this topic
+    const { documents: existingPings } = await databases.listDocuments(
+      db.communitiesId,
+      cl.pingId,
+      [
+        Query.equal('communityId', communityId),
+        Query.equal('topicId', topicId),
+        Query.equal('userId', userId),
+      ]
+    );
+
+    // Delete all pings
+    const deletePromises = existingPings.map((ping) =>
+      databases.deleteDocument(db.communitiesId, cl.pingId, ping.$id)
+    );
+
+    await Promise.all(deletePromises);
+
+    return { status: 'ok' };
+  } catch (error) {
+    console.error('Error marking all pings as read:', error);
+    return null;
+  }
+}
+
 // get-Topic-Pings
 export async function getTopicPings({
   topicId,
