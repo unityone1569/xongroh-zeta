@@ -727,6 +727,11 @@ export async function createDiscussion(
       }
     );
 
+    if (!newDiscussion && uploadedFileId) {
+      await deleteFile(uploadedFileId);
+      throw Error;
+    }
+
     // *# Note: We store AccountIds as adminIds in the community document directly. No need to convert it to accountId.
     const adminId = await getAdminAccountId(communityId);
 
@@ -809,6 +814,22 @@ export async function updateDiscussion(discussion: IUpdateDiscussion) {
       }
     );
 
+    // Failed to update
+    if (!updatedDiscussion) {
+      // Delete new file that has been recently uploaded
+      if (hasFileToUpdate) {
+        await deleteFile(media.mediaId[0]);
+      }
+
+      // If no new file uploaded, just throw error
+      throw Error;
+    }
+
+    // Safely delete old file after successful update
+    if (hasFileToUpdate) {
+      await deleteFile(discussion.mediaId[0]);
+    }
+
     return updatedDiscussion;
   } catch (error) {
     console.error('Error updating discussion:', error);
@@ -833,7 +854,9 @@ export async function deleteDiscussion(
 
     if (!statusCode) throw Error;
 
-    await deleteFile(mediaId);
+    if (mediaId && (!Array.isArray(mediaId) || mediaId.length > 0)) {
+      await deleteFile(mediaId);
+    }
 
     await deleteAllCommentsForPost(discussionId);
 

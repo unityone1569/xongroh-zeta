@@ -38,7 +38,7 @@ export type INewDiscussion = {
   content: string;
   file: File[];
   tags?: string;
-  type: 'discussion' | 'help' | 'poll';
+  type: 'discussion' | 'help' | 'poll' | 'collab';
 };
 
 export type IUpdateCreation = {

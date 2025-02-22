@@ -251,7 +251,9 @@ export async function deleteCreation(
 
     if (!statusCode) throw Error;
 
-    await deleteFile(mediaId);
+    if (mediaId && (!Array.isArray(mediaId) || mediaId.length > 0)) {
+      await deleteFile(mediaId);
+    }
 
     await deleteAllCommentsForPost(creationId);
 
@@ -668,7 +670,9 @@ export async function deleteProject(
 
     if (!statusCode) throw Error;
 
-    await deleteFile(mediaId);
+    if (mediaId && (!Array.isArray(mediaId) || mediaId.length > 0)) {
+      await deleteFile(mediaId);
+    }
 
     await decrementUserProjectsCount(authorId);
 

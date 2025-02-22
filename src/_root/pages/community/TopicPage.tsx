@@ -241,11 +241,11 @@ const TopicPage = () => {
             </div>
           </div>
           {activeTab === 'new' && pingCount > 0 && (
-            <div className="mt-2 w-full flex justify-end">
+            <div className="mt-2 max-w-screen-sm flex justify-end">
               <Button
                 onClick={handleMarkAllAsRead}
                 variant="ghost"
-                className="text-primary-500 hover:text-primary-600 text-sm"
+                className="text-primary-500 hover:text-purple-400 text-sm pr-0.5"
                 disabled={isMarkingAllAsRead}
               >
                 {isMarkingAllAsRead
