@@ -120,9 +120,19 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
   }
 
   if (type === 'user') {
+    // Sort users: verified first, then by creationsCount
+    const sortedUsers = [...items].sort((a, b) => {
+      // First priority: verified status
+      if (a.verifiedUser && !b.verifiedUser) return -1;
+      if (!a.verifiedUser && b.verifiedUser) return 1;
+
+      // Second priority: creationsCount (only if verification status is the same)
+      return (b.creationsCount || 0) - (a.creationsCount || 0);
+    });
+
     return (
       <ul className="grid-container overflow-hidden">
-        {items.map((user) => (
+        {sortedUsers.map((user) => (
           <li
             key={user.$id}
             className="user-card flex flex-start gap-4 bg-dark-3"
@@ -168,7 +178,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                   <LazyImage
                     src="/assets/icons/hometown.svg"
                     alt="hometown"
-                    className="w-4 h-4 "
+                    className="w-4 h-4"
                   />
                 </div>
                 <p className="subtle-normal line-clamp-1 lg:subtle-comment">

@@ -748,9 +748,13 @@ export async function getTopCreators() {
 // Get-Infinite-Users
 export async function getInfiniteUsers({ pageParam }: { pageParam: number }) {
   const queries: any[] = [
-    Query.orderDesc('$updatedAt'),
-    Query.equal('hasSeenWelcome', true),
-    Query.limit(10),
+    Query.or([
+      Query.equal('verifiedUser', true),
+      Query.greaterThan('creationsCount', 0),
+    ]),
+    Query.notEqual('name', ['Xongroh']),
+    Query.orderDesc('verifiedUser'),
+    Query.limit(16),
     Query.select([
       '$id',
       'name',
@@ -758,6 +762,7 @@ export async function getInfiniteUsers({ pageParam }: { pageParam: number }) {
       'hometown',
       'dpUrl',
       'verifiedUser',
+      'creationsCount',
     ]),
   ];
 
