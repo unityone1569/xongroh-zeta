@@ -150,7 +150,11 @@ const UpdateprofileForm = ({ user }: ProfileFormProps) => {
             <FormItem>
               <FormLabel className="shad-form_label">Bio</FormLabel>
               <FormControl>
-                <Textarea className="shad-textarea" {...field} />
+                <Textarea
+                  className="shad-textarea"
+                  {...field}
+                  placeholder="Write a brief and catchy bio to display on your profile."
+                />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
@@ -198,7 +202,11 @@ const UpdateprofileForm = ({ user }: ProfileFormProps) => {
             <FormItem>
               <FormLabel className="shad-form_label">About</FormLabel>
               <FormControl>
-                <Textarea className="shad-textarea" {...field} />
+                <Textarea
+                  className="shad-textarea"
+                  {...field}
+                  placeholder="Tell your story, flaunt your skills, and make your portfolio impossible to ignore!"
+                />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
