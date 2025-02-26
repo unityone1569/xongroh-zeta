@@ -102,7 +102,7 @@ export const ProfileValidation = z.object({
     .optional(),
   about: z
     .string()
-    .max(250, { message: 'About should not exceed 250 characters.' })
+    .max(350, { message: 'About should not exceed 350 characters.' })
     .optional(),
   dpFile: z
     .instanceof(File)
