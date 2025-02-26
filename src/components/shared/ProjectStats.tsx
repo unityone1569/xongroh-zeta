@@ -88,7 +88,7 @@ const ProjectStats = ({ project, userId, authorId }: ProjectStatsProps) => {
         <img
           src={isLiked ? '/assets/icons/liked.svg' : '/assets/icons/like.svg'}
           alt="like"
-          width={25}
+          width={33}
           onClick={handleLikeProject}
           className={`cursor-pointer ${
             isLiking || isUnliking ? 'opacity-50 cursor-not-allowed' : ''

@@ -185,7 +185,7 @@ const DiscussionStats = ({
           <img
             src={isLiked ? '/assets/icons/liked.svg' : '/assets/icons/like.svg'}
             alt="like"
-            width={26}
+            width={33}
             onClick={handleLike}
             className={`cursor-pointer ${
               isLiking || isUnliking ? 'opacity-50 cursor-not-allowed' : ''
