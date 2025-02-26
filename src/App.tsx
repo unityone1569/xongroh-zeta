@@ -63,7 +63,6 @@ const App = () => {
             <Route path="/explore" element={<Explore />} />
             <Route path="/circle" element={<Community />} />
             <Route path="/marketplace" element={<Marketplace />} />
-
             <Route path="/profile/:id/*" element={<Profile />} />
             <Route path="/update-profile/:id" element={<UpdateProfile />} />
 

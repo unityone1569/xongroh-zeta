@@ -26,11 +26,11 @@ export const SignUpFormSchema = z.object({
   name: z
     .string()
     .min(2, { message: 'Name must be at least 2 characters.' })
-    .max(30, { message: 'Name must be at most 30 characters.' }),
+    .max(30, { message: 'Name should not exceed 30 characters.' }),
   hometown: z
     .string()
     .min(2, { message: 'Hometown must be at least 2 characters.' })
-    .max(30, { message: 'Hometown must be at most 30 characters.' }),
+    .max(30, { message: 'Hometown should not exceed 30 characters.' }),
   email: z
     .string()
     .email({ message: 'Invalid email address.' })
@@ -87,8 +87,8 @@ export const ProfileValidation = z.object({
   name: z.string().min(2).max(100).optional(),
   username: z
     .string()
-    .min(1, { message: 'Username must be at least 1 character.' })
-    .max(64, { message: 'Username must be at most 64 characters.' })
+    .min(1, { message: 'Username should be at least 1 character.' })
+    .max(64, { message: 'Username should not exceed 64 characters.' })
     .regex(
       /^(?!\.)(?!.*\.\.)(?!.*\.$)(?!.*\.\.$)[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+$/,
       { message: 'Invalid username format.' }
@@ -96,8 +96,14 @@ export const ProfileValidation = z.object({
     .optional(),
   profession: z.string().max(65).optional(),
   hometown: z.string().max(65).optional(),
-  bio: z.string().max(150).optional(),
-  about: z.string().max(251).optional(),
+  bio: z
+    .string()
+    .max(150, { message: 'Bio should not exceed 150 characters.' })
+    .optional(),
+  about: z
+    .string()
+    .max(250, { message: 'About should not exceed 250 characters.' })
+    .optional(),
   dpFile: z
     .instanceof(File)
     .refine(
