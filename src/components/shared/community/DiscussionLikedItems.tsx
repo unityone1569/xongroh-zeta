@@ -96,9 +96,9 @@ const DiscussionLikedItems = ({
   return (
     <div className="flex gap-1 items-center">
       <img
-        src={isLikedState ? '/assets/icons/liked.svg' : '/assets/icons/like.svg'}
+        src={isLikedState ? '/assets/icons/liked-1.svg' : '/assets/icons/like-1.svg'}
         alt="like"
-        width={23}
+        width={22}
         onClick={handleLikeItem}
         className={`cursor-pointer ${
           isLiking || isUnliking ? 'opacity-50 cursor-not-allowed' : ''
