@@ -45,7 +45,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
           className="items-center cursor-pointer hover:opacity-70"
           src="/assets/icons/delete.svg"
           alt="delete"
-          width={22}
+          width={19}
         />
       </AlertDialogTrigger>
 

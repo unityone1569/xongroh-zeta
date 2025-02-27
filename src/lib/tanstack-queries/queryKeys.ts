@@ -39,6 +39,7 @@ export enum QUERY_KEYS {
   GET_POST_FEEDBACKS_COUNT = 'getPostFeedbacksCount',
   GET_POST_FEEDBACKS = 'getFeedbacks',
   GET_COMMENT_REPLIES_COUNT = 'getCommentRepliesCount',
+  GET_FEEDBACK_REPLIES_COUNT = 'getFeedbackRepliesCount',
   GET_COMMENT_REPLIES = 'getCommentReplies',
   GET_FEEDBACK_REPLIES = 'getFeedbackReplies',
 
@@ -47,7 +48,7 @@ export enum QUERY_KEYS {
   // NOTIFICATION KEYS
   GET_USER_NOTIFICATIONS = 'getUserNotifications',
   GET_COMMUNITY_NOTIFICATIONS = 'getCommunityNotifications',
-  
+
   // COMMUNITY KEYS
   GET_COMMUNITIES = 'getCommunities',
   GET_COMMUNITY_BY_ID = 'getCommunityById',

@@ -427,6 +427,17 @@ export async function deleteAllCommentReplies(commentId: string) {
   }
 }
 
+// Get-Comment-Replies-Count
+export async function getCommentRepliesCount(commentId: string) {
+  try {
+    const replies = await getCommentReplies(commentId);
+    return replies.length;
+  } catch (error) {
+    console.error('Error getting comment replies count:', error);
+    throw error;
+  }
+}
+
 // *** FEEDBACK REPLIES ***
 
 // Get-Feedback-Replies
@@ -536,6 +547,16 @@ export async function deleteFeedbackReply(
   }
 }
 
+// Get-Feedback-Replies-Count
+export async function getFeedbackRepliesCount(feedbackId: string) {
+  try {
+    const replies = await getFeedbackReplies(feedbackId);
+    return replies.length;
+  } catch (error) {
+    console.error('Error getting feedback replies count:', error);
+    throw error;
+  }
+}
 // Delete-All-Feedback-Replies
 export async function deleteAllFeedbackReplies(feedbackId: string) {
   if (!feedbackId) return;
@@ -593,8 +614,6 @@ export async function addDiscussionComment(
       authorId,
       adminId,
     });
-
-    console.log('Payload:', payload);
 
     await functions.createExecution(
       fn.discussionCommentPermissionId,

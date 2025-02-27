@@ -12,8 +12,10 @@ import {
   deleteFeedback,
   deleteFeedbackReply,
   getCommentReplies,
+  getCommentRepliesCount,
   getComments,
   getFeedbackReplies,
+  getFeedbackRepliesCount,
   getFeedbacks,
   getPostCommentsCount,
   getPostFeedbacksCount,
@@ -191,6 +193,18 @@ export const useGetPostRepliesCount = (postId?: string) => {
   });
 };
 
+// use-get-comment-replies-count
+export const useGetCommentRepliesCount = (commentId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES_COUNT, commentId],
+    queryFn: async () => {
+      if (!commentId) throw new Error('Comment ID is required');
+      return getCommentRepliesCount(commentId);
+    },
+    enabled: !!commentId,
+  });
+};
+
 // Get-Comment-Replies
 export const useGetCommentReplies = (commentId: string) => {
   return useQuery({
@@ -250,6 +264,17 @@ export const useDeleteCommentReply = () => {
 };
 
 // *** FEEDBACK-REPLY-QUERIES ***
+
+export const useGetFeedbackRepliesCount = (feedbackId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES_COUNT, feedbackId],
+    queryFn: async () => {
+      if (!feedbackId) throw new Error('Comment ID is required');
+      return getFeedbackRepliesCount(feedbackId);
+    },
+    enabled: !!feedbackId,
+  });
+};
 
 // Get-Feedback-Replies
 export const useGetFeedbackReplies = (feedbackId: string) => {

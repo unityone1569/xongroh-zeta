@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Models } from 'appwrite';
-import { multiFormatDateString } from '@/lib/utils/utils';
+import { multiFormatDateStringNoTime } from '@/lib/utils/utils';
 import { Link } from 'react-router-dom';
 import DiscussionLikedItems from './DiscussionLikedItems';
 import {
@@ -111,7 +111,7 @@ const DiscussionReplies = ({
   );
 
   return (
-    <div className="ml-7 pr-3 pt-3.5">
+    <div className="ml-5 pt-3.5">
       <div className="replies-list">
         {isRepliesLoading ? (
           <Loader />
@@ -199,7 +199,7 @@ const ReplyItem = React.memo(
       : { name: '', dpUrl: '' };
 
     return (
-      <div className="w-full mx-auto px-2 py-4 rounded-lg">
+      <div className="w-full mx-auto pl-2 py-4 rounded-lg">
         <div className="flex-between mb-5">
           <Link
             to={`/profile/${creatorId}`}
@@ -215,7 +215,7 @@ const ReplyItem = React.memo(
                 {userInfo.name}
               </p>
               <p className="subtle-semibold lg:small-regular text-light-3">
-                {multiFormatDateString(createdAt)}
+                {multiFormatDateStringNoTime(createdAt)}
               </p>
             </div>
           </Link>
@@ -223,15 +223,23 @@ const ReplyItem = React.memo(
         <p className="text-pretty leading-relaxed subtle-comment md:small-regular ml-1 lg:ml-2 mb-3">
           {content}
         </p>
-        <div className="flex justify-start gap-3.5 items-center ml-1">
-          <DiscussionLikedItems
-            item={item}
-            userId={user.id}
-            authorId={authorId}
-            postId={discussionId}
-            itemType="reply"
-            communityId={communityId}
-          />
+        <div className="flex justify-between items-center ml-1">
+          <div className="flex gap-5 items-center">
+            <DiscussionLikedItems
+              item={item}
+              userId={user.id}
+              authorId={authorId}
+              postId={discussionId}
+              itemType="reply"
+              communityId={communityId}
+            />
+            <button
+              onClick={toggleReplyForm}
+              className="small-medium text-gray-500 hover:text-gray-700"
+            >
+              Reply
+            </button>
+          </div>
           <div
             className={`${
               user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
@@ -242,12 +250,6 @@ const ReplyItem = React.memo(
               commentId={parentId}
             />
           </div>
-          <button
-            onClick={toggleReplyForm}
-            className="small-medium text-gray-500 hover:text-gray-700"
-          >
-            Reply
-          </button>
         </div>
       </div>
     );

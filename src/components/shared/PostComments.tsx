@@ -14,7 +14,7 @@ import {
 import { Textarea as BaseTextarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import Loader from './Loader';
-import { multiFormatDateString } from '@/lib/utils/utils';
+import { multiFormatDateStringNoTime } from '@/lib/utils/utils';
 import { Link } from 'react-router-dom';
 import Replies from './Replies';
 import LikedItems from './LikedItems';
@@ -23,7 +23,9 @@ import { DeleteComment, DeleteFeedback } from './DeleteItems';
 import {
   useAddComment,
   useAddFeedback,
+  useGetCommentRepliesCount,
   useGetComments,
+  useGetFeedbackRepliesCount,
   useGetFeedbacks,
   useGetPostRepliesCount,
 } from '@/lib/tanstack-queries/commentsQueries';
@@ -307,6 +309,8 @@ const CommentItem = React.memo(
   }: CommentProps) => {
     const { user } = useUserContext();
     const { data: userData } = useGetUserInfo(creatorId);
+    const { data: commentRepliesCount = 0 } =
+      useGetCommentRepliesCount(commentId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dp }
       : { name: '', dpUrl: '' };
@@ -332,7 +336,7 @@ const CommentItem = React.memo(
                 {userInfo.name}
               </p>
               <p className="subtle-semibold lg:small-regular text-light-3">
-                {multiFormatDateString(createdAt)}
+                {multiFormatDateStringNoTime(createdAt)}
               </p>
             </div>
           </Link>
@@ -341,7 +345,7 @@ const CommentItem = React.memo(
           {content}
         </p>
         <div className="flex justify-between items-center ml-1">
-          <div className="flex justify-start gap-3.5">
+          <div className="flex gap-5">
             <LikedItems
               item={item}
               userId={user.id}
@@ -349,13 +353,7 @@ const CommentItem = React.memo(
               postId={postId}
               itemType="comment"
             />
-            <div
-              className={`${
-                user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
-              }`}
-            >
-              <DeleteComment commentId={commentId} postId={postId} />
-            </div>
+
             <button
               onClick={toggleReplyForm}
               className="text-gray-500 hover:text-gray-700 small-medium"
@@ -363,18 +361,30 @@ const CommentItem = React.memo(
               Reply
             </button>
           </div>
+          <div
+            className={`${
+              user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
+            }`}
+          >
+            <DeleteComment commentId={commentId} postId={postId} />
+          </div>
         </div>
-        <div>
-          <Replies
-            postAuthorId={postAuthorId}
-            parentId={commentId}
-            userId={userId}
-            isFeedback={false}
-            showReplyForm={showReplyForm}
-            toggleReplyForm={toggleReplyForm}
-            authorId={authorId}
-            postId={postId}
-          />
+        <div className="flex mt-2">
+          {(showReplyForm || commentRepliesCount > 0) && (
+            <div className="ml-5 w-[2px] mt-5 mb-4 bg-gray-700/40 transition-colors duration-200"></div>
+          )}
+          <div className="flex-1">
+            <Replies
+              postAuthorId={postAuthorId}
+              parentId={commentId}
+              userId={userId}
+              isFeedback={false}
+              showReplyForm={showReplyForm}
+              toggleReplyForm={toggleReplyForm}
+              authorId={authorId}
+              postId={postId}
+            />
+          </div>
         </div>
       </div>
     );
@@ -409,6 +419,8 @@ const FeedbackItem = React.memo(
   }: FeedbackProps) => {
     const { user } = useUserContext();
     const { data: userData } = useGetUserInfo(creatorId);
+    const { data: feedbackRepliesCount = 0 } =
+      useGetFeedbackRepliesCount(feedbackId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dp }
       : { name: '', dpUrl: '' };
@@ -434,7 +446,7 @@ const FeedbackItem = React.memo(
                 {userInfo.name}
               </p>
               <p className="subtle-semibold lg:small-regular text-light-3">
-                {multiFormatDateString(createdAt)}
+                {multiFormatDateStringNoTime(createdAt)}
               </p>
             </div>
           </Link>
@@ -443,7 +455,7 @@ const FeedbackItem = React.memo(
           {content}
         </p>
         <div className="flex justify-between items-center ml-1">
-          <div className="flex justify-start gap-3.5">
+          <div className="flex gap-5">
             <LikedItems
               item={item}
               userId={user.id}
@@ -451,13 +463,7 @@ const FeedbackItem = React.memo(
               postId={postId}
               itemType="feedback"
             />
-            <div
-              className={`${
-                user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
-              }`}
-            >
-              <DeleteFeedback feedbackId={feedbackId} postId={postId} />
-            </div>
+
             <button
               onClick={toggleReplyForm} // Toggle visibility of reply form
               className="small-medium text-gray-500 hover:text-gray-700"
@@ -465,18 +471,31 @@ const FeedbackItem = React.memo(
               Reply
             </button>
           </div>
+          <div
+            className={`${
+              user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
+            }`}
+          >
+            <DeleteFeedback feedbackId={feedbackId} postId={postId} />
+          </div>
         </div>
-        <div>
-          <Replies
-            postAuthorId={postAuthorId}
-            authorId={authorId}
-            parentId={feedbackId}
-            userId={userId}
-            isFeedback={true}
-            showReplyForm={showReplyForm}
-            toggleReplyForm={toggleReplyForm}
-            postId={postId}
-          />
+
+        <div className="flex mt-2">
+          {(showReplyForm || feedbackRepliesCount > 0) && (
+            <div className="ml-5 w-[2px] mt-5 mb-4 bg-gray-700/40 transition-colors duration-200"></div>
+          )}
+          <div className="flex-1">
+            <Replies
+              postAuthorId={postAuthorId}
+              authorId={authorId}
+              parentId={feedbackId}
+              userId={userId}
+              isFeedback={true}
+              showReplyForm={showReplyForm}
+              toggleReplyForm={toggleReplyForm}
+              postId={postId}
+            />
+          </div>
         </div>
       </div>
     );

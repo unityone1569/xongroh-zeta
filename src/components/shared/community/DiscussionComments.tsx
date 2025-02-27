@@ -13,13 +13,14 @@ import {
 } from '@/components/ui/form';
 import { Textarea as BaseTextarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { multiFormatDateString } from '@/lib/utils/utils';
+import { multiFormatDateStringNoTime } from '@/lib/utils/utils';
 import { Link } from 'react-router-dom';
 import { Models } from 'appwrite';
 import {
   useGetComments,
   useAddDiscussionComment,
   useGetPostRepliesCount,
+  useGetCommentRepliesCount,
 } from '@/lib/tanstack-queries/commentsQueries';
 import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
 import Loader from '../Loader';
@@ -186,6 +187,7 @@ const CommentItem = React.memo(
   }: CommentProps) => {
     const { user } = useUserContext();
     const { data: userData } = useGetUserInfo(creatorId);
+    const { data: repliesCount = 0 } = useGetCommentRepliesCount(commentId);
     const userInfo = userData
       ? { name: userData.name, dpUrl: userData.dp }
       : { name: '', dpUrl: '' };
@@ -210,7 +212,7 @@ const CommentItem = React.memo(
                 {userInfo.name}
               </p>
               <p className="subtle-semibold lg:small-regular text-light-3">
-                {multiFormatDateString(createdAt)}
+                {multiFormatDateStringNoTime(createdAt)}
               </p>
             </div>
           </Link>
@@ -219,7 +221,7 @@ const CommentItem = React.memo(
           {content}
         </p>
         <div className="flex justify-between items-center ml-1">
-          <div className="flex justify-start gap-3.5">
+          <div className="flex gap-5">
             <DiscussionLikedItems
               item={item}
               userId={user.id}
@@ -228,13 +230,6 @@ const CommentItem = React.memo(
               itemType="comment"
               communityId={communityId}
             />
-            <div
-              className={`${
-                user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
-              }`}
-            >
-              <DeleteComment commentId={commentId} postId={discussionId} />
-            </div>
             <button
               onClick={toggleReplyForm}
               className="text-gray-500 hover:text-gray-700 small-medium"
@@ -242,18 +237,30 @@ const CommentItem = React.memo(
               Reply
             </button>
           </div>
+          <div
+            className={`${
+              user?.id !== creatorId && user?.id !== postAuthorId && 'hidden'
+            }`}
+          >
+            <DeleteComment commentId={commentId} postId={discussionId} />
+          </div>
         </div>
-        <div>
-          <DiscussionReplies
-            postAuthorId={postAuthorId}
-            parentId={commentId}
-            userId={userId}
-            showReplyForm={showReplyForm}
-            toggleReplyForm={toggleReplyForm}
-            authorId={authorId}
-            discussionId={discussionId}
-            communityId={communityId}
-          />
+        <div className="flex mt-2">
+          {(showReplyForm || repliesCount > 0) && (
+            <div className="ml-5 w-[2px] mt-5 mb-4 bg-gray-700/40 transition-colors duration-200"></div>
+          )}
+          <div className="flex-1">
+            <DiscussionReplies
+              postAuthorId={postAuthorId}
+              parentId={commentId}
+              userId={userId}
+              showReplyForm={showReplyForm}
+              toggleReplyForm={toggleReplyForm}
+              authorId={authorId}
+              discussionId={discussionId}
+              communityId={communityId}
+            />
+          </div>
         </div>
       </div>
     );
