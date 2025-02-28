@@ -27,6 +27,7 @@ const cl = {
   projectId: appwriteConfig.databases.posts.collections.project,
   creatorId: appwriteConfig.databases.users.collections.creator,
   saveId: appwriteConfig.databases.interactions.collections.save,
+  supportId: appwriteConfig.databases.users.collections.support,
 };
 
 // Buckets
@@ -489,6 +490,86 @@ export async function getSavedCreations({
     return { documents: creationsWithDetails };
   } catch (error) {
     console.error('Error fetching saved creations:', error);
+    return { documents: [] };
+  }
+}
+
+// Get-Following-Creations
+export async function getSupportingCreations({
+  pageParam,
+  userId,
+}: {
+  pageParam: number | null;
+  userId: string;
+}) {
+  try {
+    // First get the list of creators the user is supporting
+    const supports = await databases.listDocuments(db.usersId, cl.supportId, [
+      Query.equal('creatorId', userId),
+    ]);
+
+    if (!supports?.documents.length) {
+      return { documents: [] };
+    }
+
+    // Get the list of supported creator IDs
+    const supportedCreatorIds = supports.documents[0].supportingIds || [];
+
+    if (supportedCreatorIds.length === 0) {
+      return { documents: [] };
+    }
+
+    // Query posts from supported creators with pagination
+    const queries: any[] = [
+      Query.equal('authorId', supportedCreatorIds),
+      Query.orderDesc('$createdAt'),
+      Query.limit(6),
+      Query.select([
+        '$id',
+        'content',
+        'mediaUrl',
+        'authorId',
+        'tags',
+        '$createdAt',
+      ]),
+    ];
+
+    if (pageParam) {
+      queries.push(Query.cursorAfter(pageParam.toString()));
+    }
+
+    const { documents: creations } = await databases.listDocuments(
+      db.postsId,
+      cl.creationId,
+      queries
+    );
+
+    if (!creations || creations.length === 0) {
+      return { documents: [] };
+    }
+
+    // Get author details
+    const userFetchPromises = creations.map((creation) =>
+      databases.getDocument(db.usersId, cl.creatorId, creation.authorId, [
+        Query.select(['name', 'dpUrl', 'verifiedUser']),
+      ])
+    );
+
+    const users = await Promise.all(userFetchPromises);
+
+    // Combine posts with author details
+    const creationsWithUserDetails = creations.map((creation, index) => ({
+      ...creation,
+      author: {
+        name: users[index]?.name || '',
+        dpUrl: users[index]?.dpUrl || null,
+        verifiedUser: users[index]?.verifiedUser || false,
+      },
+    }));
+
+    return { documents: creationsWithUserDetails };
+  } catch (error) {
+    console.error('Error fetching following creations:', error);
     return { documents: [] };
   }
 }

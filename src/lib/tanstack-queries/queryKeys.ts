@@ -17,6 +17,7 @@ export enum QUERY_KEYS {
   GET_SAVED_CREATIONS = 'getSavedCreations',
   GET_INFINITE_CREATIONS = 'getInfiniteCreations',
   GET_SEARCH_CREATIONS = 'getSearchCreations',
+  GET_SUPPORTING_CREATIONS = 'getSupportingCreations',
 
   GET_POSTS = 'getPosts',
 

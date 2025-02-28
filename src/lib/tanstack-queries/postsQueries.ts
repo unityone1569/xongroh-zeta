@@ -17,6 +17,7 @@ import {
   getRecentCreations,
   getSavedCreations,
   getSearchCreations,
+  getSupportingCreations,
   updateCreation,
   updateProject,
 } from '../appwrite-apis/posts';
@@ -107,7 +108,7 @@ export const useAddCreation = () => {
     mutationFn: (creation: INewCreation) => addCreation(creation),
     onSuccess: (_, { authorId }) => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_CREATIONS],
+        queryKey: [QUERY_KEYS.GET_SUPPORTING_CREATIONS],
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_CREATIONS, authorId],
@@ -138,7 +139,7 @@ export const useUpdateCreation = () => {
         queryKey: [QUERY_KEYS.GET_SAVED_CREATIONS],
       });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_CREATIONS],
+        queryKey: [[QUERY_KEYS.GET_SUPPORTING_CREATIONS]],
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_INFINITE_CREATIONS],
@@ -165,7 +166,7 @@ export const useDeletePost = () => {
     }) => deleteCreation(creationId, mediaId, authorId),
     onSuccess: (_, { authorId }) => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_CREATIONS],
+        queryKey: [[QUERY_KEYS.GET_SUPPORTING_CREATIONS]],
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_CREATIONS, authorId],
@@ -180,6 +181,25 @@ export const useDeletePost = () => {
         queryKey: [QUERY_KEYS.GET_SEARCH_CREATIONS],
       });
     },
+  });
+};
+
+// use-Get-Following-Creations
+export const useGetSupportingCreations = (userId: string) => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_SUPPORTING_CREATIONS, userId],
+    queryFn: ({ pageParam }) => getSupportingCreations({ pageParam, userId }),
+    initialPageParam: null,
+    getNextPageParam: (lastPage: any) => {
+      // If there's no data or empty results, there are no more pages
+      if (!lastPage?.documents || lastPage.documents.length === 0) {
+        return null;
+      }
+      // Use the $id of the last document as the cursor
+      const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+      return lastId;
+    },
+    enabled: !!userId,
   });
 };
 

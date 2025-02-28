@@ -28,8 +28,8 @@ const Explore = () => {
   const tabs = useMemo(
     () => [
       { name: 'post', label: 'Creations' },
-      { name: 'circle', label: 'Circles' },
       { name: 'user', label: 'Creators' },
+      { name: 'circle', label: 'Circles' },
     ],
     []
   );
