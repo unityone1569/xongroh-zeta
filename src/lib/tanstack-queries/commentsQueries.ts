@@ -240,6 +240,9 @@ export const useAddCommentReply = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_INFO],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES_COUNT, parentId],
+      });
     },
   });
 };
@@ -258,6 +261,9 @@ export const useDeleteCommentReply = () => {
     onSuccess: (_, { commentId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES, commentId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES_COUNT, commentId],
       });
     },
   });
@@ -320,6 +326,9 @@ export const useAddFeedbackReply = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_INFO],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES_COUNT, parentId],
+      });
     },
   });
 };
@@ -338,6 +347,9 @@ export const useDeleteFeedbackReply = () => {
     onSuccess: (_, { feedbackId }) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES, feedbackId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_FEEDBACK_REPLIES_COUNT, feedbackId],
       });
     },
   });
@@ -419,6 +431,9 @@ export const useAddDiscussionCommentReply = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_INFO],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_COMMENT_REPLIES_COUNT, parentId],
       });
     },
   });
