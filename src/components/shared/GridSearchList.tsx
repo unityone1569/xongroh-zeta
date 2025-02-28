@@ -5,6 +5,8 @@ import { getMediaTypeFromUrl } from '@/lib/utils/mediaUtils';
 import VideoPlayer from '@/components/shared/VideoPlayer';
 import Loader from '@/components/shared/Loader';
 import LazyImage from './LazyImage';
+import UserSupport from '@/components/shared/UserSupport';
+import { useUserContext } from '@/context/AuthContext';
 
 type GridSearchListProps = {
   items: Models.Document[];
@@ -74,6 +76,8 @@ const GridPostMedia = ({ post }: { post: Models.Document }) => {
 };
 
 const GridSearchList = ({ items, type }: GridSearchListProps) => {
+  const { user } = useUserContext(); // Add this hook
+
   if (type === 'post') {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6 lg:gap-9">
@@ -132,58 +136,87 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
 
     return (
       <ul className="grid-container overflow-hidden">
-        {sortedUsers.map((user) => (
+        {sortedUsers.map((listUser) => (
           <li
-            key={user.$id}
+            key={listUser.$id}
             className="user-card flex flex-start gap-4 bg-dark-3"
           >
             <div className="flex-shrink-0">
-              <Link to={`/profile/${user.$id}`}>
+              <Link to={`/profile/${listUser.$id}`}>
                 <LazyImage
-                  src={user.dpUrl || '/assets/icons/profile-placeholder.svg'}
-                  alt={user.name || 'User'}
+                  src={
+                    listUser.dpUrl || '/assets/icons/profile-placeholder.svg'
+                  }
+                  alt={listUser.name || 'User'}
                   className="w-14 h-14 object-cover rounded-full"
                 />
               </Link>
             </div>
             <div className="w-full flex-col">
-              <Link to={`/profile/${user.$id}`}>
-                <h3 className="base-bold line-clamp-1 flex items-center gap-1.5">
-                  {user.name || 'Unknown User'}
-                  {user?.verifiedUser && (
-                    <img
-                      src="/assets/icons/verified.svg"
-                      alt="verified"
-                      className="w-4 h-4"
+              <div className="flex justify-between items-center w-full">
+                <div className="flex-1">
+                  <Link to={`/profile/${listUser.$id}`}>
+                    {listUser?.verifiedUser ? (
+                      // Verified user version
+                      <div className="flex items-center gap-1.5">
+                        <p className="base-medium lg:body-bold text-light-1 truncate">
+                          {listUser.name || 'Unknown User'}
+                        </p>
+                        <div className="flex-shrink-0">
+                          <img
+                            src="/assets/icons/verified.svg"
+                            alt="verified"
+                            className="w-4 h-4"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      // Non-verified user version
+                      <div className="flex items-center gap-1.5">
+                        <p className="base-medium lg:body-normal text-light-2 line-clamp-1">
+                          {listUser.name || 'Unknown User'}
+                        </p>
+                      </div>
+                    )}
+                  </Link>
+
+                  <div className="flex gap-2 pt-2 justify-start items-center">
+                    <div className="flex-shrink-0 w-4">
+                      <LazyImage
+                        src="/assets/icons/profession.svg"
+                        alt="profession"
+                        className="w-4 h-4"
+                      />
+                    </div>
+                    <p className="subtle-normal line-clamp-1 lg:subtle-comment overflow-hidden text-ellipsis">
+                      {listUser?.profession || 'Creator'}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-2 pt-1 justify-start items-center">
+                    <div className="flex-shrink-0 w-4">
+                      <LazyImage
+                        src="/assets/icons/hometown.svg"
+                        alt="hometown"
+                        className="w-4 h-4"
+                      />
+                    </div>
+                    <p className="subtle-normal line-clamp-1 lg:subtle-comment">
+                      {listUser?.hometown || 'Earth'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Support Button moved to the right */}
+                {user.id !== listUser.$id && (
+                  <div className="flex-shrink-0">
+                    <UserSupport
+                      creatorId={user.id}
+                      supportingId={listUser.$id}
+                      variant="small"
                     />
-                  )}
-                </h3>
-              </Link>
-
-              <div className="flex gap-2 pt-2 justify-start items-center">
-                <div className="flex-shrink-0 w-4">
-                  <LazyImage
-                    src="/assets/icons/profession.svg"
-                    alt="profession"
-                    className="w-4 h-4"
-                  />
-                </div>
-                <p className="subtle-normal line-clamp-1 lg:subtle-comment overflow-hidden text-ellipsis">
-                  {user?.profession || 'Creator'}
-                </p>
-              </div>
-
-              <div className="flex gap-2 pt-1 justify-start items-center">
-                <div className="flex-shrink-0 w-4">
-                  <LazyImage
-                    src="/assets/icons/hometown.svg"
-                    alt="hometown"
-                    className="w-4 h-4"
-                  />
-                </div>
-                <p className="subtle-normal line-clamp-1 lg:subtle-comment">
-                  {user?.hometown || 'Earth'}
-                </p>
+                  </div>
+                )}
               </div>
             </div>
           </li>

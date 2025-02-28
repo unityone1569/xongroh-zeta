@@ -60,16 +60,16 @@ const PostCard = ({ post }: PostCardProps) => {
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <p className="base-medium lg:body-bold text-light-1 truncate">
-              {post?.author?.name}
+                {post?.author?.name}
               </p>
-              <div className='flex-shrink-0'>
-              {post?.author?.verifiedUser && (
-                <img
-                src="/assets/icons/verified.svg"
-                alt="verified"
-                className="w-4 h-4"
-                />
-              )}
+              <div className="flex-shrink-0">
+                {post?.author?.verifiedUser && (
+                  <img
+                    src="/assets/icons/verified.svg"
+                    alt="verified"
+                    className="w-4 h-4"
+                  />
+                )}
               </div>
             </div>
 

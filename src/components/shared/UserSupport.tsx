@@ -10,9 +10,14 @@ import {
 type UserSupportProps = {
   creatorId: string;
   supportingId: string;
+  variant?: 'default' | 'small';
 };
 
-const UserSupport = ({ creatorId, supportingId }: UserSupportProps) => {
+const UserSupport = ({
+  creatorId,
+  supportingId,
+  variant = 'default',
+}: UserSupportProps) => {
   const { toast } = useToast();
   const { data: isSupporting, isLoading: isSupportLoading } =
     useCheckSupportingUser(creatorId, supportingId);
@@ -61,15 +66,30 @@ const UserSupport = ({ creatorId, supportingId }: UserSupportProps) => {
 
   return (
     <div>
-      <Button
-        className={`font-semibold ${
-          isSupportingState ? 'shad-button_dark_4' : 'shad-button_primary'
-        }`}
-        onClick={handleSupporting}
-        disabled={supportPending || unsupportPending}
-      >
-        {isSupportLoading ? 'Loading...' : buttonText}
-      </Button>
+      {variant === 'default' ? (
+        <Button
+          className={`font-semibold ${
+            isSupportingState ? 'shad-button_dark_4' : 'shad-button_primary'
+          }`}
+          onClick={handleSupporting}
+          disabled={supportPending || unsupportPending}
+        >
+          {isSupportLoading ? 'Loading...' : buttonText}
+        </Button>
+      ) : (
+        <button
+          onClick={handleSupporting}
+          disabled={supportPending || unsupportPending}
+          className={`px-3 py-1.5 tiny-medium rounded-full transition-all
+            ${
+              isSupportingState
+                ? 'bg-dark-4 text-light-1 hover:bg-dark-4/80 border border-light-4 border-opacity-50'
+                : 'bg-gradient-to-r from-purple-500 to-purple-400 hover:bg-violet-600 text-light-1 border border-light-2 border-opacity-50'
+            }`}
+        >
+          {isSupportLoading ? '...' : buttonText}
+        </button>
+      )}
     </div>
   );
 };
