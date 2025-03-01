@@ -6,6 +6,7 @@ import {
   useSupport,
   useUnSupport,
 } from '@/lib/tanstack-queries/usersQueries';
+import Loader from './Loader'; // Add this import
 
 type UserSupportProps = {
   creatorId: string;
@@ -74,20 +75,20 @@ const UserSupport = ({
           onClick={handleSupporting}
           disabled={supportPending || unsupportPending}
         >
-          {isSupportLoading ? 'Loading...' : buttonText}
+          {isSupportLoading ? <Loader size="sm" /> : buttonText}
         </Button>
       ) : (
         <button
           onClick={handleSupporting}
           disabled={supportPending || unsupportPending}
-          className={`px-3 py-1.5 tiny-medium rounded-full transition-all
+          className={`px-3 py-1.5 tiny-medium rounded-full transition-all flex items-center justify-center
             ${
               isSupportingState
                 ? 'bg-dark-4 text-light-1 hover:bg-dark-4/80 border border-light-4 border-opacity-50'
                 : 'bg-gradient-to-r from-purple-500 to-purple-400 hover:bg-violet-600 text-light-1 border border-light-2 border-opacity-50'
             }`}
         >
-          {isSupportLoading ? '...' : buttonText}
+          {isSupportLoading ? <Loader size="sm" /> : buttonText}
         </button>
       )}
     </div>
