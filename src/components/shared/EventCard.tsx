@@ -212,8 +212,8 @@ const EventCard = ({ event, creator }: EventCardProps) => {
             onClick={handleInterestClick}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 ${
               isInterested
-                ? 'bg-dark-3 hover:bg-dark-4'
-                : 'bg-dark-4 hover:bg-dark-3'
+                ? 'bg-dark-4 hover:bg-dark-3'
+                : 'bg-violet-800 hover:bg-violet-700'
             } rounded-lg text-light-1 tiny-normal-mutate lg:subtle-normal transition border border-opacity-50 border-light-4`}
           >
             <img
@@ -223,7 +223,9 @@ const EventCard = ({ event, creator }: EventCardProps) => {
                   : '/assets/icons/like-1.svg'
               }
               alt="like"
-              className="w-3.5 h-3.5"
+              className={
+                isInterested ? 'w-3.5 h-3.5 ' : 'w-3.5 h-3.5 invert-white'
+              }
             />
             {isInterested ? 'Interested' : 'Interest'}
           </button>

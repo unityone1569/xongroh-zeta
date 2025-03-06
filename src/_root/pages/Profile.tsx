@@ -297,7 +297,7 @@ const ProfileFeed = ({
         }
         return (
           <div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-9">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-6 lg:gap-9">
               {events.pages.every((page) => page.documents.length === 0) ? (
                 <div className="pt-6 items-start justify-start text-start">
                   <p className="text-sm">"No events created yet..."</p>

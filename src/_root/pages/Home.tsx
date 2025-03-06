@@ -120,7 +120,7 @@ const Home = () => {
   };
 
   const renderExploreButton = () => (
-    <Link to="/explore" className="pt-6">
+    <Link to="/explore" className="pt-6 lg:pt-9">
       <Button className="shad-button_dark_4 px-8">Explore</Button>
     </Link>
   );
