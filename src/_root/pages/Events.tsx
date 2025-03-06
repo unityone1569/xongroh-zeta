@@ -27,11 +27,10 @@ const Events = () => {
   const { data: events, isPending } = useGetEvents(filter, creatorId);
   const { data: interestedEvents, isPending: isInterestedPending } =
     useGetUserInterestedEvents(user?.id || '');
- 
 
   const filters = [
     { label: 'Live', value: 'live' },
-    { label: 'Upcoming', value: 'upcoming' },
+    { label: 'Up Next', value: 'upcoming' },
     { label: 'Archived', value: 'archived' },
     // Only show My Events tab to verified users
     ...(user?.verifiedUser ? [{ label: 'My Events', value: 'my-events' }] : []),
@@ -51,7 +50,7 @@ const Events = () => {
         <h2 className="h3-bold md:h2-bold w-full mt-16 lg:mt-0">Events</h2>
 
         {/* Tabs with horizontal scroll */}
-        <div className="w-full mt-4 overflow-x-auto custom-scrollbar">
+        <div className="w-full mt-4 overflow-x-auto custom-scrollbar pb-1">
           <div className="flex gap-2 min-w-max pb-2">
             {filters.map((f) => (
               <button
