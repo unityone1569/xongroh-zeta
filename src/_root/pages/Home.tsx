@@ -198,29 +198,33 @@ const Home = () => {
     <div className="home-container">
       <div className="home-posts">
         <div className="flex flex-col gap-9 w-full">
-          <h2 className="h3-bold mt-16 lg:mt-0 md:h2-bold text-left w-full">
-            Creation Feed
-          </h2>
+          <div className="flex flex-col gap-4 mt-16 lg:mt-0">
+            <h2 className="h3-bold md:h2-bold text-left">Creation Feed</h2>
 
-          <div className="flex-start w-full max-w-5xl">
-            {TABS.map((tab) => (
-              <button
-                key={tab.name}
-                onClick={() => setActiveTab(tab.name)}
-                className={`py-2 px-3 font-semibold ${
-                  activeTab === tab.name
-                    ? 'underline text-primary-500 underline-offset-8'
-                    : 'hover:text-primary-500'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+            <Link to="/events" className="py-3.5 pt-6 lg:py-9 pl-1">
+              <Button className="shad-button_dark_4">Events</Button>
+            </Link>
+
+            <div className="flex-start">
+              {TABS.map((tab) => (
+                <button
+                  key={tab.name}
+                  onClick={() => setActiveTab(tab.name)}
+                  className={`py-2 px-3 font-semibold ${
+                    activeTab === tab.name
+                      ? 'underline text-primary-500 underline-offset-8'
+                      : 'hover:text-primary-500'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div className="flex flex-col flex-1 gap-9 w-full max-w-5xl pb-7">
-          {renderContent()}
+          <div className="flex flex-col flex-1 gap-9 w-full max-w-5xl pb-7">
+            {renderContent()}
+          </div>
         </div>
       </div>
       <WelcomeDialog open={showWelcome} onOpenChange={handleWelcomeChange} />

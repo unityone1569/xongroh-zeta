@@ -10,6 +10,9 @@ import LazyImage from '@/components/shared/LazyImage';
 import { useCreateConversation } from '@/lib/tanstack-queries/conversationsQueries';
 import { useGetUserCreations } from '@/lib/tanstack-queries/postsQueries';
 import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
+import { useGetUserEvents } from '@/lib/tanstack-queries/eventsQueries';
+import EventCard from '@/components/shared/EventCard';
+import { IEvent } from '@/types';
 
 interface ProfileCardItemProps {
   creatorId: string;
@@ -206,77 +209,123 @@ const ProfileCardItem = ({
   );
 };
 
-const ProfileFeed = ({ userId }: { userId: string }) => {
+const getTabs = (isVerified: boolean) => {
+  const baseTabs = [{ name: 'creation', label: 'Creations' }];
+
+  if (isVerified) {
+    baseTabs.push({ name: 'event', label: 'Events' });
+  }
+
+  return baseTabs;
+};
+
+const ProfileFeed = ({
+  userId,
+  isVerified,
+}: {
+  userId: string;
+  isVerified: boolean;
+}) => {
   const [activeTab, setActiveTab] = useState('creation');
+  const tabs = getTabs(isVerified);
 
-  const tabs = useMemo(
-    () => [
-      { name: 'creation', label: 'Creations' },
-      { name: 'tribe', label: 'Tribe' },
-      { name: 'store', label: 'Store' },
-      { name: 'event', label: 'Events' },
-    ],
-    []
-  );
+  // Add events query
+  const {
+    data: events,
+    fetchNextPage: fetchNextEvents,
+    hasNextPage: hasNextEvents,
+  } = useGetUserEvents(userId);
 
-  const { ref, inView } = useInView();
+  // Keep existing posts query
   const {
     data: posts,
     fetchNextPage,
     hasNextPage,
   } = useGetUserCreations(userId);
 
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [inView, hasNextPage, fetchNextPage]);
+  const { ref, inView } = useInView();
 
-  if (!posts) {
-    return (
-      <div className="flex-center w-full h-full">
-        <Loader />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (inView) {
+      if (activeTab === 'creation' && hasNextPage) {
+        fetchNextPage();
+      } else if (activeTab === 'event' && hasNextEvents) {
+        fetchNextEvents();
+      }
+    }
+  }, [
+    inView,
+    activeTab,
+    hasNextPage,
+    hasNextEvents,
+    fetchNextPage,
+    fetchNextEvents,
+  ]);
 
   const renderContent = () => {
-    if (activeTab === 'creation') {
-      return (
-        <div>
-          <div className="w-full max-w-5xl">
-            {posts.pages.every((page) => page.documents.length === 0) ? (
-              <div className="pt-6 items-start justify-start text-start">
-                <p className="text-sm">"The best is yet to come..."</p>
-              </div>
-            ) : (
-              posts.pages.map((page, pageIndex) =>
-                page.documents.map((post) => (
-                  <div
-                    key={`${post.$id}-${pageIndex}`}
-                    className="flex flex-col items-start pb-8"
-                  >
-                    <PostCard key={post.$id} post={post} />
-                  </div>
-                ))
-              )
-            )}
-          </div>
-          {hasNextPage && (
-            <div ref={ref} className="mt-10">
-              <Loader />
+    switch (activeTab) {
+      case 'creation':
+        if (!posts) {
+          return <Loader />;
+        }
+        return (
+          <div>
+            <div className="w-full max-w-5xl">
+              {posts.pages.every((page) => page.documents.length === 0) ? (
+                <div className="pt-6 items-start justify-start text-start">
+                  <p className="text-sm">"The best is yet to come..."</p>
+                </div>
+              ) : (
+                posts.pages.map((page, pageIndex) =>
+                  page.documents.map((post) => (
+                    <div
+                      key={`${post.$id}-${pageIndex}`}
+                      className="flex flex-col items-start pb-8"
+                    >
+                      <PostCard key={post.$id} post={post} />
+                    </div>
+                  ))
+                )
+              )}
             </div>
-          )}
-        </div>
-      );
+          </div>
+        );
+
+      case 'event':
+        if (!events) {
+          return <Loader />;
+        }
+        return (
+          <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-9">
+              {events.pages.every((page) => page.documents.length === 0) ? (
+                <div className="pt-6 items-start justify-start text-start">
+                  <p className="text-sm">"No events created yet..."</p>
+                </div>
+              ) : (
+                events.pages.map((page) =>
+                  page.documents.map((event) => (
+                    <EventCard
+                      key={event.$id}
+                      event={event as unknown as IEvent}
+                    />
+                  ))
+                )
+              )}
+            </div>
+          </div>
+        );
+
+      default:
+        return (
+          <div className="pt-6">
+            <p className="text-sm">"Coming soon..."</p>
+          </div>
+        );
     }
-    return (
-      <div className="pt-6">
-        <p className="text-sm">"Coming soon..."</p>
-      </div>
-    );
   };
 
+  // Keep existing JSX
   return (
     <>
       <div className="flex-start lg:mt-8 lg:mb-10 whitespace-nowrap pl-1 sm:pl-3 lg:pl-9 lg:overflow-hidden">
@@ -296,6 +345,12 @@ const ProfileFeed = ({ userId }: { userId: string }) => {
       </div>
       <div className="mx-3 mt-8 mb-20 pl-1 sm:pl-3 lg:pl-9">
         {renderContent()}
+        {((activeTab === 'creation' && hasNextPage) ||
+          (activeTab === 'event' && hasNextEvents)) && (
+          <div ref={ref} className="mt-10">
+            <Loader />
+          </div>
+        )}
       </div>
     </>
   );
@@ -333,7 +388,10 @@ const Profile = () => {
           userId={id || ''}
           creatorId={user?.id}
         />
-        <ProfileFeed userId={id || ''} />
+        <ProfileFeed
+          userId={id || ''}
+          isVerified={profileUser?.verifiedUser || false}
+        />
       </div>
     </div>
   );

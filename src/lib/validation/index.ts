@@ -144,10 +144,60 @@ export const NewPasswordValidation = z.object({
     .min(8, { message: 'Password must be at least 8 characters.' }),
 });
 
-// Add type to validation schema
 export const DiscussionValidation = z.object({
   content: z.string().min(1),
   file: z.array(z.any()),
   tags: z.string(),
   type: z.enum(['Discussion', 'Help', 'Collab']),
+});
+
+export const EventValidation = z.object({
+  title: z
+    .string()
+    .min(3, { message: 'Title must be at least 3 characters.' })
+    .max(250, { message: 'Title should not exceed 250 characters.' }),
+  description: z
+    .string()
+    .min(10, { message: 'Description must be at least 10 characters.' })
+    .max(3000, { message: 'Description should not exceed 3000 characters.' }),
+  venue: z
+    .string()
+    .min(3, { message: 'Venue must be at least 3 characters.' })
+    .max(250, { message: 'Venue should not exceed 250 characters.' }),
+  dateTime: z.string().refine((date) => new Date(date) > new Date(), {
+    message: 'Event date must be in the future',
+  }),
+  type: z
+    .enum([
+      'Exhibition',
+      'Concert',
+      'Live Performance',
+      'Workshop',
+      'Masterclass',
+      'Meetup',
+      'Launch Event',
+      'Competition',
+      'Award',
+      'Fair',
+      'Webinar',
+      'Other',
+    ])
+    .optional(),
+  imageFile: z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(
+          file.type
+        ),
+      { message: 'Invalid image type. Supported formats: JPEG, JPG, PNG, WEBP' }
+    )
+    .optional(),
+  imageUrl: z.string().optional(),
+  imageId: z.string().optional(),
+  bookingLink: z
+    .string()
+    .url({ message: 'Please enter a valid URL' })
+    .optional()
+    .or(z.literal('')),
 });

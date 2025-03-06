@@ -24,6 +24,10 @@ import {
   TopicPage,
   AddDiscussion,
   EditDiscussion,
+  Events,
+  AddEvent,
+  EditEvent,
+  EventDetails,
   DiscussionDetailsPage,
   BadgeDetailsPage,
 } from './_root/pages';
@@ -96,6 +100,12 @@ const App = () => {
               path="/discussions/:id"
               element={<DiscussionDetailsPage />}
             />
+
+            {/* Events */}
+            <Route path="/events" element={<Events />} />
+            <Route path="/add-event" element={<AddEvent />} />
+            <Route path="/update-event/:id" element={<EditEvent />} />
+            <Route path="/events/:id" element={<EventDetails />} />
           </Route>
         </Route>
 

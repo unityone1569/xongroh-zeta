@@ -26,6 +26,7 @@ interface AppwriteConfig {
     communities: DatabaseConfig;
     conversations: DatabaseConfig;
     notifications: DatabaseConfig;
+    events: DatabaseConfig;
     temps: DatabaseConfig;
   };
 
@@ -56,6 +57,7 @@ interface AppwriteConfig {
     projectBucket: string;
     communityBucket: string;
     discussionBucket: string;
+    eventBucket: string;
   };
 
   oauth: {
@@ -142,6 +144,15 @@ export const appwriteConfig: AppwriteConfig = {
       },
     },
 
+    events: {
+      databaseId: import.meta.env.VITE_APPWRITE_EVENTS_DATABASE_ID,
+      collections: {
+        event: import.meta.env.VITE_APPWRITE_EVENT_COLLECTION_ID,
+        interestedEvents: import.meta.env
+          .VITE_APPWRITE_INTERESTED_EVENTS_COLLECTION_ID,
+      },
+    },
+
     temps: {
       databaseId: import.meta.env.VITE_APPWRITE_TEMPS_DATABASE_ID,
       collections: {
@@ -211,6 +222,7 @@ export const appwriteConfig: AppwriteConfig = {
     projectBucket: import.meta.env.VITE_APPWRITE_PROJECT_BUCKET_ID,
     communityBucket: import.meta.env.VITE_APPWRITE_COMMUNITY_BUCKET_ID,
     discussionBucket: import.meta.env.VITE_APPWRITE_DISCUSSION_BUCKET_ID,
+    eventBucket: import.meta.env.VITE_APPWRITE_EVENT_BUCKET_ID,
   },
 
   oauth: {

@@ -92,6 +92,9 @@
   .tiny-medium {
     @apply text-[10px] font-medium leading-[140%];
   }
+  .tiny-normal-mutate {
+    @apply text-[11px] font-normal leading-[140%];
+  }
 
   /* UTILITIES */
   .invert-white {

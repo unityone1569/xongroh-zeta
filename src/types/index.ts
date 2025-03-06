@@ -137,3 +137,44 @@ export interface INotification {
   message: string;
   isRead: boolean;
 }
+
+export interface INewEvent {
+  title: string;
+  description: string;
+  organiser: string;
+  venue: string;
+  dateTime: string;
+  type?: string;
+  imageFile?: File;
+  bookingLink?: URL;
+  creatorId: string;
+}
+
+export interface IUpdateEvent extends Omit<INewEvent, 'creatorId'> {
+  eventId: string;
+  imageUrl?: URL;
+  imageId?: string;
+}
+
+export interface IEvent extends Omit<IUpdateEvent, 'imageFile'> {
+  $id: string;
+  creatorId: string;
+  creator?: IUser;
+  $createdAt: string;
+  $updatedAt: string;
+}
+
+export type EventType =
+  | 'Exhibition'
+  | 'Concert'
+  | 'Live Performance'
+  | 'Cultural Festival'
+  | 'Workshop'
+  | 'Masterclass'
+  | 'Meetup'
+  | 'Launch Event'
+  | 'Competition'
+  | 'Award'
+  | 'Fair'
+  | 'Webinar'
+  | 'Other';

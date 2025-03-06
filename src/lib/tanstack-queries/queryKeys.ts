@@ -75,4 +75,12 @@ export enum QUERY_KEYS {
   GET_CONVERSATIONS = 'getConversations',
   SEARCH_MESSAGES = 'searchMessages',
   GET_SENDER_INFO = 'getSenderInfo',
+
+  // EVENTS KEYS
+  GET_EVENTS = 'getEvents',
+  GET_EVENT_BY_ID = 'getEventById',
+  GET_USER_INTERESTED_EVENTS = 'getUserInterestedEvents',
+  GET_INTERESTED_EVENTS_USERS = 'getInterestedEventsUsers',
+  CHECK_USER_INTERESTED_EVENT = 'checkUserInterestedEvent',
+  GET_USER_EVENTS = 'getEvents',
 }

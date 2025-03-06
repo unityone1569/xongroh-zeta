@@ -186,6 +186,7 @@ const SingleFileUploader = ({
       'image/png': ['.png'],
       'image/jpeg': ['.jpeg', '.jpg'],
       'image/gif': ['.gif'],
+      'image/webp': ['.webp'],
     },
     maxSize: MAX_SINGLE_FILE_SIZE, // Add maxSize option
     onDropRejected: (fileRejections) => {
