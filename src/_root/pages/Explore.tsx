@@ -222,7 +222,7 @@ const Explore = () => {
         events?.pages.every((page) => page.documents.length === 0);
 
       return (
-        <div className="flex flex-wrap w-full mt-4 mb-10">
+        <div className="flex flex-wrap w-full mt-4 mb-10 ">
           {isSearchActive ? (
             <SearchResult
               isSearchFetching={isSearchFetchingEvents}
@@ -235,7 +235,10 @@ const Explore = () => {
             </p>
           ) : (
             events?.pages.map((page, index) => (
-              <div key={`page-${index}`} className="w-full">
+              <div
+                key={`page-${index}`}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-6 lg:gap-9"
+              >
                 {page.documents.map((event) => (
                   <EventCard
                     key={event.$id}
