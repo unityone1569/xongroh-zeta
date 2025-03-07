@@ -81,7 +81,7 @@ const EventCard = ({ event, creator }: EventCardProps) => {
   const displayCreator = creator || event?.creator;
 
   return (
-    <div className="post-card bg-dark-2 rounded-2xl overflow-hidden">
+    <div className="bg-dark-2 rounded-2xl border  border-light-4 border-opacity-50 px-3 py-5 lg:p-7 w-full max-w-screen-sm;">
       {/* Image Container with Badges */}
       <div className="relative">
         <LazyImage
@@ -100,7 +100,7 @@ const EventCard = ({ event, creator }: EventCardProps) => {
         </div>
 
         {/* Date Badge - Top Right */}
-        <div className="absolute top-4 left-4 bg-violet-600 px-3 py-1.5 rounded-lg flex flex-col items-center">
+        <div className="absolute top-0 left-4 bg-violet-600 px-3 py-2 rounded-b-md flex flex-col items-center">
           <span className="text-light-1 body-bold xl:h3-bold">
             {format(new Date(event?.dateTime), 'dd')}
           </span>

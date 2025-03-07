@@ -80,7 +80,7 @@ const EventDetails = () => {
             />
 
             {/* Date Badge */}
-            <div className="absolute top-5 left-5 bg-violet-600 px-3 py-1.5 rounded-lg flex flex-col items-center">
+            <div className="absolute top-0 left-5 bg-violet-600 px-3 py-2 rounded-b-md flex flex-col items-center">
               <span className="text-light-1 body-bold xl:h3-bold">
                 {format(new Date(event?.dateTime || ''), 'dd')}
               </span>

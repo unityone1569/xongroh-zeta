@@ -46,7 +46,7 @@ const Events = () => {
 
   return (
     <div className="explore-container">
-      <div className="explore-inner_container">
+      <div className="explore-inner_container mb-3 sm:mb-0">
         <h2 className="h3-bold md:h2-bold w-full mt-16 lg:mt-0">Events</h2>
 
         {/* Tabs with horizontal scroll */}
