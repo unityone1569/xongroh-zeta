@@ -222,7 +222,7 @@ const Explore = () => {
         events?.pages.every((page) => page.documents.length === 0);
 
       return (
-        <div className="flex flex-wrap w-full mt-4">
+        <div className="flex flex-wrap w-full mt-4 mb-10">
           {isSearchActive ? (
             <SearchResult
               isSearchFetching={isSearchFetchingEvents}
