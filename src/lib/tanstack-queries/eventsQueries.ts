@@ -110,12 +110,19 @@ export const useAddInterestedEvent = () => {
   return useMutation({
     mutationFn: ({ eventId, userId }: { eventId: string; userId: string }) =>
       addInterestedEvent(eventId, userId),
-    onSuccess: (eventId, userId) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_EVENTS],
       });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.CHECK_USER_INTERESTED_EVENT, eventId, userId],
+        queryKey: [
+          QUERY_KEYS.CHECK_USER_INTERESTED_EVENT,
+          data.eventId,
+          data.userId,
+        ],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_INTERESTED_EVENTS_USERS, data.eventId],
       });
     },
   });
@@ -177,8 +184,7 @@ export const useGetUserEvents = (userId: string) => {
     queryKey: [QUERY_KEYS.GET_USER_EVENTS, userId],
     queryFn: ({ pageParam }) => getUserEvents(userId, pageParam),
     initialPageParam: null,
-    getNextPageParam: (lastPage) =>
-      lastPage.hasMore ? null : undefined,
+    getNextPageParam: (lastPage) => (lastPage.hasMore ? null : undefined),
     select: (data) => ({
       pages: data.pages,
       pageParams: data.pageParams,

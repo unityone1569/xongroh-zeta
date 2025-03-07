@@ -216,6 +216,23 @@ export async function deleteEvent(eventId: string, imageId?: string) {
 // Add Interested Event
 export async function addInterestedEvent(eventId: string, userId: string) {
   try {
+    // First check if the user is already interested in this event
+    const existingInterest = await databases.listDocuments(
+      db.eventsId,
+      cl.interestedEventsId,
+      [
+        Query.equal('eventId', eventId),
+        Query.equal('userId', userId),
+        Query.limit(1),
+      ]
+    );
+
+    // If already interested, return the existing interest
+    if (existingInterest.documents.length > 0) {
+      return existingInterest.documents[0];
+    }
+
+    // If not interested, create new interest
     const interestedEvent = await databases.createDocument(
       db.eventsId,
       cl.interestedEventsId,

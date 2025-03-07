@@ -28,8 +28,10 @@ const EventCard = ({ event, creator }: EventCardProps) => {
   const [interestedEventId, setInterestedEventId] = useState('');
 
   // Interest mutations
-  const { mutate: addInterest } = useAddInterestedEvent();
-  const { mutate: removeInterest } = useDeleteInterestedEvent();
+  const { mutate: addInterest, isPending: isAddingInterest } =
+    useAddInterestedEvent();
+  const { mutate: removeInterest, isPending: isRemovingInterest } =
+    useDeleteInterestedEvent();
 
   // Check if user is interested
   const { data: interestCheck } = useCheckUserInterestedEvent(
@@ -57,21 +59,30 @@ const EventCard = ({ event, creator }: EventCardProps) => {
     }
   }, [interestCheck]);
 
-  // Handle interest click
-  const handleInterestClick = () => {
+  // Update the handleInterestClick function
+  const handleInterestClick = async () => {
     if (!user) {
-      // Handle not logged in case - maybe redirect to login
       window.location.href = '/sign-in';
       return;
     }
 
-    if (isInterested && interestedEventId) {
-      removeInterest(interestedEventId);
-      setIsInterested(false);
-      setInterestedEventId('');
-    } else {
-      addInterest({ eventId: event.$id, userId: user.id });
-      setIsInterested(true);
+    try {
+      if (isInterested && interestedEventId) {
+        removeInterest(interestedEventId);
+        setIsInterested(false);
+        setInterestedEventId('');
+      } else {
+        addInterest({
+          eventId: event.$id,
+          userId: user.id,
+        });
+        setIsInterested(true);
+        // Note: You might need to fetch the new interestedEventId separately
+        // or modify your mutation to return it
+      }
+    } catch (error) {
+      console.error('Error handling interest:', error);
+      // Optionally show an error message to user
     }
   };
 
@@ -210,23 +221,31 @@ const EventCard = ({ event, creator }: EventCardProps) => {
           </button>
           <button
             onClick={handleInterestClick}
+            disabled={isAddingInterest || isRemovingInterest}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 ${
               isInterested
                 ? 'bg-dark-4 hover:bg-dark-3'
                 : 'bg-violet-800 hover:bg-violet-700'
-            } rounded-lg text-light-1 tiny-normal-mutate lg:subtle-normal transition border border-opacity-50 border-light-4`}
+            } rounded-lg text-light-1 tiny-normal-mutate lg:subtle-normal transition border border-opacity-50 border-light-4 ${
+              (isAddingInterest || isRemovingInterest) &&
+              'opacity-50 cursor-not-allowed'
+            }`}
           >
-            <img
-              src={
-                isInterested
-                  ? '/assets/icons/liked-1.svg'
-                  : '/assets/icons/like-1.svg'
-              }
-              alt="like"
-              className={
-                isInterested ? 'w-3.5 h-3.5 ' : 'w-3.5 h-3.5 invert-white'
-              }
-            />
+            {isAddingInterest || isRemovingInterest ? (
+              <div className="w-3.5 h-3.5 border-2 border-light-1 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <img
+                src={
+                  isInterested
+                    ? '/assets/icons/liked-1.svg'
+                    : '/assets/icons/like-1.svg'
+                }
+                alt="like"
+                className={
+                  isInterested ? 'w-3.5 h-3.5' : 'w-3.5 h-3.5 invert-white'
+                }
+              />
+            )}
             {isInterested ? 'Interested' : 'Interest'}
           </button>
         </div>
