@@ -421,10 +421,12 @@ export async function checkUserInterestedEvent(
 // Get User Events
 export async function getUserEvents(userId: string, pageParam?: string | null) {
   try {
+    const now = new Date().toISOString();
     let queries = [
       Query.equal('creatorId', userId),
+      Query.greaterThan('dateTime', now),
       Query.orderAsc('dateTime'),
-      Query.limit(10),
+      Query.limit(6),
     ];
 
     if (pageParam) {
@@ -479,6 +481,95 @@ export async function getUserEvents(userId: string, pageParam?: string | null) {
       lastId: null,
       hasMore: false,
     };
+  }
+}
+
+export async function getSearchEvents(searchTerm: string) {
+  try {
+    const { documents: events } = await databases.listDocuments(
+      db.eventsId,
+      cl.eventId,
+      [Query.search('title', searchTerm)]
+    );
+
+    if (!events || events.length === 0) {
+      return { documents: [] };
+    }
+
+    // Fetch creator details in parallel
+    const creatorFetchPromises = events.map((event) =>
+      databases.getDocument(db.usersId, cl.creatorId, event.creatorId, [
+        Query.select(['name', 'dpUrl', 'verifiedUser']),
+      ])
+    );
+
+    const creators = await Promise.all(creatorFetchPromises);
+
+    // Combine events with creator details
+    const eventsWithCreators = events.map((event, index) => ({
+      ...event,
+      creator: {
+        name: creators[index]?.name || '',
+        dpUrl: creators[index]?.dpUrl || null,
+        verifiedUser: creators[index]?.verifiedUser || false,
+      },
+    }));
+
+    return { documents: eventsWithCreators };
+  } catch (error) {
+    console.error('Error searching events:', error);
+    return { documents: [] };
+  }
+}
+
+// Get Upcoming Events
+export async function getUpcomingEvents({ pageParam }: { pageParam?: string }) {
+  try {
+    const now = new Date().toISOString();
+    let queries = [
+      Query.greaterThan('dateTime', now),
+      Query.orderAsc('dateTime'),
+      Query.limit(6),
+    ];
+
+    if (pageParam) {
+      queries.push(Query.cursorAfter(pageParam));
+    }
+
+    // Fetch events
+    const { documents: events } = await databases.listDocuments(
+      db.eventsId,
+      cl.eventId,
+      queries
+    );
+
+    if (!events || events.length === 0) {
+      return { documents: [] };
+    }
+
+    // Fetch creator details in parallel
+    const creatorFetchPromises = events.map((event) =>
+      databases.getDocument(db.usersId, cl.creatorId, event.creatorId, [
+        Query.select(['name', 'dpUrl', 'verifiedUser']),
+      ])
+    );
+
+    const creators = await Promise.all(creatorFetchPromises);
+
+    // Merge event data with creator details
+    const eventsWithCreators = events.map((event, index) => ({
+      ...event,
+      creator: {
+        name: creators[index]?.name || '',
+        dpUrl: creators[index]?.dpUrl || null,
+        verifiedUser: creators[index]?.verifiedUser || false,
+      },
+    }));
+
+    return { documents: eventsWithCreators };
+  } catch (error) {
+    console.error('Error fetching upcoming events:', error);
+    return { documents: [] };
   }
 }
 

@@ -83,4 +83,6 @@ export enum QUERY_KEYS {
   GET_INTERESTED_EVENTS_USERS = 'getInterestedEventsUsers',
   CHECK_USER_INTERESTED_EVENT = 'checkUserInterestedEvent',
   GET_USER_EVENTS = 'getEvents',
+  GET_SEARCH_EVENTS = 'getSearchEvents',
+  GET_UPCOMING_EVENTS = 'getUpcomingEvents',
 }

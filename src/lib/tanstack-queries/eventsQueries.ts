@@ -17,6 +17,8 @@ import {
   getInterestedEventsUsersById,
   checkUserInterestedEvent,
   getUserEvents,
+  getSearchEvents,
+  getUpcomingEvents,
 } from '../appwrite-apis/events';
 import { INewEvent, IUpdateEvent } from '@/types';
 
@@ -64,6 +66,9 @@ export const useCreateEvent = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_EVENTS],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_UPCOMING_EVENTS],
+      });
     },
   });
 };
@@ -83,6 +88,9 @@ export const useUpdateEvent = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_EVENTS],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_UPCOMING_EVENTS],
+      });
     },
   });
 };
@@ -99,6 +107,9 @@ export const useDeleteEvent = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_EVENTS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_UPCOMING_EVENTS],
       });
     },
   });
@@ -196,5 +207,34 @@ export const useGetUserEvents = (userId: string) => {
         return [...acc, ...uniqueEvents];
       }, []),
     }),
+  });
+};
+
+export const useSearchEvents = (searchTerm: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_SEARCH_EVENTS, searchTerm],
+    queryFn: () => {
+      if (!searchTerm.trim()) {
+        return { documents: [] };
+      }
+      return getSearchEvents(searchTerm);
+    },
+    enabled: searchTerm.length >= 2,
+  });
+};
+
+// Use-Get-Upcoming-Events
+export const useGetUpcomingEvents = () => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_UPCOMING_EVENTS],
+    queryFn: ({ pageParam }) => getUpcomingEvents({ pageParam }),
+    initialPageParam: null,
+    getNextPageParam: (lastPage: any) => {
+      if (!lastPage?.documents || lastPage.documents.length === 0) {
+        return null;
+      }
+      const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+      return lastId;
+    },
   });
 };

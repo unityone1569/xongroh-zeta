@@ -15,21 +15,28 @@ import {
   useGetCommunities,
   useGetSearchCommunities,
 } from '@/lib/tanstack-queries/communityQueries';
+import {
+  useGetUpcomingEvents,
+  useSearchEvents,
+} from '@/lib/tanstack-queries/eventsQueries';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
+import EventCard from '@/components/shared/EventCard';
+import { IEvent } from '@/types';
 
 const Explore = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [activeTab, setActiveTab] = useState<'post' | 'user' | 'circle'>(
-    'post'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'post' | 'user' | 'circle' | 'event'
+  >('post');
 
   const tabs = useMemo(
     () => [
       { name: 'post', label: 'Creations' },
       { name: 'user', label: 'Creators' },
       { name: 'circle', label: 'Circles' },
+      { name: 'event', label: 'Events' }, // Add events tab
     ],
     []
   );
@@ -59,6 +66,13 @@ const Explore = () => {
     hasNextPage: hasMoreCommunities,
   } = useGetCommunities();
 
+  // Fetch events
+  const {
+    data: events,
+    fetchNextPage: fetchNextEvents,
+    hasNextPage: hasMoreEvents,
+  } = useGetUpcomingEvents();
+
   // Search posts
   const { data: searchedPosts, isFetching: isSearchFetchingPosts } =
     useGetSearchCreations(debouncedValue);
@@ -71,11 +85,16 @@ const Explore = () => {
   const { data: searchedCommunities, isFetching: isSearchFetchingCommunities } =
     useGetSearchCommunities(debouncedValue);
 
+  // Search events
+  const { data: searchedEvents, isFetching: isSearchFetchingEvents } =
+    useSearchEvents(debouncedValue);
+
   useEffect(() => {
     if (loadMoreInView && !searchValue) {
       if (activeTab === 'post') fetchNextPosts();
       if (activeTab === 'user') fetchNextUsers();
       if (activeTab === 'circle') fetchNextCommunities();
+      if (activeTab === 'event') fetchNextEvents();
     }
   }, [
     loadMoreInView,
@@ -84,6 +103,7 @@ const Explore = () => {
     fetchNextPosts,
     fetchNextUsers,
     fetchNextCommunities,
+    fetchNextEvents,
   ]);
 
   const renderContent = () => {
@@ -194,6 +214,45 @@ const Explore = () => {
         </div>
       );
     }
+
+    if (activeTab === 'event') {
+      const isSearchActive = searchValue.trim() !== '';
+      const noEvents =
+        !isSearchActive &&
+        events?.pages.every((page) => page.documents.length === 0);
+
+      return (
+        <div className="flex flex-wrap w-full mt-4">
+          {isSearchActive ? (
+            <SearchResult
+              isSearchFetching={isSearchFetchingEvents}
+              searchedItems={searchedEvents}
+              type="event"
+            />
+          ) : noEvents ? (
+            <p className="text-light-4 text-center pl-1 w-full">
+              No upcoming events found...
+            </p>
+          ) : (
+            events?.pages.map((page, index) => (
+              <div key={`page-${index}`} className="w-full">
+                {page.documents.map((event) => (
+                  <EventCard
+                    key={event.$id}
+                    event={event as unknown as IEvent}
+                  />
+                ))}
+              </div>
+            ))
+          )}
+          {hasMoreEvents && !searchValue && (
+            <div ref={loadMoreRef} className="mt-10 w-full">
+              <Loader />
+            </div>
+          )}
+        </div>
+      );
+    }
   };
 
   return (
@@ -220,7 +279,7 @@ const Explore = () => {
             <button
               key={tab.name}
               onClick={() =>
-                setActiveTab(tab.name as 'post' | 'user' | 'circle')
+                setActiveTab(tab.name as 'post' | 'user' | 'circle' | 'event')
               }
               className={`p-2 px-3 font-semibold ${
                 activeTab === tab.name

@@ -7,10 +7,12 @@ import Loader from '@/components/shared/Loader';
 import LazyImage from './LazyImage';
 import UserSupport from '@/components/shared/UserSupport';
 import { useUserContext } from '@/context/AuthContext';
+import EventCard from './EventCard';
+import { IEvent } from '@/types';
 
 type GridSearchListProps = {
   items: Models.Document[];
-  type: 'post' | 'user' | 'circle';
+  type: 'post' | 'user' | 'circle' | 'event'; // Add 'event'
 };
 
 const GridPostMedia = ({ post }: { post: Models.Document }) => {
@@ -263,6 +265,16 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
           </li>
         ))}
       </ul>
+    );
+  }
+
+  if (type === 'event') {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-6 lg:gap-9">
+        {items.map((event) => (
+          <EventCard key={event.$id} event={event as unknown as IEvent} />
+        ))}
+      </div>
     );
   }
 
