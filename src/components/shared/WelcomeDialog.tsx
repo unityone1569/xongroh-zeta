@@ -57,9 +57,14 @@ export function WelcomeDialog({ open, onOpenChange }: WelcomeDialogProps) {
             </li>
             <li role="listitem">
               • Join our{' '}
-              <span className="font-semibold text-violet-300">Circles</span>
-              , take part in discussions, collabs and share your thoughts, experiences &
-              ideas.
+              <span className="font-semibold text-violet-300">Circles</span>,
+              take part in discussions, collabs and share your thoughts,
+              experiences & ideas.
+            </li>
+            <li role="listitem">
+              • Discover{' '}
+              <span className="font-semibold text-violet-300">Events</span> and
+              get Tickets for your fav Creators.
             </li>
           </ul>
 
@@ -78,10 +83,7 @@ export function WelcomeDialog({ open, onOpenChange }: WelcomeDialogProps) {
               <span className="font-semibold text-violet-300">MasterClass</span>{' '}
               - Learn from the industry Experts.
             </li>
-            <li role="listitem" className="text-light-2">
-              • <span className="font-semibold text-violet-300">Events</span> -
-              Discover Events and get Tickets for your fav Creators.
-            </li>
+
             <li role="listitem" className="text-light-2">
               • <span className="font-semibold text-violet-300">Tribe</span> -
               Build a supportive fan base.
