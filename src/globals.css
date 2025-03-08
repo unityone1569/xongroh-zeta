@@ -249,7 +249,7 @@
 
   /* Grid Post List */
   .grid-container {
-    @apply w-full grid grid-cols-1 sm:grid-cols-2 gap-7 max-w-5xl pb-6;
+    @apply w-full grid grid-cols-1 2xl:grid-cols-2 gap-7 max-w-5xl pb-6;
   }
 
   .grid-post_link {
@@ -289,7 +289,7 @@
   }
 
   .creator-card {
-    @apply flex px-1.5 py-3.5 w-40 rounded-xl bg-dark-3 hover:bg-dark-4 transition-all border border-light-4 border-opacity-50;
+    @apply flex px-3 py-3.5 w-40 rounded-xl bg-dark-3 hover:bg-dark-4 transition-all border border-light-4 border-opacity-50;
   }
 
   /* Post Card */

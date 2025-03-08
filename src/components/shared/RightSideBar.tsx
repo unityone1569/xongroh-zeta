@@ -43,8 +43,7 @@ const RightSideBar = () => {
             <li
               key={link.label}
               className={`leftsidebar-link group ${
-                isActive &&
-                'bg-gradient-to-r from-light-4 to-dark-4'
+                isActive && 'bg-gradient-to-r from-light-4 to-dark-4'
               }`}
             >
               <NavLink
@@ -106,14 +105,28 @@ const CreatorCard = ({ creator }: { creator: Models.Document }) => {
         className="w-12 h-12 rounded-full object-cover"
       />
       <div className="mt-2 w-full">
-        <div className="small-bold text-light-1 line-clamp-1 flex items-center justify-center gap-1.5">
-          {creator.name}
-          {creator.verifiedUser && (
-            <img
-              src="/assets/icons/verified.svg"
-              alt="verified"
-              className="w-4 h-4 flex-shrink-0"
-            />
+        <div className="flex items-center gap-1.5 justify-center">
+          {creator?.verifiedUser ? (
+            // Verified user version
+            <div className="flex items-center gap-1.5">
+              <p className="subtle-comment-semibold text-light-1 truncate">
+                {creator.name || 'Unknown User'}
+              </p>
+              <div className="flex-shrink-0">
+                <img
+                  src="/assets/icons/verified.svg"
+                  alt="verified"
+                  className="w-4 h-4"
+                />
+              </div>
+            </div>
+          ) : (
+            // Non-verified user version
+            <div className="flex items-center gap-1.5">
+              <p className="subtle-comment-semibold text-light-2 line-clamp-1">
+                {creator.name || 'Unknown User'}
+              </p>
+            </div>
           )}
         </div>
         <p className="subtle-normal text-light-3 pt-1 line-clamp-1">

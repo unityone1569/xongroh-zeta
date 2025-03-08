@@ -234,7 +234,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
     );
 
     return (
-      <ul className="grid-container overflow-hidden">
+      <ul className="w-full grid grid-cols-1 sm:grid-cols-2 gap-7 max-w-5xl pb-6 overflow-hidden">
         {sortedCommunities.map((community) => (
           <li
             key={community.$id}
