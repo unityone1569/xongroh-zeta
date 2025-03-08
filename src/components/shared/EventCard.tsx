@@ -198,7 +198,7 @@ const EventCard = ({ event, creator }: EventCardProps) => {
               {(interestedUsers?.totalCount || 0) > 5 && (
                 <div className="flex items-center gap-1">
                   <span className="text-stone-500 subtle-comment lg:small-regular text-nowrap">
-                    + {(interestedUsers?.totalCount || 0) - 5}
+                    +{(interestedUsers?.totalCount || 0) - 5}
                   </span>
                   <span className="text-stone-500 subtle-comment lg:small-regular line-clamp-1">
                     {(interestedUsers?.totalCount || 0) - 5 === 1
