@@ -174,11 +174,19 @@ const EventDetails = () => {
               </div>
             </div>
 
+            {/* Description */}
+            <div className="mt-11">
+              <h3 className="h4-bold text-light-2 mb-4">About Event</h3>
+              <p className="text-light-2 whitespace-pre-line px-1 small-regular text-pretty">
+                {event?.description}
+              </p>
+            </div>
+
             {/* Interested Users */}
-            <div className="flex items-center gap-2 mt-11 px-1 pl-2">
+            <div className="flex items-center gap-2 mt-11 px-1 pl-1">
               {(interestedUsers?.totalCount || 0) > 0 && (
                 <>
-                  <div className="flex -space-x-3.5">
+                  <div className="flex -space-x-5">
                     {interestedUsers?.documents
                       .slice(0, 5)
                       .map((user, index) => (
@@ -189,19 +197,19 @@ const EventDetails = () => {
                             '/assets/icons/profile-placeholder.svg'
                           }
                           alt={`interested-user-${index}`}
-                          className="w-9 h-9 lg:w-11 lg:h-11 rounded-full border-2 border-dark-2 object-cover"
+                          className="w-11 h-11 lg:w-14 lg:h-14 rounded-full border-2 border-dark-2 object-cover"
                         />
                       ))}
                   </div>
                   {(interestedUsers?.totalCount || 0) > 5 && (
                     <div className="flex items-center gap-1">
-                      <span className="text-light-3 small-semibold lg:base-semibold">
+                      <span className="text-light-4 small-semibold lg:base-semibold text-nowrap">
                         +{(interestedUsers?.totalCount || 0) - 5}
                       </span>
-                      <span className="text-light-3 small-semibold lg:base-semibold">
+                      <span className="text-light-4 small-semibold lg:base-semibold line-clamp-1">
                         {(interestedUsers?.totalCount || 0) - 5 === 1
-                          ? 'other'
-                          : 'others'}
+                          ? 'other are interested.'
+                          : 'others are interested.'}
                       </span>
                     </div>
                   )}
@@ -209,16 +217,8 @@ const EventDetails = () => {
               )}
             </div>
 
-            {/* Description */}
-            <div className="mt-11">
-              <h3 className="h4-bold text-light-2 mb-4">About Event</h3>
-              <p className="text-light-2 whitespace-pre-line px-1 small-regular text-pretty">
-                {event?.description}
-              </p>
-            </div>
-
             {/* Action Buttons */}
-            <div className="flex gap-4 mt-9">
+            <div className="flex gap-4 mt-11">
               {event?.bookingLink && (
                 <Button
                   className="shad-button_primary flex-1"

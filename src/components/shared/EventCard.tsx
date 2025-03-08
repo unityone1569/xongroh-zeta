@@ -111,7 +111,7 @@ const EventCard = ({ event, creator }: EventCardProps) => {
         </div>
 
         {/* Date Badge - Top Right */}
-        <div className="absolute top-0 left-4 bg-violet-600 px-3 py-2 rounded-b-md flex flex-col items-center">
+        <div className="absolute top-0 left-4 bg-gradient-to-br from-purple-500 to-violet-800 px-3 py-2 rounded-b-md flex flex-col items-center">
           <span className="text-light-1 body-bold xl:h3-bold">
             {format(new Date(event?.dateTime), 'dd')}
           </span>
@@ -185,25 +185,25 @@ const EventCard = ({ event, creator }: EventCardProps) => {
         <div className="flex items-center gap-2 pl-2 pt-3">
           {(interestedUsers?.totalCount || 0) > 0 && (
             <>
-              <div className="flex -space-x-3.5">
+              <div className="flex -space-x-5">
                 {interestedUsers?.documents.slice(0, 5).map((user, index) => (
                   <LazyImage
                     key={index}
                     src={user.dpUrl || '/assets/icons/profile-placeholder.svg'}
                     alt={`interested-user-${index}`}
-                    className="w-7 h-7 lg:w-9 lg:h-9 rounded-full border-2 border-dark-2 object-cover"
+                    className="w-9 h-9 lg:w-11 lg:h-11 rounded-full border-2 border-dark-2 object-cover"
                   />
                 ))}
               </div>
               {(interestedUsers?.totalCount || 0) > 5 && (
                 <div className="flex items-center gap-1">
-                  <span className="text-light-3 subtle-semibold md:small-semibold">
+                  <span className="text-stone-500 subtle-comment lg:small-regular text-nowrap">
                     + {(interestedUsers?.totalCount || 0) - 5}
                   </span>
-                  <span className="text-light-3 subtle-semibold md:small-semibold">
+                  <span className="text-stone-500 subtle-comment lg:small-regular line-clamp-1">
                     {(interestedUsers?.totalCount || 0) - 5 === 1
-                      ? 'other'
-                      : 'others'}
+                      ? 'other.'
+                      : 'others.'}
                   </span>
                 </div>
               )}
@@ -224,7 +224,7 @@ const EventCard = ({ event, creator }: EventCardProps) => {
             disabled={isAddingInterest || isRemovingInterest}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 ${
               isInterested
-                ? 'bg-dark-4 hover:bg-dark-3'
+                ? 'bg-dark-3 hover:bg-dark-4'
                 : 'bg-violet-800 hover:bg-violet-700'
             } rounded-lg text-light-1 tiny-normal-mutate lg:subtle-normal transition border border-opacity-50 border-light-4 ${
               (isAddingInterest || isRemovingInterest) &&
