@@ -11,6 +11,14 @@ import { Link } from 'react-router-dom';
 import { useUserContext } from '@/context/AuthContext';
 
 const EventGrid = ({ events }: { events: IEvent[] }) => {
+  if (events.length === 0) {
+    return (
+      <div className="w-full flex flex-col items-center justify-center mt-10">
+        <p className="text-light-4 mt-6 text-center">No events found</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-6 lg:gap-9">
       {events.map((event) => (
@@ -29,8 +37,7 @@ const Events = () => {
     useGetUserInterestedEvents(user?.id || '');
 
   const filters = [
-    { label: 'Live', value: 'live' },
-    { label: 'Up Next', value: 'upcoming' },
+    { label: 'Upcoming', value: 'upcoming' },
     { label: 'Archived', value: 'archived' },
     // Only show My Events tab to verified users
     ...(user?.verifiedUser ? [{ label: 'My Events', value: 'my-events' }] : []),

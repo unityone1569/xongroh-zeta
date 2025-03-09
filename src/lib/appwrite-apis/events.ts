@@ -85,9 +85,6 @@ export async function getEvents(params: {
       case 'archived':
         queries.push(Query.lessThan('dateTime', now));
         break;
-      case 'live':
-        queries.push(Query.equal('dateTime', now));
-        break;
       case 'upcoming':
         queries.push(Query.greaterThan('dateTime', now));
         break;
