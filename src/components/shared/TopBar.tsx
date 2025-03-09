@@ -30,8 +30,10 @@ const Topbar = () => {
     <section className="topbar">
       <div className="flex-between py-4 px-5">
         <Link to="/" className="flex gap-0.5 items-center">
-          <img src="/assets/icons/logo.svg" alt="logo" width={29} />
-          <h3 className="text-[24px] font-bold leading-[140%]  tracking-wider">ongroh</h3>
+          <img src="/assets/icons/logo.svg" alt="logo" className="h-7 w-7" />
+          <h3 className="text-[24px] font-bold leading-[140%]  tracking-wider">
+            ongroh
+          </h3>
         </Link>
         <div className="flex items-center gap-5">
           <div className="relative">
