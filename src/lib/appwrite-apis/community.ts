@@ -710,7 +710,9 @@ export async function createDiscussion(
     }
 
     // convert tags into an array
-    const tags = discussion.tags?.replace(/ /g, '').split(',') || [];
+    const tags = discussion.tags
+      ?.split(/[\s,]+/)
+      .filter((tag) => tag.length > 0);
 
     const newDiscussion = await databases.createDocument(
       db.communitiesId,
@@ -800,7 +802,7 @@ export async function updateDiscussion(discussion: IUpdateDiscussion) {
     // Convert tags into array
     const tags = Array.isArray(discussion.tags)
       ? discussion.tags
-      : discussion.tags?.replace(/ /g, '').split(',') || [];
+      : discussion.tags?.split(/[\s,]+/).filter((tag) => tag.length > 0);
 
     const updatedDiscussion = await databases.updateDocument(
       db.communitiesId,

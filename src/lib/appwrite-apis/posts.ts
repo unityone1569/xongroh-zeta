@@ -133,8 +133,9 @@ export async function addCreation(creation: INewCreation) {
       }
     }
 
-    // convert tags into an array
-    const tags = creation.tags?.replace(/ /g, '').split(',') || [];
+    // convert tags into an array, splitting by both commas and spaces
+    const tags =
+      creation.tags?.split(/[\s,]+/).filter((tag) => tag.length > 0) || [];
 
     // Create the creation
     const newCreation = await databases.createDocument(
@@ -198,7 +199,7 @@ export async function updateCreation(creation: IUpdateCreation) {
     // Convert tags into array
     const tags = Array.isArray(creation.tags)
       ? creation.tags
-      : creation.tags?.replace(/ /g, '').split(',') || [];
+      : creation.tags?.split(/[\s,]+/).filter((tag) => tag.length > 0) || [];
 
     //  Update post
     const updatedCreation = await databases.updateDocument(
@@ -616,13 +617,13 @@ export async function addProject(project: INewProject) {
     const links = Array.isArray(project.links)
       ? project.links
       : project.links
-      ? project.links.replace(/ /g, '').split(',')
+      ? project.links.split(/[\s,]+/).filter((link) => link.length > 0)
       : []; // Empty array if no links provided
 
     // Normalize tags to an array
     const tags = Array.isArray(project.tags)
       ? project.tags
-      : project.tags?.replace(/ /g, '').split(',') || [];
+      : project.tags?.split(/[\s,]+/).filter((tag) => tag.length > 0) || [];
 
     // Create the project document
     const newProject = await databases.createDocument(
@@ -691,12 +692,12 @@ export async function updateProject(project: IUpdateProject) {
     const links = Array.isArray(project.links)
       ? project.links
       : project.links
-      ? project.links.replace(/ /g, '').split(',')
+      ? project.links.split(/[\s,]+/).filter((link) => link.length > 0)
       : [];
 
     const tags = Array.isArray(project.tags)
       ? project.tags
-      : project.tags?.replace(/ /g, '').split(',') || [];
+      : project.tags?.split(/[\s,]+/).filter((tag) => tag.length > 0) || [];
 
     // Update document in the database
     const updatedPost = await databases.updateDocument(
@@ -864,6 +865,3 @@ export async function deleteFile(fileId: string) {
     console.log(error);
   }
 }
-
-
-
