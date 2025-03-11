@@ -214,7 +214,7 @@ const TopicPage = () => {
                   className="w-4 h-4"
                 /> */}
                 <p className="text-primary-500 transition-colors base-regular md:body-regular line-clamp-1">
-                  {community?.name || 'Community'}
+                  {community?.document?.name || 'Community'}
                 </p>
               </Link>
               <span className="base-regular md:body-regular ">&gt;</span>
