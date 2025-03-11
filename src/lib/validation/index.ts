@@ -145,7 +145,7 @@ export const NewPasswordValidation = z.object({
 });
 
 export const DiscussionValidation = z.object({
-  content: z.string().min(1),
+  content: z.string().min(1).max(650),
   file: z.array(z.any()),
   tags: z.string(),
   type: z.enum(['Discussion', 'Help', 'Collab']),
