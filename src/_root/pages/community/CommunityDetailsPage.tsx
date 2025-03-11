@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Models } from 'appwrite';
 import { useInView } from 'react-intersection-observer';
-
 import Loader from '@/components/shared/Loader';
 import LazyImage from '@/components/shared/LazyImage';
 import {
@@ -196,7 +195,8 @@ const CommunityDetailsPage = () => {
           <div className="flex flex-col gap-4 p-6 bg-dark-3 rounded-xl">
             <h3 className="h4-bold">Community Rules</h3>
             <div className="base-regular whitespace-pre-line">
-              {community?.rules || 'No rules have been set for this community.'}
+              {community?.document.rules ||
+                'No rules have been set for this community.'}
             </div>
           </div>
         );
@@ -218,7 +218,7 @@ const CommunityDetailsPage = () => {
                   <div className="flex-shrink-0 pb-6">
                     <LazyImage
                       src={
-                        community?.imageUrl ||
+                        community?.document.imageUrl ||
                         '/assets/icons/profile-placeholder.svg'
                       }
                       className="h-20 w-20 lg:h-28 lg:w-28 object-cover rounded-full bottom-9 lg:bottom-11"
@@ -230,7 +230,7 @@ const CommunityDetailsPage = () => {
                     <div className="flex gap-6 lg:gap-20 pt-2 lg:pt-4">
                       <div className="text-center">
                         <div className="small-medium lg:base-medium">
-                          {members?.length || 0}
+                          {community?.document.membersCount || 0}
                         </div>
                         <div className="small-regular lg:base-regular pt-1">
                           Members
@@ -240,10 +240,10 @@ const CommunityDetailsPage = () => {
                   </div>
                 </div>
                 <div className="text-xl font-bold lg:text-2xl">
-                  {community?.name}
+                  {community?.document.name}
                 </div>
                 <p className="pt-3 max-w-xl text-pretty small-regular font-light">
-                  {community?.about}
+                  {community?.document.about}
                 </p>
 
                 {user.id && (

@@ -1,6 +1,6 @@
 import { ID, Query } from 'appwrite';
 import { appwriteConfig, databases, functions, storage } from './config';
-import { INewDiscussion, IUpdateDiscussion } from '@/types';
+import { ICommunity, INewDiscussion, IUpdateDiscussion } from '@/types';
 import { deleteAllCommentsForPost } from './comments';
 import {
   deleteAllPostLikes,
@@ -91,20 +91,38 @@ export async function getCommunities({
 }
 
 // Get-Community-By-Id
-export async function getCommunityById(communityId: string) {
+export async function getCommunityById(
+  communityId: string
+): Promise<{ document: ICommunity } | null> {
   const queries: any[] = [
     Query.select(['$id', 'name', 'about', 'imageUrl', 'rules']),
   ];
 
   try {
-    const community = await databases.getDocument(
-      db.communitiesId,
-      cl.communityId,
-      communityId,
-      queries
-    );
+    const [community, members] = await Promise.all([
+      databases.getDocument(
+        db.communitiesId,
+        cl.communityId,
+        communityId,
+        queries
+      ),
+      databases.listDocuments(db.communitiesId, cl.memberId, [
+        Query.equal('communityId', communityId),
+      ]),
+    ]);
 
-    return community;
+    if (!community) return null;
+
+    const enrichedCommunity: ICommunity = {
+      ...community,
+      name: community.name,
+      about: community.about,
+      imageUrl: community.imageUrl,
+      rules: community.rules,
+      membersCount: members.total,
+    };
+
+    return { document: enrichedCommunity };
   } catch (error) {
     console.error('Error fetching community:', error);
     return null;

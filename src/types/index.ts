@@ -178,3 +178,12 @@ export type EventType =
   | 'Fair'
   | 'Webinar'
   | 'Other';
+
+export interface ICommunity {
+  $id: string;
+  name: string;
+  about: string;
+  imageUrl: string;
+  rules: string;
+  membersCount?: number;
+}
