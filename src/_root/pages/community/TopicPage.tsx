@@ -18,10 +18,10 @@ import { getCommunityIdFromTopicId } from '@/lib/appwrite-apis/community';
 
 // Move constants outside component to prevent recreation
 const FILTER_TABS = [
-  { name: 'new', label: 'New' },
+  { name: 'new', label: 'Unread' },
   { name: 'popular', label: 'Popular' },
-  { name: 'collab', label: 'Collab' }, // Add new tab
   { name: 'discussion', label: 'Discussion' },
+  { name: 'collab', label: 'Collab' },
   { name: 'help', label: 'Help' },
 ] as const;
 

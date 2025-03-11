@@ -134,8 +134,8 @@ const DiscussionForm = ({ discussion, action }: DiscussionFormProps) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="Collab">Collab</SelectItem>
                   <SelectItem value="Discussion">Discussion</SelectItem>
+                  <SelectItem value="Collab">Collab</SelectItem>
                   <SelectItem value="Help">Help</SelectItem>
                 </SelectContent>
               </Select>
