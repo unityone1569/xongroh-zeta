@@ -27,6 +27,9 @@ const EventCard = ({ event, creator }: EventCardProps) => {
   const [isInterested, setIsInterested] = useState(false);
   const [interestedEventId, setInterestedEventId] = useState('');
 
+  // Add this line to check if event date has passed
+  const isPastEvent = new Date(event.dateTime) < new Date();
+
   // Interest mutations
   const { mutate: addInterest, isPending: isAddingInterest } =
     useAddInterestedEvent();
@@ -221,13 +224,13 @@ const EventCard = ({ event, creator }: EventCardProps) => {
           </button>
           <button
             onClick={handleInterestClick}
-            disabled={isAddingInterest || isRemovingInterest}
+            disabled={isAddingInterest || isRemovingInterest || isPastEvent}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 ${
               isInterested
                 ? 'bg-dark-3 hover:bg-dark-4'
                 : 'bg-violet-800 hover:bg-violet-700'
             } rounded-lg text-light-1 tiny-normal-mutate lg:subtle-normal transition border border-opacity-50 border-light-4 ${
-              (isAddingInterest || isRemovingInterest) &&
+              (isAddingInterest || isRemovingInterest || isPastEvent) &&
               'opacity-50 cursor-not-allowed'
             }`}
           >
@@ -246,7 +249,11 @@ const EventCard = ({ event, creator }: EventCardProps) => {
                 }
               />
             )}
-            {isInterested ? 'Interested' : 'Interest'}
+            {isPastEvent
+              ? 'Event Ended'
+              : isInterested
+              ? 'Interested'
+              : 'Interest'}
           </button>
         </div>
       </div>
