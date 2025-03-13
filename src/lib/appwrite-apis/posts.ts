@@ -368,7 +368,7 @@ export async function getInfiniteCreations({
   pageParam: number;
 }) {
   const queries: any[] = [
-    Query.orderDesc('$updatedAt'),
+    Query.orderDesc('$createdAt'),
     Query.limit(6),
     Query.select([
       '$id',
