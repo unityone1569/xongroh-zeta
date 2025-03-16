@@ -316,9 +316,9 @@ const SignUpForm = () => {
           </Button>
 
           <div className="flex items-center my-4">
-            <hr className="w-full border-t-2 border-dark-4" />
+            <hr className="w-full border-t-1 border-light-4" />
             <span className="px-2 text-light-3 subtle-semibold ml-1">Or</span>
-            <hr className="w-full border-t-2 border-dark-4" />
+            <hr className="w-full border-t-1 border-light-4" />
           </div>
 
           <Button

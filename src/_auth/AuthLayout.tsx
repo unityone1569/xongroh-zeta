@@ -12,25 +12,32 @@ export default function AuthLayout() {
   // If user is authenticated, handle routing based on verification status
   if (isAuthenticated) {
     if (!isVerified) {
-      // Redirect to verification page if email isn't verified
       return <Navigate to="/verify-email" replace />;
     }
-    // Redirect to home if already authenticated and verified
     return <Navigate to="/" replace />;
   }
 
   // Allow access to auth pages if not authenticated
   return (
-    <>
-      <section className="flex flex-1 justify-center items-center flex-col overflow-hidden">
-        <Outlet />
-      </section>
+    <div className="flex h-screen w-full">
+      <div className="relative flex flex-1">
+        <img
+          src="https://api.xongroh.com/v1/storage/buckets/678c8e03002d41317909/files/678c902a003a135baa89/view?project=66e2a98a00192795ca51"
+          alt="cover"
+          className="absolute inset-0 w-full h-full object-cover opacity-15 xl:hidden"
+        />
+        <section className="relative flex-1 flex justify-center items-center">
+          <div className="max-h-screen overflow-y-auto no-scrollbar">
+            <Outlet />
+          </div>
+        </section>
+      </div>
 
       <img
         src="https://api.xongroh.com/v1/storage/buckets/678c8e03002d41317909/files/678c902a003a135baa89/view?project=66e2a98a00192795ca51"
         alt="cover"
         className="hidden xl:block h-screen w-1/2 object-cover bg-no-repeat"
       />
-    </>
+    </div>
   );
 }
