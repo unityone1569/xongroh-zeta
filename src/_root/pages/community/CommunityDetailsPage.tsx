@@ -32,7 +32,14 @@ const TopicCard = ({ topic }: { topic: Models.Document }) => {
     <div className="flex flex-col p-6 bg-dark-3 rounded-xl border border-light-4 border-opacity-50 w-full">
       <div className="flex justify-between items-center">
         <Link to={`/topics/${topic.$id}`}>
-          <h3 className="base-medium line-clamp-1">{topic.topicName}</h3>
+          <div className="flex items-center justify-center w-full gap-1">
+            <h3 className="base-medium line-clamp-1">{topic.topicName}</h3>
+            {topic.discussionsCount > 0 && (
+              <p className="text-light-3 subtle-semibold pt-1">
+                ({topic.discussionsCount})
+              </p>
+            )}
+          </div>
         </Link>
         {pingCount > 0 && (
           <div className="flex-shrink-0">
@@ -171,7 +178,7 @@ const CommunityDetailsPage = () => {
       case 'topics':
         if (isLoadingTopics) return <Loader />;
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-6 w-full">
             {topics.map((topic) => (
               <TopicCard key={topic.$id} topic={topic} />
             ))}
@@ -182,7 +189,7 @@ const CommunityDetailsPage = () => {
       case 'members':
         if (isLoadingMembers) return <Loader />;
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-6 w-full">
             {members.map((member) => (
               <MemberCard key={member.$id} member={member} />
             ))}

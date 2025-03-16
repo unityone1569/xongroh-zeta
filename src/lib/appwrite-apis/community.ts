@@ -231,7 +231,27 @@ export async function getCommunityTopics({
       queries
     );
 
-    return { documents: topics };
+    if (!topics || topics.length === 0) {
+      return { documents: [] };
+    }
+
+    // Get discussion counts for each topic in parallel
+    const topicsWithCounts = await Promise.all(
+      topics.map(async (topic) => {
+        const { total } = await databases.listDocuments(
+          db.communitiesId,
+          cl.discussionId,
+          [Query.equal('topicId', topic.$id)]
+        );
+
+        return {
+          ...topic,
+          discussionsCount: total,
+        };
+      })
+    );
+
+    return { documents: topicsWithCounts };
   } catch (error) {
     console.error('Error fetching topics:', error);
     return { documents: [] };
