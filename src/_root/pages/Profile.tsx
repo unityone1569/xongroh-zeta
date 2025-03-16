@@ -343,7 +343,7 @@ const ProfileFeed = ({
           </button>
         ))}
       </div>
-      <div className="mx-3 mt-8 mb-20 pl-1 sm:pl-3 lg:pl-9">
+      <div className="mx-3 mt-8 pl-1 sm:pl-3 lg:pl-9">
         {renderContent()}
         {((activeTab === 'creation' && hasNextPage) ||
           (activeTab === 'event' && hasNextEvents)) && (

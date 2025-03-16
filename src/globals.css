@@ -221,7 +221,7 @@
   }
 
   .profile-inner_container {
-    @apply max-w-3xl w-full;
+    @apply max-w-3xl w-full mb-28;
   }
 
   /* Portfolio */
