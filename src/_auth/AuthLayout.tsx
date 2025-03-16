@@ -19,7 +19,7 @@ export default function AuthLayout() {
 
   // Allow access to auth pages if not authenticated
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-screen w-full overflow-hidden">
       <div className="relative flex flex-1">
         <img
           src="https://api.xongroh.com/v1/storage/buckets/678c8e03002d41317909/files/678c902a003a135baa89/view?project=66e2a98a00192795ca51"
