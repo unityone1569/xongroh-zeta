@@ -35,7 +35,7 @@ const TopicCard = ({ topic }: { topic: Models.Document }) => {
           <div className="flex items-center justify-center w-full gap-1">
             <h3 className="base-medium line-clamp-1">{topic.topicName}</h3>
             {topic.discussionsCount > 0 && (
-              <p className="text-light-3 subtle-semibold">
+              <p className="text-light-3 subtle-semibold pt-[3px]">
                 ({topic.discussionsCount})
               </p>
             )}
