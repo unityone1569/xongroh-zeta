@@ -47,7 +47,7 @@ import CommunityGuidelines from './_auth/CommunityGuidelines';
 
 const App = () => {
   return (
-    <main className="flex max-h-screen">
+    <main className="flex h-svh ">
       <Toaster />
       <Routes>
         {/* PUBLIC ROUTES */}
