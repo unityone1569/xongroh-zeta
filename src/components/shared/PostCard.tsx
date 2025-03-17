@@ -59,7 +59,7 @@ const PostCard = ({ post }: PostCardProps) => {
           </Link>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <p className="base-medium lg:body-bold text-light-1 truncate">
+              <p className="small-bold lg:body-bold text-light-1 truncate">
                 {post?.author?.name}
               </p>
               <div className="flex-shrink-0">
