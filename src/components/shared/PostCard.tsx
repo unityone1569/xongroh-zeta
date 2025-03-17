@@ -80,8 +80,8 @@ const PostCard = ({ post }: PostCardProps) => {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-5">
-          <div className="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-violet-400">
+        <div className="flex items-center gap-3">
+          <div className="px-2.5 py-1 rounded-full tiny-normal-mutate bg-purple-500/20 text-violet-400">
             Creation
           </div>
           <Link
@@ -90,7 +90,7 @@ const PostCard = ({ post }: PostCardProps) => {
               user.id !== post?.authorId && 'hidden'
             } flex-shrink-0`}
           >
-            <img src="/assets/icons/edit.svg" alt="edit" width={20} />
+            <img src="/assets/icons/edit.svg" alt="edit" width={19} />
           </Link>
         </div>
       </div>
