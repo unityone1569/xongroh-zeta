@@ -224,7 +224,9 @@ const EventForm = ({ event, action }: EventFormProps) => {
           control={form.control}
           name="type"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="relative">
+              {' '}
+              {/* Add relative positioning */}
               <FormLabel className="shad-form_label">Event Type</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
@@ -232,7 +234,9 @@ const EventForm = ({ event, action }: EventFormProps) => {
                     <SelectValue placeholder="Select event type" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent className="max-h-[300px] overflow-y-auto">
+                  {' '}
+                  {/* Add max height and scrolling */}
                   {[
                     'Exhibition',
                     'Concert',
