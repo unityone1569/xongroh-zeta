@@ -219,7 +219,7 @@ const Home = () => {
               </div>
             </Link>
 
-            <div className="flex-start">
+            <div className="flex-start lg:mt-3">
               {TABS.map((tab) => (
                 <button
                   key={tab.name}
