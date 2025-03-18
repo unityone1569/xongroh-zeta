@@ -201,8 +201,22 @@ const Home = () => {
           <div className="flex flex-col gap-4 mt-16 lg:mt-0">
             <h2 className="h3-bold md:h2-bold text-left">Creation Feed</h2>
 
-            <Link to="/events" className="py-3.5 pt-6 lg:py-9 pl-1">
-              <Button className="shad-button_dark_4">Events</Button>
+            <Link to="/events" className="py-5 md:py-9 pl-1 lg:hidden">
+              <div
+                className="flex items-center justify-center w-28 md:w-32 pl-1 pr-2 rounded-md hover:opacity-80 
+                transition-opacity cursor-pointer h-10 bg-dark-4 border border-light-4 border-opacity-50 gap-2"
+              >
+                <div className="flex items-center gap-2">
+                  <img
+                    src="/assets/icons/event.svg"
+                    alt="events"
+                    className="w-6 h-"
+                  />
+                  <span className="text-base font-semibold text-light-2">
+                    Events
+                  </span>
+                </div>
+              </div>
             </Link>
 
             <div className="flex-start">

@@ -15,6 +15,11 @@ export const sidebarLinks = [
     label: 'Circle',
   },
   {
+    imgURL: '/assets/icons/event.svg',
+    route: '/events',
+    label: 'Events',
+  },
+  {
     imgURL: '/assets/icons/marketplace.svg',
     route: '/marketplace',
     label: 'Marketplace',
