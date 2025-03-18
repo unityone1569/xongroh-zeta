@@ -38,10 +38,10 @@ const Events = () => {
 
   const filters = [
     { label: 'Upcoming', value: 'upcoming' },
-    { label: 'Archived', value: 'archived' },
     // Only show My Events tab to verified users
     ...(user?.verifiedUser ? [{ label: 'My Events', value: 'my-events' }] : []),
     { label: 'Interested', value: 'interested' },
+    { label: 'Archived', value: 'archived' },
   ];
 
   const getDisplayedEvents = () => {
