@@ -59,28 +59,36 @@ const BottomBar = () => {
         const isActive = pathname === link.route;
 
         return (
-          <Link
-            to={link.route}
-            key={link.label}
-            className={`relative ${
-              isActive &&
-              'bg-gradient-to-r from-light-4 to-dark-4 transition rounded-full'
-            } flex-center flex-col gap-1 p-3 transition`}
-          >
-            <div className="relative">
-              <img
-                src={link.imgURL}
-                alt={link.label}
-                width={28}
-                className={`group-hover:invert-white ${
-                  isActive && 'invert-white'
-                }`}
-              />
-              {link.label === 'Circle' && pingCount > 0 && (
-                <span className="absolute -top-2.5 -right-[6px] w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
-              )}
-            </div>
-          </Link>
+          <div className="flex flex-col items-center" key={link.label}>
+            <Link
+              to={link.route}
+              className={`relative ${
+                isActive &&
+                'bg-gradient-to-r from-light-4 to-dark-4 transition rounded-full'
+              } flex-center flex-col gap-1 p-2 transition`}
+            >
+              <div className="relative">
+                <img
+                  src={link.imgURL}
+                  alt={link.label}
+                  width={28}
+                  className={`group-hover:invert-white ${
+                    isActive && 'invert-white'
+                  }`}
+                />
+                {link.label === 'Circle' && pingCount > 0 && (
+                  <span className="absolute -top-2.5 -right-[6px] w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
+                )}
+              </div>
+            </Link>
+            <p
+              className={`tiny-normal mt-1 sm:subtle-comment ${
+                isActive ? 'text-light-2' : 'text-light-3'
+              }`}
+            >
+              {link.label}
+            </p>
+          </div>
         );
       })}
     </section>

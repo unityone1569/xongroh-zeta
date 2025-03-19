@@ -201,7 +201,7 @@ const Home = () => {
           <div className="flex flex-col gap-4 mt-16 lg:mt-0">
             <h2 className="h3-bold md:h2-bold text-left">Creation Feed</h2>
 
-            <Link to="/events" className="py-5 md:py-9 pl-1 lg:hidden">
+            {/* <Link to="/events" className="py-5 md:py-9 pl-1 lg:hidden">
               <div
                 className="flex items-center justify-center w-28 md:w-32 pl-1 pr-2 rounded-md hover:opacity-80 
                 transition-opacity cursor-pointer h-10 bg-dark-4 border border-light-4 border-opacity-50 gap-2"
@@ -217,9 +217,9 @@ const Home = () => {
                   </span>
                 </div>
               </div>
-            </Link>
+            </Link> */}
 
-            <div className="flex-start lg:mt-5">
+            <div className="flex-start mt-5">
               {TABS.map((tab) => (
                 <button
                   key={tab.name}

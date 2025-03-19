@@ -19,11 +19,11 @@ export const sidebarLinks = [
     route: '/events',
     label: 'Events',
   },
-  {
-    imgURL: '/assets/icons/marketplace.svg',
-    route: '/marketplace',
-    label: 'Marketplace',
-  },
+  // {
+  //   imgURL: '/assets/icons/marketplace.svg',
+  //   route: '/marketplace',
+  //   label: 'Marketplace',
+  // },
   {
     imgURL: '/assets/icons/add.svg',
     route: '/add-creation',
@@ -60,14 +60,19 @@ export const bottombarLinks = [
     route: '/circle',
     label: 'Circle',
   },
+  // {
+  //   imgURL: '/assets/icons/marketplace.svg',
+  //   route: '/marketplace',
+  //   label: 'Marketplace',
+  // },
   {
-    imgURL: '/assets/icons/marketplace.svg',
-    route: '/marketplace',
-    label: 'Marketplace',
+    imgURL: '/assets/icons/event.svg',
+    route: '/events',
+    label: 'Events',
   },
   {
     imgURL: '/assets/icons/add.svg',
     route: '/add-creation',
-    label: 'Add Creation',
+    label: 'Create',
   },
 ];

@@ -92,6 +92,9 @@
   .tiny-medium {
     @apply text-[10px] font-medium leading-[140%];
   }
+  .tiny-normal {
+    @apply text-[9px] font-normal leading-[140%] tracking-tight;
+  }
   .tiny-normal-mutate {
     @apply text-[11px] font-normal leading-[140%];
   }
@@ -277,7 +280,7 @@
 
   /* Bottom bar */
   .bottom-bar {
-    @apply z-50 flex-between w-full fixed bottom-0 bg-dark-3 px-6 py-4 lg:hidden;
+    @apply z-50 flex-between w-full fixed bottom-0 bg-dark-3 px-3.5 sm:px-9 py-3 lg:hidden;
   }
 
   /* Left sidebar */
