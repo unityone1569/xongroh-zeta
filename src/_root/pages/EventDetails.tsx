@@ -223,8 +223,11 @@ const EventDetails = () => {
                 <Button
                   className="shad-button_primary flex-1"
                   onClick={() => window.open(event.bookingLink, '_blank')}
+                  disabled={new Date(event?.dateTime) < new Date()}
                 >
-                  Book Now
+                  {new Date(event?.dateTime) < new Date()
+                    ? 'Event Ended'
+                    : 'Book Now'}
                 </Button>
               )}
               {user?.id === event?.creatorId && (
