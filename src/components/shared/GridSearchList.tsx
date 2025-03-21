@@ -141,7 +141,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
         {sortedUsers.map((listUser) => (
           <li
             key={listUser.$id}
-            className="user-card flex flex-start gap-4 bg-dark-3"
+            className="user-card flex flex-start bg-dark-3"
           >
             <div className="flex-shrink-0">
               <Link to={`/profile/${listUser.$id}`}>
@@ -150,7 +150,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                     listUser.dpUrl || '/assets/icons/profile-placeholder.svg'
                   }
                   alt={listUser.name || 'User'}
-                  className="w-14 h-14 object-cover rounded-full"
+                  className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-full"
                 />
               </Link>
             </div>
@@ -161,7 +161,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                     {listUser?.verifiedUser ? (
                       // Verified user version
                       <div className="flex items-center gap-1.5">
-                        <p className="base-medium lg:body-bold text-light-1 truncate">
+                        <p className="small-semibold lg:body-bold text-light-1 truncate">
                           {listUser.name || 'Unknown User'}
                         </p>
                         <div className="flex-shrink-0">
@@ -175,7 +175,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                     ) : (
                       // Non-verified user version
                       <div className="flex items-center gap-1.5">
-                        <p className="base-medium lg:body-normal text-light-2 line-clamp-1">
+                        <p className="small-semibold lg:body-normal text-light-2 line-clamp-1">
                           {listUser.name || 'Unknown User'}
                         </p>
                       </div>
@@ -190,7 +190,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                         className="w-4 h-4"
                       />
                     </div>
-                    <p className="subtle-normal line-clamp-1 lg:subtle-comment overflow-hidden text-ellipsis">
+                    <p className="subtle-normal line-clamp-1 lg:subtle-comment overflow-hidden text-ellipsis text-light-2">
                       {listUser?.profession || 'Creator'}
                     </p>
                   </div>
@@ -203,7 +203,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
                         className="w-4 h-4"
                       />
                     </div>
-                    <p className="subtle-normal line-clamp-1 lg:subtle-comment">
+                    <p className="subtle-normal line-clamp-1 lg:subtle-comment text-light-2">
                       {listUser?.hometown || 'Earth'}
                     </p>
                   </div>
