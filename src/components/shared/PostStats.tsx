@@ -32,7 +32,7 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
   const { $id: postId } = post;
   const location = useLocation();
   const queryClient = useQueryClient();
-  const isHomeRoute = location.pathname === '/';
+  const isHomeRoute = location.pathname === '/home';
   const isProfileRoute = location.pathname.includes('/profile/');
 
   // Queries
