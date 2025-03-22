@@ -450,7 +450,7 @@ const LandingPage = () => {
             </h4>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
               <a
-                href="tel:+1234567890"
+                href="tel:+919127510087"
                 className="flex items-center gap-2 hover:text-light-1 transition-colors"
               >
                 <svg
