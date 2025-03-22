@@ -43,7 +43,7 @@ const VerifySuccess = () => {
         });
 
         // Redirect to home after success
-        setTimeout(() => navigate('/'), 2000);
+        setTimeout(() => navigate('/home'), 2000);
       } catch (error) {
         console.error('Verification error:', error);
         setVerificationStatus('error');

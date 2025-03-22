@@ -89,7 +89,7 @@ const LeftSidebar = () => {
       <div className="flex flex-col gap-11">
         <Link to="/" className="flex gap-1 items-center pl-1.5">
           <img src="/assets/icons/logo.svg" alt="logo" className="h-9 w-9" />
-          <h3 className="text-[26px] font-bold leading-[140%]  tracking-wider">
+          <h3 className="text-[26px] font-bold leading-[140%] tracking-wider">
             ongroh
           </h3>
         </Link>

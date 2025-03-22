@@ -14,7 +14,7 @@ export default function AuthLayout() {
     if (!isVerified) {
       return <Navigate to="/verify-email" replace />;
     }
-    return <Navigate to="/" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   // Allow access to auth pages if not authenticated

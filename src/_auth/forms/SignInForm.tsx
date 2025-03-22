@@ -17,7 +17,10 @@ import { useToast } from '@/hooks/use-toast';
 import { SignInValidation } from '@/lib/validation';
 import { useUserContext } from '@/context/AuthContext';
 import { useState } from 'react';
-import { useLoginWithGoogle, useSignInAccount } from '@/lib/tanstack-queries/usersQueries';
+import {
+  useLoginWithGoogle,
+  useSignInAccount,
+} from '@/lib/tanstack-queries/usersQueries';
 
 const SignInForm = () => {
   const { toast } = useToast();
@@ -71,7 +74,7 @@ const SignInForm = () => {
       if (isLoggedIn) {
         form.reset();
         toast({ title: 'Signin successful!' });
-        navigate('/');
+        navigate('/home');
       } else {
         throw new Error('Authentication failed after sign-in');
       }

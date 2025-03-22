@@ -38,7 +38,7 @@ const VerifyEmail = () => {
 
   // Redirect if already verified
   if (isVerified) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   const handleResendEmail = async () => {

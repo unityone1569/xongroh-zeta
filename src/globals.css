@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply bg-dark-1 text-white min-h-screen font-inter;
+    @apply bg-dark-1 text-white min-h-screen font-inter custom-scrollbar;
   }
 }
 
@@ -64,7 +64,7 @@
   .small-semibold {
     @apply text-[14px] font-semibold leading-[140%] tracking-tight;
   }
-  
+
   .small-bold {
     @apply text-[14px] font-bold leading-[140%] tracking-tight;
   }
@@ -457,6 +457,22 @@
 
   .image-loaded {
     @apply transition-opacity duration-300;
+  }
+
+  /* Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade {
+    animation: fadeIn 0.5s ease-out;
   }
 }
 
