@@ -382,7 +382,7 @@ const LandingPage = () => {
 
         {/* Community Stats Section - Replace fixed height with min-height */}
         <section className="min-h-[600px] md:min-h-[720px] flex flex-col text-center items-center justify-center w-full py-12 sm:py-16 md:py-24 px-4 sm:px-5">
-          <h3 className="text-xl sm:text-2xl font-bold text-light-1 ">
+          <h3 className="h3-bold sm:h2-bold text-light-1 ">
             Join Our Growing Community
           </h3>
           <p className="base-regular text-light-3 mt-4 sm:mt-6 md:mt-10 mb-12 sm:mb-20 md:mb-24">
