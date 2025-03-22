@@ -57,7 +57,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
                       <LazyImage
                         src={project?.mediaUrl}
                         alt="project image"
-                        className="post-card_img mt-5"
+                        className="project-card_img mt-5"
                       />
                     </Link>
                   );

@@ -313,6 +313,9 @@
   .post-card_img {
     @apply h-[310px] xs:h-[360px] overflow-hidden bg-dark-4 lg:h-[450px] w-full object-cover;
   }
+  .project-card_img {
+    @apply h-[310px] xs:h-[360px] overflow-hidden bg-dark-3 lg:h-[450px] w-full border border-dark-4 object-contain;
+  }
   .post-card-detail_img {
     @apply h-full lg:h-[520px] overflow-hidden bg-dark-4 w-full object-contain;
   }

@@ -109,7 +109,7 @@ const ProjectDetails = () => {
                         <LazyImage
                           src={project.mediaUrl}
                           alt="project"
-                          className="post-card_img"
+                          className="project-card_img"
                         />
                       );
                     case 'audio':
