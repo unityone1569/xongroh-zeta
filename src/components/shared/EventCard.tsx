@@ -10,6 +10,7 @@ import {
   useCheckUserInterestedEvent,
   useGetInterestedEventsUsers,
 } from '@/lib/tanstack-queries/eventsQueries';
+import { Link } from 'react-router-dom';
 
 type EventCardProps = {
   event: IEvent;
@@ -216,12 +217,12 @@ const EventCard = ({ event, creator }: EventCardProps) => {
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-3">
-          <button
-            onClick={() => (window.location.href = `/events/${event?.$id}`)}
-            className="flex-1 px-4 py-2 bg-dark-4 rounded-lg text-white tiny-normal-mutate lg:subtle-normal text-center items-center hover:bg-dark-3 transition border border-opacity-50 border-light-4"
-          >
+            <Link
+            to={`/events/${event?.$id}`}
+            className="flex-1 px-4 py-2 bg-dark-4 rounded-lg text-white tiny-normal-mutate lg:subtle-normal text-center items-center hover:bg-dark-3 transition border border-opacity-50 border-light-4 flex justify-center"
+            >
             Details
-          </button>
+            </Link>
           <button
             onClick={handleInterestClick}
             disabled={isAddingInterest || isRemovingInterest || isPastEvent}
