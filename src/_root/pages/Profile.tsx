@@ -93,7 +93,7 @@ const ProfileCardItem = ({
                   <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
                     {creationsCount}
                   </div>
-                  <div className="tiny-bold sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
+                  <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
                     Creations
                   </div>
                 </div>
@@ -101,7 +101,7 @@ const ProfileCardItem = ({
                   <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
                     {projectsCount}
                   </div>
-                  <div className="tiny-bold sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
+                  <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
                     Projects
                   </div>
                 </div>
@@ -109,7 +109,7 @@ const ProfileCardItem = ({
                   <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
                     {supportingCount}
                   </div>
-                  <div className="tiny-bold sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
+                  <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
                     Supporting
                   </div>
                 </div>
