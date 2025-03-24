@@ -255,12 +255,12 @@ const LandingPage = () => {
                 </span>
               </span>
             </div>
-            <p className="small-regular md:base-regular text-light-2 max-w-3xl px-3 pt-4 sm:pt-8 text-pretty">
+            <p className="text-sm font-light leading-[23px] md:text-base text-light-2 max-w-3xl px-3 pt-4 sm:pt-8 text-pretty">
               Welcome to a platform where creativity in all forms thrives. From
               powerful tools to vibrant communities, we empower artists,
-              writers, musicians, photographers, performers and others to share
-              their passion and grow. Turn your talent into opportunities, your
-              creative journey starts here!
+              writers, musicians, photographers, performers and all others to
+              share their passion and grow. Turn your talent into opportunities,
+              your creative journey starts here!
             </p>
             {!isAuthenticated && (
               <Link to="/sign-up">
@@ -484,7 +484,7 @@ const FeatureCard = ({
   description: string;
   isComingSoon?: boolean;
 }) => (
-  <div className="flex flex-col items-center p-4 sm:p-6 md:p-8 bg-dark-2 rounded-xl border border-light-4 border-opacity-50 h-full relative">
+  <div className="flex flex-col items-center p-6 md:p-9 bg-dark-2 rounded-xl border border-light-4 border-opacity-50 h-full relative">
     {isComingSoon && (
       <div className="absolute -top-3 right-3">
         <div className="px-2 sm:px-3 py-1 bg-primary-500 text-dark-1 text-xs font-bold rounded-full uppercase tracking-wider">
@@ -500,7 +500,7 @@ const FeatureCard = ({
     <h3 className="text-lg sm:text-xl font-bold text-light-1 mb-2 sm:mb-4">
       {title}
     </h3>
-    <p className="text-light-2 text-center text-sm sm:text-base">
+    <p className="text-light-3 text-center subtle-comment sm:text-base">
       {description}
     </p>
   </div>
