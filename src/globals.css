@@ -80,12 +80,19 @@
   .subtle-comment {
     @apply text-[13px] font-normal leading-[140%];
   }
+
   .subtle-comment-semibold {
     @apply text-[13px] font-semibold leading-[140%];
   }
+
   .subtle-normal {
     @apply text-[12px] font-normal leading-[140%];
   }
+
+  .subtle-medium {
+    @apply text-[12px] font-medium leading-[140%];
+  }
+
   .subtle-semibold {
     @apply text-[12px] font-semibold leading-[140%];
   }
@@ -93,9 +100,15 @@
   .tiny-medium {
     @apply text-[10px] font-medium leading-[140%];
   }
+
+  .tiny-bold {
+    @apply text-[10px] font-bold leading-[140%] tracking-tighter;
+  }
+
   .tiny-normal {
     @apply text-[9px] font-normal leading-[140%] tracking-tight;
   }
+
   .tiny-normal-mutate {
     @apply text-[11px] font-normal leading-[140%];
   }

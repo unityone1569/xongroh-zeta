@@ -24,6 +24,7 @@ interface ProfileCardItemProps {
   hometown: string;
   profession: string;
   creationsCount: string;
+  projectsCount: string;
   isVerified: boolean;
   badges: string[];
   isCurrentUser: boolean;
@@ -42,6 +43,7 @@ const ProfileCardItem = ({
   isVerified,
   badges,
   creationsCount,
+  projectsCount,
   isCurrentUser,
   userId,
 }: ProfileCardItemProps) => {
@@ -86,20 +88,28 @@ const ProfileCardItem = ({
                 />
               </div>
 
-              <div className="flex gap-6 lg:gap-20 pt-2 lg:pt-4">
+              <div className="flex gap-6 2xl:gap-10 pt-3 lg:pt-4">
                 <div className="text-center">
-                  <div className="small-medium lg:base-medium">
+                  <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
                     {creationsCount}
                   </div>
-                  <div className="small-regular lg:base-regular pt-1">
+                  <div className="tiny-bold sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
                     Creations
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="small-medium lg:base-medium">
+                  <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
+                    {projectsCount}
+                  </div>
+                  <div className="tiny-bold sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
+                    Projects
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
                     {supportingCount}
                   </div>
-                  <div className="small-regular lg:base-regular pt-1">
+                  <div className="tiny-bold sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
                     Supporting
                   </div>
                 </div>
@@ -115,7 +125,7 @@ const ProfileCardItem = ({
                 />
               )}
             </div>
-            <p className="pt-3 max-w-xl text-pretty small-regular font-light">
+            <p className="pt-3 max-w-xl text-pretty small-regular font-light text-light-2">
               {bio}
             </p>
 
@@ -127,7 +137,7 @@ const ProfileCardItem = ({
                     alt="profession"
                     className="w-5 h-5 md:w-6 md:h-6 opacity-65"
                   />
-                  <p className="text-sm lg:text-base font-light">
+                  <p className="text-sm lg:text-base font-medium text-light-3">
                     {profession}
                   </p>
                 </div>
@@ -139,7 +149,9 @@ const ProfileCardItem = ({
                     alt="hometown"
                     className="w-5 h-5 md:w-6 md:h-6 opacity-65"
                   />
-                  <p className="text-sm lg:text-base font-light">{hometown}</p>
+                  <p className="text-sm lg:text-base font-medium text-light-3">
+                    {hometown}
+                  </p>
                 </div>
               )}
               {Array.isArray(badges) && badges.some((badge) => badge) && (
@@ -369,12 +381,13 @@ const Profile = () => {
       cover: profileUser?.cover || '/assets/icons/cover-placeholder.png',
       dp: profileUser?.dp || '/assets/icons/profile-placeholder.svg',
       creationsCount: profileUser?.creationsCount || '0',
-      bio: profileUser?.bio,
+      projectsCount: profileUser?.projectsCount || '0',
       hometown: profileUser?.hometown,
       profession: profileUser?.profession,
       supportingCount: profileUser?.supportingCount || '0',
       isVerified: profileUser?.verifiedUser || false,
       badges: profileUser?.badges || [],
+      bio: profileUser?.bio || '',
     }),
     [profileUser]
   );
