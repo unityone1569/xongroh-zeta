@@ -1,4 +1,4 @@
-import { ID, ImageGravity, Models, OAuthProvider, Query } from 'appwrite';
+import { ID, Models, OAuthProvider, Query } from 'appwrite';
 import { INewUser, IUpdateUser } from '@/types';
 import { account, appwriteConfig, avatars, databases, storage } from './config';
 
@@ -696,14 +696,7 @@ export async function uploadFile(file: File) {
 // Get-File-Preview
 export function getFilePreview(fileId: string) {
   try {
-    const fileUrl = storage.getFilePreview(
-      bk.creatorBucketId,
-      fileId,
-      0,
-      0,
-      ImageGravity.Center,
-      50
-    );
+    const fileUrl = storage.getFileView(bk.creatorBucketId, fileId);
 
     if (!fileUrl) throw Error;
 

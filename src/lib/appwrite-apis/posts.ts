@@ -33,6 +33,7 @@ const cl = {
 // Buckets
 const bk = {
   creationBucketId: appwriteConfig.storage.creationBucket,
+  projectBucketId: appwriteConfig.storage.projectBucket,
 };
 
 // *** CREATIONS ***
@@ -604,11 +605,11 @@ export async function addProject(project: INewProject) {
       if (!uploadedFile) throw new Error('File upload failed');
 
       // Get file URL and cast it to string
-      fileUrl = String(getFilePreview(uploadedFile.$id));
+      fileUrl = String(getProjectFilePreview(uploadedFile.$id));
       uploadedFileId = uploadedFile.$id;
 
       if (!fileUrl) {
-        await deleteFile(uploadedFile.$id);
+        await deleteProjectFile(uploadedFile.$id);
         throw new Error('File preview generation failed');
       }
     }
@@ -642,7 +643,7 @@ export async function addProject(project: INewProject) {
     );
 
     if (!newProject && uploadedFileId) {
-      await deleteFile(uploadedFileId);
+      await deleteProjectFile(uploadedFileId);
       throw new Error('Project creation failed');
     }
 
@@ -676,9 +677,9 @@ export async function updateProject(project: IUpdateProject) {
       if (!uploadedFile) throw new Error('File upload failed');
 
       // Get new file URL
-      const fileUrl = getFilePreview(uploadedFile.$id);
+      const fileUrl = getProjectFilePreview(uploadedFile.$id);
       if (!fileUrl) {
-        await deleteFile(uploadedFile.$id);
+        await deleteProjectFile(uploadedFile.$id);
         throw new Error('File preview generation failed');
       }
 
@@ -716,7 +717,7 @@ export async function updateProject(project: IUpdateProject) {
 
     // If update failed, delete newly uploaded file (if any)
     if (!updatedPost && hasFileToUpdate) {
-      await deleteFile(media.mediaId[0]);
+      await deleteProjectFile(media.mediaId[0]);
       throw new Error('Document update failed');
     }
 
@@ -726,7 +727,7 @@ export async function updateProject(project: IUpdateProject) {
       Array.isArray(project.mediaId) &&
       project.mediaId.length > 0
     ) {
-      await deleteFile(project.mediaId[0]);
+      await deleteProjectFile(project.mediaId[0]);
     }
 
     return updatedPost;
@@ -753,7 +754,7 @@ export async function deleteProject(
     if (!statusCode) throw Error;
 
     if (mediaId && (!Array.isArray(mediaId) || mediaId.length > 0)) {
-      await deleteFile(mediaId);
+      await deleteProjectFile(mediaId);
     }
 
     await decrementUserProjectsCount(authorId);
@@ -855,10 +856,36 @@ export function getFilePreview(fileId: string) {
   }
 }
 
+// Get-Project-File-Preview
+export function getProjectFilePreview(fileId: string) {
+  try {
+    const fileUrl = storage.getFileView(bk.projectBucketId, fileId);
+
+    if (!fileUrl) throw Error;
+
+    // console.log(fileUrl);
+
+    return fileUrl;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 // Delete-File
 export async function deleteFile(fileId: string) {
   try {
     await storage.deleteFile(bk.creationBucketId, fileId);
+
+    return { status: 'ok' };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// Delete-Project-File
+export async function deleteProjectFile(fileId: string) {
+  try {
+    await storage.deleteFile(bk.projectBucketId, fileId);
 
     return { status: 'ok' };
   } catch (error) {
