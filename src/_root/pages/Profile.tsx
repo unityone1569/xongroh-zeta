@@ -93,23 +93,23 @@ const ProfileCardItem = ({
                   <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
                     {creationsCount}
                   </div>
-                  <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
+                  <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-2">
                     Creations
                   </div>
                 </div>
-                <div className="text-center">
+                <Link to={`/portfolio/${userId}`} className="text-center">
                   <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
                     {projectsCount}
                   </div>
-                  <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
+                  <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-2">
                     Projects
                   </div>
-                </div>
+                </Link>
                 <div className="text-center">
                   <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
                     {supportingCount}
                   </div>
-                  <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-3">
+                  <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-2">
                     Supporting
                   </div>
                 </div>
@@ -125,7 +125,7 @@ const ProfileCardItem = ({
                 />
               )}
             </div>
-            <p className="pt-3 max-w-xl text-pretty small-regular font-light text-light-2">
+            <p className="pt-3 max-w-xl text-pretty small-regular font-light text-light-3">
               {bio}
             </p>
 
@@ -137,7 +137,7 @@ const ProfileCardItem = ({
                     alt="profession"
                     className="w-5 h-5 md:w-6 md:h-6 opacity-65"
                   />
-                  <p className="text-sm lg:text-base font-medium text-light-3">
+                  <p className="text-sm lg:text-base font-medium text-light-2">
                     {profession}
                   </p>
                 </div>
@@ -149,7 +149,7 @@ const ProfileCardItem = ({
                     alt="hometown"
                     className="w-5 h-5 md:w-6 md:h-6 opacity-65"
                   />
-                  <p className="text-sm lg:text-base font-medium text-light-3">
+                  <p className="text-sm lg:text-base font-medium text-light-2">
                     {hometown}
                   </p>
                 </div>
@@ -157,8 +157,8 @@ const ProfileCardItem = ({
               {Array.isArray(badges) && badges.some((badge) => badge) && (
                 <div className="flex flex-col gap-4 pt-9 pl-0.5">
                   <div className="flex gap-2 justify-start items-center">
-                    <h2 className="base-bold lg:body-bold text-primary-500">
-                      Badges
+                    <h2 className="small-bold lg:base-bold text-light-3">
+                      BADGES
                     </h2>
                   </div>
                   <div className="overflow-x-auto scrollbar-hide">
