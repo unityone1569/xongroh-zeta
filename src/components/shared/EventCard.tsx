@@ -72,7 +72,10 @@ const EventCard = ({ event, creator }: EventCardProps) => {
 
     try {
       if (isInterested && interestedEventId) {
-        removeInterest(interestedEventId);
+        removeInterest({
+          interestedEventId: interestedEventId,
+          userId: user.id
+        });
         setIsInterested(false);
         setInterestedEventId('');
       } else {

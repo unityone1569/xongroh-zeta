@@ -156,14 +156,18 @@ export const useAddInterestedEvent = () => {
 export const useDeleteInterestedEvent = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (interestedEventId: string) =>
+    mutationFn: ({ interestedEventId }: { interestedEventId: string; userId: string }) =>
       deleteInterestedEvent(interestedEventId),
-    onSuccess: (eventId, userId) => {
+    onSuccess: (_, variables) => {
+      const { interestedEventId, userId } = variables;
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_EVENTS],
       });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.CHECK_USER_INTERESTED_EVENT, eventId, userId],
+        queryKey: [QUERY_KEYS.CHECK_USER_INTERESTED_EVENT, interestedEventId, userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_INTERESTED_EVENTS_USERS, interestedEventId],
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_INTERESTED_EVENTS, userId],

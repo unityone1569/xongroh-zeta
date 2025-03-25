@@ -248,7 +248,7 @@ export async function addInterestedEvent(eventId: string, userId: string) {
 }
 
 // Delete Interested Event
-export async function deleteInterestedEvent(interestedEventId: string) {
+export async function deleteInterestedEvent(interestedEventId: string,) {
   try {
     await databases.deleteDocument(
       db.eventsId,
