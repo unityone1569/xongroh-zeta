@@ -385,7 +385,7 @@ const LandingPage = () => {
               />
             </div>
           </div>
-          {!isAuthenticated && (
+          {!isAuthenticated ? (
             <div className="mt-12 sm:mt-16 md:mt-24 flex flex-col items-center justify-center">
               <p className="text-light-2 text-center text-sm sm:text-base pb-6 sm:pb-9 max-w-md">
                 It's not every day you get to join something this epic!
@@ -399,6 +399,12 @@ const LandingPage = () => {
                 </Button>
               </Link>
             </div>
+          ) : (
+            <Link to="/home" className="mt-11 sm:mt-16 md:mt-24">
+              <Button className="shad-button_primary px-6 sm:px-10 font-bold shadow-lg hover:shadow-primary-500/20 transition-all">
+                Go to App
+              </Button>
+            </Link>
           )}
         </section>
 
