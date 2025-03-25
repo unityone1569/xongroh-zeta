@@ -145,6 +145,9 @@ export const useAddInterestedEvent = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_INTERESTED_EVENTS_USERS, data.eventId],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_INTERESTED_EVENTS, data.userId],
+      });
     },
   });
 };
@@ -161,6 +164,9 @@ export const useDeleteInterestedEvent = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.CHECK_USER_INTERESTED_EVENT, eventId, userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_INTERESTED_EVENTS, userId],
       });
     },
   });
@@ -220,6 +226,7 @@ export const useGetUserEvents = (userId: string) => {
   });
 };
 
+// Use-Search-Events
 export const useSearchEvents = (searchTerm: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_SEARCH_EVENTS, searchTerm],
