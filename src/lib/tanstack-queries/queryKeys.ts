@@ -85,4 +85,5 @@ export enum QUERY_KEYS {
   GET_USER_EVENTS = 'getEvents',
   GET_SEARCH_EVENTS = 'getSearchEvents',
   GET_UPCOMING_EVENTS = 'getUpcomingEvents',
+  GET_UPCOMING_EVENTS_COUNT= 'getUpcomingEventsCount',
 }

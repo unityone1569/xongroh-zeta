@@ -6,12 +6,14 @@ import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/lib/tanstack-queries/queryKeys';
 import { appwriteConfig, client } from '@/lib/appwrite-apis/config';
+import { useGetUpcomingEventsCount } from '@/lib/tanstack-queries/eventsQueries';
 
 const BottomBar = () => {
   const { pathname } = useLocation();
   const { user } = useUserContext();
   const queryClient = useQueryClient();
   const { data: pingCount = 0 } = useGetUserPings(user?.id);
+  const { data: upcomingEventsData } = useGetUpcomingEventsCount();
 
   useEffect(() => {
     if (!user?.id) return;
@@ -57,6 +59,8 @@ const BottomBar = () => {
     <section className="bottom-bar">
       {bottombarLinks.map((link) => {
         const isActive = pathname === link.route;
+        const hasEvents =
+          link.label === 'Events' && upcomingEventsData?.hasUpcomingEvents;
 
         return (
           <div className="flex flex-col items-center" key={link.label}>
@@ -77,7 +81,10 @@ const BottomBar = () => {
                   }`}
                 />
                 {link.label === 'Circle' && pingCount > 0 && (
-                  <span className="absolute -top-2.5 -right-[6px] w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
+                  <span className="absolute -top-1.5 -right-[6px] w-2.5 h-2.5 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
+                )}
+                {hasEvents && (
+                  <span className="absolute -top-1.5 -right-[6px] w-2.5 h-2.5 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
                 )}
               </div>
             </Link>

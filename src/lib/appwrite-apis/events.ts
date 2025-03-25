@@ -570,6 +570,39 @@ export async function getUpcomingEvents({ pageParam }: { pageParam?: string }) {
   }
 }
 
+
+
+// getUpcomingEventsCount
+export async function getUpcomingEventsCount() {
+  try {
+    const now = new Date().toISOString();
+    const queries = [
+      Query.greaterThan('dateTime', now),
+    ];
+
+    // Only need the count, not the actual documents
+    const { total } = await databases.listDocuments(
+      db.eventsId,
+      cl.eventId,
+      queries
+    );
+
+    return { 
+      hasUpcomingEvents: total > 0,
+      count: total 
+    };
+  } catch (error) {
+    console.error('Error fetching upcoming events count:', error);
+    return { 
+      hasUpcomingEvents: false,
+      count: 0 
+    };
+  }
+}
+
+
+
+
 // *** HELPER-FUNCTION ***
 
 // File-Upload

@@ -19,6 +19,7 @@ import {
   getUserEvents,
   getSearchEvents,
   getUpcomingEvents,
+  getUpcomingEventsCount,
 } from '../appwrite-apis/events';
 import { INewEvent, IUpdateEvent } from '@/types';
 
@@ -69,6 +70,9 @@ export const useCreateEvent = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_UPCOMING_EVENTS],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_UPCOMING_EVENTS_COUNT],
+      });
     },
   });
 };
@@ -91,6 +95,9 @@ export const useUpdateEvent = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_UPCOMING_EVENTS],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_UPCOMING_EVENTS_COUNT],
+      });
     },
   });
 };
@@ -110,6 +117,9 @@ export const useDeleteEvent = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_UPCOMING_EVENTS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_UPCOMING_EVENTS_COUNT],
       });
     },
   });
@@ -236,5 +246,15 @@ export const useGetUpcomingEvents = () => {
       const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
       return lastId;
     },
+  });
+};
+
+// Use-Get-Upcoming-Events-Count
+export const useGetUpcomingEventsCount = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_UPCOMING_EVENTS_COUNT],
+    queryFn: () => getUpcomingEventsCount(),
+    // Using shorter stale time so count updates more frequently
+    staleTime: 3 * 60 * 1000, // 3 minutes
   });
 };

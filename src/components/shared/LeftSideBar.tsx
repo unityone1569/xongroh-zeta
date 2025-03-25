@@ -7,6 +7,7 @@ import { useGetUserPings } from '@/lib/tanstack-queries/communityQueries';
 import { useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/lib/tanstack-queries/queryKeys';
 import { appwriteConfig, client } from '@/lib/appwrite-apis/config';
+import { useGetUpcomingEventsCount } from '@/lib/tanstack-queries/eventsQueries';
 
 const ProfileSection = memo(
   ({
@@ -54,6 +55,7 @@ const LeftSidebar = () => {
   const { user } = useUserContext();
   const queryClient = useQueryClient();
   const { data: pingCount = 0 } = useGetUserPings(user?.id);
+  const { data: upcomingEventsData } = useGetUpcomingEventsCount();
 
   useEffect(() => {
     if (!user?.id) return;
@@ -97,6 +99,8 @@ const LeftSidebar = () => {
         <ul className="flex flex-col gap-6 mt-8">
           {sidebarLinks.map((link: INavLink) => {
             const isActive = pathname === link.route;
+            const hasEvents =
+              link.label === 'Events' && upcomingEventsData?.hasUpcomingEvents;
 
             return (
               <li
@@ -119,6 +123,10 @@ const LeftSidebar = () => {
                   {link.label}
 
                   {link.label === 'Circle' && pingCount > 0 && (
+                    <span className=" -top-1 -right-[1px] w-2.5 h-2.5 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
+                  )}
+
+                  {hasEvents && (
                     <span className=" -top-1 -right-[1px] w-2.5 h-2.5 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full" />
                   )}
                 </NavLink>
