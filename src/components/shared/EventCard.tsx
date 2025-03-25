@@ -110,7 +110,7 @@ const EventCard = ({ event, creator }: EventCardProps) => {
         />
 
         {/* Event Type Badge - Top Left */}
-        <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300">
+        <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/20 backdrop-blur-xl text-emerald-300">
           {event.type || 'Event'}
         </div>
 
@@ -125,7 +125,7 @@ const EventCard = ({ event, creator }: EventCardProps) => {
         </div>
 
         {/* Creator Badge - Bottom Left */}
-        <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-dark-1/60 backdrop-blur-sm rounded-lg ">
+        <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-dark-1/60 backdrop-blur-sm rounded-full px-3 ">
           <LazyImage
             src={
               displayCreator?.dpUrl || '/assets/icons/profile-placeholder.svg'
