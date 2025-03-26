@@ -167,7 +167,7 @@ const PostDetails = () => {
             </div>
             <hr className="border w-full mt-2 mb-0.5 border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-              <p className="small-regular pl-1 whitespace-pre text-pretty">
+              <p className="small-regular pl-1 whitespace-pre-wrap text-pretty">
                 {post?.content}
               </p>
               {post?.tags &&
