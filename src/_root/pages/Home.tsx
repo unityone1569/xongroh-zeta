@@ -205,7 +205,7 @@ const Home = () => {
               className="w-full my-5 block"
             >
               <img
-                src="https://api.xongroh.com/v1/storage/buckets/678c8e03002d41317909/files/67e4d63b00355a7181ba/view?project=66e2a98a00192795ca51"
+                src="https://api.xongroh.com/v1/storage/buckets/678c8e03002d41317909/files/67e4d8770012b7cfee78/view?project=66e2a98a00192795ca51"
                 alt="Promotional Banner"
                 className="w-full rounded-lg object-cover aspect-video hover:opacity-90 transition-opacity"
               />
