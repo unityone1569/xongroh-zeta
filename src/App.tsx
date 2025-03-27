@@ -66,8 +66,7 @@ const App = () => {
 
           {/* Main App Routes - require both auth and verification */}
           <Route element={<RootLayout />}>
-            <Route path="/home" element={<Home />} />{' '}
-            {/* Changed from index to /home */}
+            <Route path="/home" element={<Home />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/circle" element={<Community />} />
             <Route path="/marketplace" element={<Marketplace />} />

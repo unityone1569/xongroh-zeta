@@ -200,25 +200,16 @@ const Home = () => {
         <div className="flex flex-col gap-9 w-full">
           <div className="flex flex-col gap-4 mt-16 lg:mt-0">
             <h2 className="h3-bold md:h2-bold text-left">Creation Feed</h2>
-
-            {/* <Link to="/events" className="py-5 md:py-9 pl-1 lg:hidden">
-              <div
-                className="flex items-center justify-center w-28 md:w-32 pl-1 pr-2 rounded-md hover:opacity-80 
-                transition-opacity cursor-pointer h-10 bg-dark-4 border border-light-4 border-opacity-50 gap-2"
-              >
-                <div className="flex items-center gap-2">
-                  <img
-                    src="/assets/icons/event.svg"
-                    alt="events"
-                    className="w-6 h-"
-                  />
-                  <span className="text-base font-semibold text-light-2">
-                    Events
-                  </span>
-                </div>
-              </div>
-            </Link> */}
-
+            <Link
+              to="/creations/67e3e111003cf0d33591"
+              className="w-full my-5 block"
+            >
+              <img
+                src="https://api.xongroh.com/v1/storage/buckets/678c8e03002d41317909/files/67e4d63b00355a7181ba/view?project=66e2a98a00192795ca51"
+                alt="Promotional Banner"
+                className="w-full rounded-lg object-cover aspect-video hover:opacity-90 transition-opacity"
+              />
+            </Link>
             <div className="flex-start mt-5">
               {TABS.map((tab) => (
                 <button
