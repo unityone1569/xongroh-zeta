@@ -387,7 +387,7 @@ const LandingPage = () => {
           </div>
           {!isAuthenticated ? (
             <div className="mt-12 sm:mt-16 md:mt-24 flex flex-col items-center justify-center">
-              <p className="text-light-2 text-center text-sm sm:text-base pb-6 sm:pb-9 max-w-md">
+              <p className="text-light-2 font-semibold text-center text-sm sm:text-base pb-6 sm:pb-9 max-w-md">
                 It's not every day you get to join something this epic!
               </p>
               <Link to="/sign-up">
