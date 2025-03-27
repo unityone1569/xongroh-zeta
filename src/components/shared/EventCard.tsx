@@ -109,7 +109,7 @@ const EventCard = ({ event, creator }: EventCardProps) => {
               : event.imageUrl) || '/assets/icons/cover-placeholder.png'
           }
           alt={event.title}
-          className="w-full aspect-video object-cover"
+          className="w-full aspect-video object-contain bg-dark-3"
         />
 
         {/* Event Type Badge - Top Left */}
