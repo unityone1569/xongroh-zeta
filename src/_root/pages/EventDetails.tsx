@@ -76,7 +76,7 @@ const EventDetails = () => {
             <LazyImage
               src={event?.imageUrl || '/assets/icons/cover-placeholder.png'}
               alt={event?.title}
-              className="w-full aspect-video object-cover"
+              className="w-full aspect-auto object-cover"
             />
 
             {/* Date Badge */}
