@@ -57,7 +57,7 @@ const Events = () => {
         <h2 className="h3-bold md:h2-bold w-full mt-16 lg:mt-0">Events</h2>
 
         {/* Tabs with horizontal scroll */}
-        <div className="w-full mt-4 overflow-x-auto custom-scrollbar pb-1">
+        <div className="w-full mt-4 overflow-x-auto no-scrollbar pb-1">
           <div className="flex gap-2 min-w-max pb-2">
             {filters.map((f) => (
               <button
