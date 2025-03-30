@@ -66,7 +66,7 @@ const EventDetails = () => {
               />
               <p className="pt-1 lg:small-medium">Back</p>
             </button>
-            <div className="px-2.5 py-1 mr-3.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300">
+            <div className="px-3.5 py-1 mr-3.5 rounded-full text-light-1 text-xs font-medium bg-violet-500">
               {event?.type || 'Event'}
             </div>
           </div>
