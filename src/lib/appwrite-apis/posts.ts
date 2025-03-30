@@ -327,7 +327,7 @@ export async function getSearchCreations(searchTerm: string) {
     const { documents: creations } = await databases.listDocuments(
       db.postsId,
       cl.creationId,
-      [Query.search('content', searchTerm)]
+      [Query.equal('isBanned', false), Query.search('content', searchTerm)]
     );
 
     if (!creations || creations.length === 0) {
@@ -369,6 +369,7 @@ export async function getInfiniteCreations({
   pageParam: number;
 }) {
   const queries: any[] = [
+    Query.equal('isBanned', false),
     Query.orderDesc('$createdAt'),
     Query.limit(6),
     Query.select([
@@ -523,6 +524,7 @@ export async function getSupportingCreations({
 
     // Query posts from supported creators with pagination
     const queries: any[] = [
+      Query.equal('isBanned', false),
       Query.equal('authorId', supportedCreatorIds),
       Query.orderDesc('$createdAt'),
       Query.limit(6),

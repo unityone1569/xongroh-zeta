@@ -790,6 +790,7 @@ export async function getUserCreations({
   authorId: string;
 }) {
   const queries: any[] = [
+    Query.equal('isBanned', false),
     Query.orderDesc('$createdAt'),
     Query.equal('authorId', authorId), // Filter by authorId
     Query.limit(9),
@@ -840,8 +841,9 @@ export async function getUserProjects({
   authorId: string;
 }) {
   const queries: any[] = [
+    Query.equal('isBanned', false),
     Query.orderDesc('$createdAt'),
-    Query.equal('authorId', authorId), // Filter by authorId
+    Query.equal('authorId', authorId),
     Query.limit(9),
   ];
 
