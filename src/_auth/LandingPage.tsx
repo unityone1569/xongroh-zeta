@@ -196,7 +196,7 @@ const LandingPage = () => {
               alt="logo"
               className="w-7 h-7 sm:h-9 sm:w-9 "
             />
-            <h3 className="text-[23px] sm:text-[26px] font-bold leading-[140%] tracking-wider">
+            <h3 className="text-[23px] sm:text-[26px] text-primary-500 font-bold leading-[140%] tracking-wider">
               ongroh
             </h3>
           </Link>
