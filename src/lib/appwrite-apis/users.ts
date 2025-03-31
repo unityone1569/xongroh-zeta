@@ -725,7 +725,8 @@ export async function deleteFile(fileId: string) {
 export async function getTopCreators() {
   try {
     const creators = await databases.listDocuments(db.usersId, cl.creatorId, [
-      Query.or([Query.notEqual('isBanned', true), Query.isNull('isBanned')]), 
+      Query.or([Query.notEqual('isBanned', true), Query.isNull('isBanned')]),
+      Query.notEqual('name', ['Xongroh']), 
       Query.orderDesc('creationsCount'),
       Query.limit(10),
     ]);
