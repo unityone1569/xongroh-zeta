@@ -43,17 +43,21 @@ export function WelcomeDialog({ open, onOpenChange }: WelcomeDialogProps) {
               <span className="font-semibold text-violet-300">Projects</span>.
             </li>
             <li role="listitem">
-              • Connect and Grow with other{' '}
-              <span className="font-semibold text-violet-300">Creators</span>.
+              • <span className="font-semibold text-violet-300">Connect</span>{' '}
+              and <span className="font-semibold text-violet-300">Grow</span>{' '}
+              with other Creators.
             </li>
             <li role="listitem">
-              • Make a Professional{' '}
-              <span className="font-semibold text-violet-300">Portfolio</span>.
+              • Make a{' '}
+              <span className="font-semibold text-violet-300">
+                Professional Portfolio
+              </span>
+              .
             </li>
             <li role="listitem">
               • Give constructive{' '}
               <span className="font-semibold text-violet-300">Feedbacks</span>{' '}
-              to Creators.
+              in the comment section.
             </li>
             <li role="listitem">
               • Join our{' '}
@@ -63,8 +67,9 @@ export function WelcomeDialog({ open, onOpenChange }: WelcomeDialogProps) {
             </li>
             <li role="listitem">
               • Discover{' '}
-              <span className="font-semibold text-violet-300">Events</span> and
-              get Tickets for your fav Creators.
+              <span className="font-semibold text-violet-300">Events</span> and{' '}
+              <span className="font-semibold text-violet-300">Tickets</span> for
+              your fav Creators.
             </li>
           </ul>
 

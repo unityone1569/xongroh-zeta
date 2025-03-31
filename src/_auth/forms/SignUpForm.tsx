@@ -35,8 +35,6 @@ const SignUpForm = () => {
     useCreateUserAccount();
   const { mutateAsync: loginWithGoogle } = useLoginWithGoogle();
   const { data: creators } = useGetTopCreators();
-  // const { mutateAsync: SignInAccount, isPending: isSigningInUser } =
-  //   useSignInAccount();
 
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     resolver: zodResolver(SignUpFormSchema),
@@ -46,8 +44,64 @@ const SignUpForm = () => {
   const [isGoogleSignUp, setIsGoogleSignUp] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
+  const [isEmailBlacklisted, setIsEmailBlacklisted] = useState(false);
+  const [blacklistMessage, setBlacklistMessage] = useState('');
 
   const formDisabled = isGoogleSignUp || isCreatingAccount || isUserLoading;
+
+  // Email blacklist from environment variables
+  const blacklistedDomains = import.meta.env.VITE_BLACKLISTED_DOMAINS
+    ? import.meta.env.VITE_BLACKLISTED_DOMAINS.split(',')
+    : [];
+
+  const blacklistedEmails = import.meta.env.VITE_BLACKLISTED_EMAILS
+    ? import.meta.env.VITE_BLACKLISTED_EMAILS.split(',')
+    : [];
+
+  const checkIfEmailIsBlacklisted = (email: string) => {
+    if (!email) return false;
+
+    const emailLower = email.toLowerCase();
+
+    // Only attempt to split if @ is present to avoid errors
+    const atIndex = emailLower.indexOf('@');
+    if (atIndex === -1) return false;
+
+    // Safely construct the base email (without + attribution)
+    let emailBase = emailLower;
+    const plusIndex = emailLower.substring(0, atIndex).indexOf('+');
+    if (plusIndex !== -1) {
+      // This handles the + attribution technique
+      emailBase =
+        emailLower.substring(0, plusIndex) + emailLower.substring(atIndex);
+    }
+
+    // Check for exact blacklisted emails
+    if (
+      blacklistedEmails.includes(emailLower) ||
+      blacklistedEmails.includes(emailBase)
+    ) {
+      setIsEmailBlacklisted(true);
+      setBlacklistMessage(
+        'This email has been suspended due to suspicious activity.'
+      );
+      return true;
+    }
+
+    // Check for blacklisted domains
+    const domain = emailLower.split('@')[1];
+    if (domain && blacklistedDomains.includes(domain)) {
+      setIsEmailBlacklisted(true);
+      setBlacklistMessage(
+        'Emails from this domain are not allowed due to spam concerns.'
+      );
+      return true;
+    }
+
+    setIsEmailBlacklisted(false);
+    setBlacklistMessage('');
+    return false;
+  };
 
   const handleSignupWithGoogle = async (
     event: React.MouseEvent<HTMLButtonElement>
@@ -68,33 +122,29 @@ const SignUpForm = () => {
       toast({ title: 'Google sign-up failed. Please try again.' });
     } finally {
       form.reset();
-      // setIsGoogleSignUp(false);
     }
   };
-
-  // Add console logging for form state
-  // console.log('Form State:', form.formState);
-  // console.log('Form Errors:', form.formState.errors);
 
   const handleSignup = async (user: z.infer<typeof SignUpFormSchema>) => {
     if (!termsAccepted) {
       setShowTermsError(true);
-      return; // Stop form submission here
+      return;
     }
-    // console.log('Form Submission Triggered with data:', user);
+
+    // Check if email is blacklisted
+    if (checkIfEmailIsBlacklisted(user.email)) {
+      toast({
+        title: 'Email not allowed',
+        description: blacklistMessage,
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
       // Create user account
       const newUser = await createUserAccount(user);
       if (!newUser) throw new Error('Signup failed');
-
-      // Sign in after signup
-      // const session = await SignInAccount({
-      //   email: user.email,
-      //   password: user.password,
-      // });
-      // if (!session) throw new Error('Sign-in failed');
-
-      // Navigate directly to verify-email without signing in
 
       const isLoggedIn = await checkAuthUser();
       if (isLoggedIn) {
@@ -168,6 +218,34 @@ const SignUpForm = () => {
           </p>
         </div>
 
+        {/* COTM Contest Sticker */}
+        <div className="relative mb-8">
+          <div className="absolute -top-3 -right-3 bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">
+            NEW!
+          </div>
+          <div className="bg-gradient-to-r from-primary-600 to-violet-600 p-0.5 rounded-xl">
+            <div className="bg-dark-3 rounded-lg p-4">
+              <div className="flex items-center  gap-3">
+                <div>
+                  <h3 className="base-bold text-white">
+                    C.O.T.M. Competition is Live!
+                  </h3>
+                  <p className="subtle-comment lg:small-regular text-light-3 pt-1.5">
+                    Submit your best creation on <strong>Xongroh</strong> for a
+                    chance to win{' '}
+                    <span className="font-semibold text-violet-300">₹3000</span>{' '}
+                    and a{' '}
+                    <span className="font-semibold text-violet-300">
+                      Xongroh T-Shirt
+                    </span>{' '}
+                    every month!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <form
           onSubmit={(e) => {
             if (!termsAccepted) {
@@ -177,7 +255,7 @@ const SignUpForm = () => {
             }
             form.handleSubmit(handleSignup)(e);
           }}
-          className="flex flex-col gap-5 w-full  mt-4"
+          className="flex flex-col gap-5 w-full mt-4"
         >
           <FormField
             control={form.control}
@@ -224,11 +302,25 @@ const SignUpForm = () => {
                 <FormControl>
                   <Input
                     type="email"
-                    className="shad-input"
+                    className={`shad-input ${
+                      isEmailBlacklisted ? 'border-red/50' : ''
+                    }`}
                     {...field}
                     disabled={formDisabled}
+                    onBlur={(e) => {
+                      field.onBlur();
+                      checkIfEmailIsBlacklisted(e.target.value);
+                    }}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      if (e.target.value)
+                        checkIfEmailIsBlacklisted(e.target.value);
+                    }}
                   />
                 </FormControl>
+                {isEmailBlacklisted && (
+                  <p className="text-red text-sm mt-1">{blacklistMessage}</p>
+                )}
                 <FormMessage />
               </FormItem>
             )}
