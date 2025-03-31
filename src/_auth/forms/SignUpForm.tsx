@@ -232,8 +232,8 @@ const SignUpForm = () => {
                   </h3>
                   <p className="subtle-comment lg:small-regular text-light-3 pt-1.5">
                     Submit your best creation on <strong>Xongroh</strong> for a
-                    chance to win{' '}
-                    <span className="font-semibold text-violet-300">₹3000</span>{' '}
+                    chance to{' '}
+                    <span className="font-semibold text-violet-300">Win ₹3000</span>{' '}
                     and a{' '}
                     <span className="font-semibold text-violet-300">
                       Xongroh T-Shirt
