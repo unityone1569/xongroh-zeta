@@ -354,7 +354,15 @@ const LandingPage = () => {
         </section>
 
         {/* COTM Competition Section */}
-        <section className="min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center w-full py-12 sm:py-16 md:py-20 px-4 sm:px-5 bg-gradient-to-br from-primary-500/10 via-dark-1 to-dark-1">
+        <section className="min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center w-full py-12 sm:py-16 md:py-20 px-6 sm:px-5 bg-gradient-to-br from-primary-500/10 via-dark-1 to-dark-1 relative">
+          {/* Live Now! badge at the top-right of the entire section */}
+          <div className="absolute top-4 left-4 md:top-6 md:left-8 bg-gradient-to-r from-primary-600 to-primary-500/80 text-light-1 text-xs  font-medium px-3 py-1.5 rounded-full shadow-lg shadow-primary-600/20 z-10">
+            <span className="flex items-center gap-2.5">
+              <span className="w-2 h-2 bg-light-1 rounded-full animate-ping"></span>
+              <span className="subtle-comment">Live now!</span>
+            </span>
+          </div>
+
           <div className="w-full max-w-4xl flex flex-col md:flex-row gap-8 md:gap-12 items-center">
             <div className="md:w-2/5 flex justify-center">
               <div className="relative">
@@ -362,9 +370,6 @@ const LandingPage = () => {
                   <div className="relative flex items-center justify-center">
                     <div className="text-5xl md:text-6xl z-10">🏆</div>
                   </div>
-                </div>
-                <div className="absolute -top-3 -right-5 md:-right-3 bg-primary-600 text-light-1 text-xs font-medium px-3 py-1 rounded-full animate-pulse">
-                  Live Now!
                 </div>
               </div>
             </div>
@@ -487,7 +492,7 @@ const LandingPage = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                 </svg>
                 <span>+91 91275 10087</span>
               </a>
