@@ -353,6 +353,54 @@ const LandingPage = () => {
           </div>
         </section>
 
+        {/* COTM Competition Section */}
+        <section className="min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center w-full py-12 sm:py-16 md:py-20 px-4 sm:px-5 bg-gradient-to-br from-primary-500/10 via-dark-1 to-dark-1">
+          <div className="w-full max-w-4xl flex flex-col md:flex-row gap-8 md:gap-12 items-center">
+            <div className="md:w-2/5 flex justify-center">
+              <div className="relative">
+                <div className="w-40 h-40 md:w-48 md:h-48 bg-dark-4 rounded-full flex items-center justify-center animate-pulse-slow">
+                  <img
+                    src="/assets/icons/trophy.svg"
+                    alt="Trophy"
+                    className="w-20 h-20 md:w-24 md:h-24 z-10"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/assets/icons/logo.svg';
+                    }}
+                  />
+                </div>
+                <div className="absolute -top-3 -right-3 bg-dark-1 text-primary-500 text-xs font-bold py-1 px-3 rounded-full border border-primary-500">
+                  APRIL 2025
+                </div>
+              </div>
+            </div>
+
+            <div className="md:w-3/5 text-center md:text-left">
+              <h2 className="h3-bold text-primary-500 mb-3">
+                C.O.T.M. Competition is Live!
+              </h2>
+              <p className="text-light-1 subtle-comment md:base-regular mb-4">
+                Submit your best creation on Xongroh for a chance to Win ₹3000
+                and a Xongroh T-Shirt every month!
+              </p>
+              <p className="text-light-3 subtle-normal md:subtle-comment mb-6">
+                Competition starts from April, 2025
+              </p>
+
+              <Link
+                to={isAuthenticated ? '/add-creation' : '/sign-up'}
+                className="flex md:flex-none w-full justify-center items-center md:justify-start md:items-start"
+              >
+                <Button className="shad-button_primary px-6">
+                  {isAuthenticated
+                    ? 'Submit Your Creation'
+                    : 'Join to Participate'}
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* Community Stats Section - Replace fixed height with min-height */}
         <section className="min-h-[600px] md:min-h-[720px] flex flex-col text-center items-center justify-center w-full py-12 sm:py-16 md:py-24 px-4 sm:px-5">
           <h3 className="h3-bold sm:h2-bold text-light-1 ">
