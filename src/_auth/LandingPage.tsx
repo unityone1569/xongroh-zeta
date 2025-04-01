@@ -374,11 +374,13 @@ const LandingPage = () => {
                 C.O.T.M. Competition
               </h2>
               <p className="text-light-2 subtle-comment md:small-regular mb-4">
-                Submit your best creation on Xongroh for a chance to Win ₹3000
-                and a Xongroh T-Shirt every month!
+                Submit your best creation on Xongroh for a chance to{' '}
+                <span className="font-bold">Win ₹3000</span> and a{' '}
+                <span className="font-bold">Xongroh T-Shirt</span> every month!
               </p>
               <p className="text-light-3 subtle-normal md:subtle-comment mb-6">
-                Competition starts from 1st April, 2025.
+                Competition starts from{' '}
+                <span className="font-bold">1st April, 2025.</span>
               </p>
 
               <Link
