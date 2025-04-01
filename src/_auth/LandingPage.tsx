@@ -358,33 +358,27 @@ const LandingPage = () => {
           <div className="w-full max-w-4xl flex flex-col md:flex-row gap-8 md:gap-12 items-center">
             <div className="md:w-2/5 flex justify-center">
               <div className="relative">
-                <div className="w-40 h-40 md:w-48 md:h-48 bg-dark-4 rounded-full flex items-center justify-center animate-pulse-slow">
-                  <img
-                    src="/assets/icons/trophy.svg"
-                    alt="Trophy"
-                    className="w-20 h-20 md:w-24 md:h-24 z-10"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/assets/icons/logo.svg';
-                    }}
-                  />
+                <div className="w-32 h-32 md:w-44 md:h-44 bg-gradient-to-br from-primary-500/30 via-primary-600/50 to-dark-3 rounded-full flex items-center justify-center animate-pulse-slow relative">
+                  <div className="relative flex items-center justify-center">
+                    <div className="text-5xl md:text-6xl z-10">🏆</div>
+                  </div>
                 </div>
-                <div className="absolute -top-3 -right-3 bg-dark-1 text-primary-500 text-xs font-bold py-1 px-3 rounded-full border border-primary-500">
-                  APRIL 2025
+                <div className="absolute -top-3 -right-5 md:-right-3 bg-primary-600 text-light-1 text-xs font-medium px-3 py-1 rounded-full animate-pulse">
+                  Live Now!
                 </div>
               </div>
             </div>
 
             <div className="md:w-3/5 text-center md:text-left">
               <h2 className="h3-bold text-primary-500 mb-3">
-                C.O.T.M. Competition is Live!
+                C.O.T.M. Competition
               </h2>
-              <p className="text-light-1 subtle-comment md:base-regular mb-4">
+              <p className="text-light-2 subtle-comment md:small-regular mb-4">
                 Submit your best creation on Xongroh for a chance to Win ₹3000
                 and a Xongroh T-Shirt every month!
               </p>
               <p className="text-light-3 subtle-normal md:subtle-comment mb-6">
-                Competition starts from April, 2025
+                Competition starts from 1st April, 2025.
               </p>
 
               <Link
