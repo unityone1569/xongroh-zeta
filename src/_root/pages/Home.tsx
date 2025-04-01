@@ -209,6 +209,18 @@ const Home = () => {
                 alt="Promotional Banner"
                 className="w-full rounded-lg object-cover aspect-video hover:opacity-90 transition-opacity"
               />
+              <div className="flex gap-3.5 sm:gap-6 mt-6 w-full justify-start">
+                <Link to="/add-creation">
+                  <Button className="shad-button_primary px-5">
+                    Submit Creation
+                  </Button>
+                </Link>
+                <Link to="/creations/67e3e111003cf0d33591">
+                  <Button className="px-6 shad-button_dark_4">
+                    Know More
+                  </Button>
+                </Link>
+              </div>
             </Link>
             <div className="flex-start mt-5">
               {TABS.map((tab) => (
