@@ -92,6 +92,7 @@ const LandingPage = () => {
     creations: 0,
     projects: 0,
     events: 0,
+    discussions: 0, // Add discussions property
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -100,33 +101,40 @@ const LandingPage = () => {
     setIsLoading(true);
     try {
       // Use Promise.all to fetch data in parallel rather than sequentially
-      const [creators, creations, projects, events] = await Promise.all([
-        databases.listDocuments(
-          appwriteConfig.databases.users.databaseId,
-          appwriteConfig.databases.users.collections.creator,
-          [Query.limit(1)]
-        ),
-        databases.listDocuments(
-          appwriteConfig.databases.posts.databaseId,
-          appwriteConfig.databases.posts.collections.creation
-        ),
-        databases.listDocuments(
-          appwriteConfig.databases.posts.databaseId,
-          appwriteConfig.databases.posts.collections.project,
-          [Query.limit(1)]
-        ),
-        databases.listDocuments(
-          appwriteConfig.databases.events.databaseId,
-          appwriteConfig.databases.events.collections.event,
-          [Query.limit(1)]
-        ),
-      ]);
+      const [creators, creations, projects, events, discussions] =
+        await Promise.all([
+          databases.listDocuments(
+            appwriteConfig.databases.users.databaseId,
+            appwriteConfig.databases.users.collections.creator,
+            [Query.limit(1)]
+          ),
+          databases.listDocuments(
+            appwriteConfig.databases.posts.databaseId,
+            appwriteConfig.databases.posts.collections.creation
+          ),
+          databases.listDocuments(
+            appwriteConfig.databases.posts.databaseId,
+            appwriteConfig.databases.posts.collections.project,
+            [Query.limit(1)]
+          ),
+          databases.listDocuments(
+            appwriteConfig.databases.events.databaseId,
+            appwriteConfig.databases.events.collections.event,
+            [Query.limit(1)]
+          ),
+          databases.listDocuments(
+            appwriteConfig.databases.communities.databaseId,
+            appwriteConfig.databases.communities.collections.discussion,
+            [Query.limit(1)]
+          ),
+        ]);
 
       setStats({
         creators: creators.total,
         creations: creations.total,
         projects: projects.total,
         events: events.total,
+        discussions: discussions.total,
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -136,6 +144,7 @@ const LandingPage = () => {
         creations: 99,
         projects: 50,
         events: 30,
+        discussions: 15,
       });
     } finally {
       setIsLoading(false);
@@ -428,6 +437,11 @@ const LandingPage = () => {
                 isLoading={isLoading}
               />
               <StatCard
+                number={stats.discussions}
+                label="Discussions Added"
+                isLoading={isLoading}
+              />
+              <StatCard
                 number={stats.events}
                 label="Events Listed"
                 isLoading={isLoading}
@@ -623,7 +637,9 @@ const StatCard = ({
           displayNumber
         )}
       </p>
-      <p className="text-light-2 text-sm sm:text-base base-medium uppercase">{label}</p>
+      <p className="text-light-2 text-sm sm:text-base base-medium uppercase">
+        {label}
+      </p>
     </div>
   );
 };
