@@ -187,7 +187,7 @@ const SignUpForm = () => {
         </div>
 
         {/* Founding Creator Section */}
-        <div className="flex flex-col items-center gap-4 my-9 bg-dark-3 p-6 rounded-xl border-light-4 border">
+        <div className="flex flex-col items-center gap-4 my-9 bg-dark-1 p-6 rounded-xl border-light-4 border">
           <div className="flex flex-col items-center gap-2">
             <p className="h4-bold text-center pb-3">
               Only <span className="text-primary-500">{remainingSpots}</span>{' '}
@@ -220,20 +220,23 @@ const SignUpForm = () => {
 
         {/* COTM Contest Sticker */}
         <div className="relative mb-8">
-          <div className="absolute -top-3 -right-3 bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">
-            NEW!
+          <div className="absolute -top-3 -right-3 bg-primary-600 text-light-1 text-xs  font-medium px-3.5 py-1 rounded-full z-10">
+            <span className="flex justify-center items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-light-1 rounded-full animate-ping mb-0.5"></span>
+              <span className="subtle-semibold">LIVE</span>
+            </span>
           </div>
           <div className="bg-gradient-to-r from-primary-600 to-violet-600 p-0.5 rounded-xl">
-            <div className="bg-dark-3 rounded-lg p-4">
+            <div className="bg-dark-2 rounded-lg p-4">
               <div className="flex items-center  gap-3">
                 <div>
-                  <h3 className="base-bold text-white">
-                    C.O.T.M. Competition is Live!
-                  </h3>
+                  <h3 className="base-bold text-white">C.O.T.M. Competition</h3>
                   <p className="subtle-comment lg:small-regular text-light-3 pt-1.5">
                     Submit your best creation on <strong>Xongroh</strong> for a
                     chance to{' '}
-                    <span className="font-semibold text-violet-300">Win ₹3000</span>{' '}
+                    <span className="font-semibold text-violet-300">
+                      Win ₹3000
+                    </span>{' '}
                     and a{' '}
                     <span className="font-semibold text-violet-300">
                       Xongroh T-Shirt

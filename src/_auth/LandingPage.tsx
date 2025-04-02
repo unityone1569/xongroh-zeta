@@ -356,10 +356,10 @@ const LandingPage = () => {
         {/* COTM Competition Section */}
         <section className="min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center w-full py-12 sm:py-16 md:py-20 px-6 sm:px-5 bg-gradient-to-br from-primary-500/10 via-dark-1 to-dark-1 relative">
           {/* Live Now! badge at the top-right of the entire section */}
-          <div className="absolute top-4 left-4 md:top-6 md:left-8 bg-gradient-to-r from-primary-600 to-primary-500/80 text-light-1 text-xs  font-medium px-3 py-1.5 rounded-full shadow-lg shadow-primary-600/20 z-10">
-            <span className="flex items-center gap-2.5">
-              <span className="w-2 h-2 bg-light-1 rounded-full animate-ping"></span>
-              <span className="subtle-comment">Live now!</span>
+          <div className="absolute top-4 left-4 md:top-6 md:left-8 bg-gradient-to-r from-primary-600 to-primary-500/80 text-light-1 text-xs  font-medium px-3.5 py-1 rounded-full shadow-lg shadow-primary-600/20 z-10">
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-light-1 rounded-full animate-ping mb-o.5"></span>
+              <span className="subtle-semibold">LIVE</span>
             </span>
           </div>
 
