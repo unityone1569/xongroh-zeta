@@ -623,7 +623,7 @@ const StatCard = ({
           displayNumber
         )}
       </p>
-      <p className="text-light-2 text-sm sm:text-base base-regular">{label}</p>
+      <p className="text-light-2 text-sm sm:text-base base-medium uppercase">{label}</p>
     </div>
   );
 };
