@@ -181,7 +181,7 @@ const SignUpForm = () => {
             <img className="h-14" src="/assets/icons/logo.svg" alt="logo" />
           </Link>
           <h2 className="h3-bold md:h2-bold pt-6 sm:pt-8">Create account</h2>
-          <p className="text-light-3 small-medium md:base-regular mt-2">
+          <p className="text-light-3 text-center small-medium md:base-regular mt-2">
             A fresh journey is just getting underway!
           </p>
         </div>
