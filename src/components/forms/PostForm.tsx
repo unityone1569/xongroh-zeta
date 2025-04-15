@@ -76,7 +76,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
       toast({ title: 'Please try again!' });
     }
 
-    navigate(`/creations/${post?.$id}`);
+    navigate(`/creations/${newPost?.$id}`);
   }
 
   return (
