@@ -267,7 +267,7 @@ const LandingPage = () => {
               <span className="text-lg md:text-xl text-light-2 font-semibold">
                 Are you?
               </span>
-              <span className="text-primary-500 text-4xl md:text-6xl pt-1.5 sm:pt-3 font-bold capitalize transition-all duration-500 ease-in-out">
+              <span className="text-primary-500 text-3xl md:text-5xl pt-1.5 sm:pt-3 font-bold capitalize transition-all duration-500 ease-in-out">
                 {creatorType}
               </span>
             </div>
