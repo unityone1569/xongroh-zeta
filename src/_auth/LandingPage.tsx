@@ -143,11 +143,11 @@ const LandingPage = () => {
       console.error('Error fetching stats:', error);
       // Fallback to reasonable defaults if fetch fails
       setStats({
-        creators: 100,
-        creations: 99,
+        creators: 130,
+        creations: 105,
         projects: 50,
         events: 30,
-        discussions: 15,
+        discussions: 19,
       });
     } finally {
       setIsLoading(false);
@@ -188,7 +188,7 @@ const LandingPage = () => {
           setIsTransitioning(false);
         }, 50);
       }, 500); // Wait for fade out before changing image
-    }, 6500);
+    }, 3000);
 
     return () => {
       clearInterval(creatorInterval);
