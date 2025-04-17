@@ -86,6 +86,9 @@ const LandingPage = () => {
   const [backgroundImage, setBackgroundImage] = useState(artBackgrounds[0]);
   const [isArtBackground, setIsArtBackground] = useState(true);
 
+  // First, add a new state for transition
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
   // Add states for the stats
   const [stats, setStats] = useState({
     creators: 0,
@@ -156,27 +159,36 @@ const LandingPage = () => {
   }, []);
 
   useEffect(() => {
-    // First effect for changing creator types (keep your existing code)
+    // First effect for changing creator types
     const creatorInterval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * creatorTypes.length);
       setCreatorType(creatorTypes[randomIndex]);
-    }, 3000); // Changes every 3 seconds
+    }, 1900);
 
     // Second effect for changing background images
     const backgroundInterval = setInterval(() => {
-      // Toggle between art and music themes
-      setIsArtBackground((prev) => !prev);
+      setIsTransitioning(true); // Start transition
 
-      if (isArtBackground) {
-        // If currently art, switch to music
-        const randomIndex = Math.floor(Math.random() * musicBackgrounds.length);
-        setBackgroundImage(musicBackgrounds[randomIndex]);
-      } else {
-        // If currently music, switch to art
-        const randomIndex = Math.floor(Math.random() * artBackgrounds.length);
-        setBackgroundImage(artBackgrounds[randomIndex]);
-      }
-    }, 30000); // Change background every 7 seconds
+      setTimeout(() => {
+        // Toggle between art and music themes
+        setIsArtBackground((prev) => !prev);
+
+        if (isArtBackground) {
+          const randomIndex = Math.floor(
+            Math.random() * musicBackgrounds.length
+          );
+          setBackgroundImage(musicBackgrounds[randomIndex]);
+        } else {
+          const randomIndex = Math.floor(Math.random() * artBackgrounds.length);
+          setBackgroundImage(artBackgrounds[randomIndex]);
+        }
+
+        // Reset transition state after a short delay
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 50);
+      }, 500); // Wait for fade out before changing image
+    }, 6500);
 
     return () => {
       clearInterval(creatorInterval);
@@ -237,7 +249,9 @@ const LandingPage = () => {
             <img
               src={backgroundImage}
               alt="Creative background"
-              className="w-full h-full object-cover transition-opacity duration-1000"
+              className={`w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+                isTransitioning ? 'opacity-0' : 'opacity-100'
+              }`}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src =
@@ -249,19 +263,12 @@ const LandingPage = () => {
 
           {/* Content positioned above the background */}
           <div className="z-10 flex flex-col items-center justify-center gap-6 sm:gap-8 max-w-4xl py-16 md:py-24">
-            <div
-              className="h2-bold md:h1-bold font-bold text-light-1 min-h-[110px] md:min-h-[130px] flex flex-wrap 
-              items-center justify-center gap-x-2 px-4"
-            >
-              <span className="inline-flex items-center">Are you</span>
-              <span className="inline-flex items-center">
-                {creatorType.match(/^(a|an)\s/)?.[0] || 'a'}
+            <div className="h2-bold md:h1-bold font-bold text-light-1 min-h-[110px] md:min-h-[130px] flex flex-col items-center justify-center gap-2 px-4">
+              <span className="text-lg md:text-xl text-light-2 font-semibold">
+                Are you?
               </span>
-              <span className="text-primary-500 inline-flex items-center break-words">
-                {creatorType.replace(/^(a|an)\s/, '')}
-                <span className="inline-flex items-center text-light-1 pl-0.5">
-                  ?
-                </span>
+              <span className="text-primary-500 text-4xl md:text-6xl pt-1.5 sm:pt-3 font-bold capitalize transition-all duration-500 ease-in-out">
+                {creatorType}
               </span>
             </div>
             <p className="text-sm font-light leading-[23px] md:text-base text-light-2 max-w-3xl px-3 pt-4 sm:pt-8 text-pretty">
