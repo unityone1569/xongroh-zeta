@@ -163,7 +163,7 @@ const LandingPage = () => {
     const creatorInterval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * creatorTypes.length);
       setCreatorType(creatorTypes[randomIndex]);
-    }, 1900);
+    }, 1500);
 
     // Second effect for changing background images
     const backgroundInterval = setInterval(() => {
@@ -188,7 +188,7 @@ const LandingPage = () => {
           setIsTransitioning(false);
         }, 50);
       }, 500); // Wait for fade out before changing image
-    }, 3000);
+    }, 5000);
 
     return () => {
       clearInterval(creatorInterval);
