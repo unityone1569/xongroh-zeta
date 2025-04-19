@@ -6,6 +6,10 @@ import { useUserContext } from '@/context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { sendVerificationEmail } from '@/lib/appwrite-apis/users';
+import { account } from '@/lib/appwrite-apis/config';
+
+const INITIAL_DELAY = 60; // 60 seconds for first 3 attempts
+const EXTENDED_DELAY = 120; // 120 seconds for last 2 attempts
 
 const VerifyEmail = () => {
   const { user, isLoading, isAuthenticated, isVerified } = useUserContext();
@@ -13,14 +17,56 @@ const VerifyEmail = () => {
   const [isResending, setIsResending] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [attempts, setAttempts] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
-  // Handle countdown timer
+  // Initialize attempts and countdown from server
   useEffect(() => {
+    const initializeState = async () => {
+      try {
+        const prefs = await account.getPrefs();
+        if (prefs?.verificationAttempts) {
+          setAttempts(prefs.verificationAttempts);
+
+          // Calculate remaining countdown if within delay period
+          const now = Date.now();
+          const lastAttempt = prefs.lastVerificationTime || 0;
+          const requiredDelay =
+            prefs.verificationAttempts < 3 ? INITIAL_DELAY : EXTENDED_DELAY;
+
+          const elapsed = (now - lastAttempt) / 1000;
+          if (elapsed < requiredDelay) {
+            setCountdown(Math.ceil(requiredDelay - elapsed));
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing state:', error);
+      }
+    };
+
+    initializeState();
+  }, []);
+
+  // Add countdown timer effect
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
     if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown((count) => count - 1), 1000);
-      return () => clearTimeout(timer);
+      timer = setInterval(() => {
+        setCountdown((prevCount) => {
+          if (prevCount <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prevCount - 1;
+        });
+      }, 1000);
     }
-  }, [countdown]);
+
+    // Cleanup function
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [countdown]); // Only re-run effect when countdown changes
 
   // Show loader while checking auth status
   if (isLoading) {
@@ -44,18 +90,29 @@ const VerifyEmail = () => {
   const handleResendEmail = async () => {
     if (countdown > 0) return;
 
+    setError(null);
     setIsResending(true);
     try {
       await sendVerificationEmail();
-      toast({ title: 'Verification email sent!' });
 
-      // Calculate exponential countdown: 60 * 2^attempts
-      const newCountdown = 60 * Math.pow(2, attempts);
+      // Update local state
+      const newCountdown = attempts < 3 ? INITIAL_DELAY : EXTENDED_DELAY;
       setCountdown(newCountdown);
       setAttempts((prev) => prev + 1);
-    } catch (error) {
+
       toast({
-        title: 'Failed to send verification email',
+        title: 'Verification email sent!',
+        description: 'Please check your inbox',
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Failed to send verification email';
+      setError(message);
+      toast({
+        title: 'Error',
+        description: message,
         variant: 'destructive',
       });
     } finally {
@@ -64,7 +121,7 @@ const VerifyEmail = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen w-full p-5 ">
+    <div className="flex items-center justify-center min-h-screen w-full p-5">
       <div className="max-w-md w-full bg-dark-2 p-8 pb-10 rounded-xl border-[1.5px] border-dark-4 shadow-lg">
         <div className="flex-col flex-center space-y-8 text-center">
           <img
@@ -97,6 +154,8 @@ const VerifyEmail = () => {
             <span className="font-semibold text-gray-500">"Not Spam"</span>.
           </span>
 
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
           <Button
             onClick={handleResendEmail}
             disabled={isResending || countdown > 0}
@@ -112,7 +171,9 @@ const VerifyEmail = () => {
           </Button>
 
           <div className="mt-11 text-center">
-            <p className="text-light-3 small-regular mb-2">Still need help?</p>
+            <p className="text-light-3 small-regular mb-2">
+              Didn't receive any email?
+            </p>
             <a
               href="https://api.whatsapp.com/send/?phone=919127510087&text=I+need+help"
               target="_blank"

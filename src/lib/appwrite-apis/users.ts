@@ -406,17 +406,55 @@ export async function checkUserExists(
 }
 
 // Send-Verification-Email
-export async function sendVerificationEmail(): Promise<void> {
+export const sendVerificationEmail = async () => {
   try {
-    // Update with your actual verification endpoint
+    const INITIAL_DELAY = 60;
+    const EXTENDED_DELAY = 120;
+    const MAX_ATTEMPTS = 5;
+
+    // Get current user preferences
+    const userPrefs = await account.getPrefs();
+    const now = Date.now();
+    const attempts = userPrefs?.verificationAttempts || 0;
+    const lastAttemptTime = userPrefs?.lastVerificationTime || 0;
+
+    // Check maximum attempts
+    if (attempts >= MAX_ATTEMPTS) {
+      throw new Error(
+        'Maximum verification attempts reached. Please contact support.'
+      );
+    }
+
+    // Calculate required delay based on attempt count
+    const requiredDelay = attempts < 3 ? INITIAL_DELAY : EXTENDED_DELAY;
+    const timeElapsed = (now - lastAttemptTime) / 1000; // Convert to seconds
+
+    if (lastAttemptTime && timeElapsed < requiredDelay) {
+      const waitTime = Math.ceil(requiredDelay - timeElapsed);
+      throw new Error(
+        `Please wait ${waitTime} seconds before requesting another email.`
+      );
+    }
+
+    // Send verification email
     await account.createVerification(
       `${window.location.origin}/verify-success`
     );
+
+    // Update preferences after successful send
+    await account.updatePrefs({
+      verificationAttempts: attempts + 1,
+      lastVerificationTime: now,
+    });
+
+    return true;
   } catch (error) {
-    console.error('Error sending verification email:', error);
-    throw error;
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Failed to send verification email');
   }
-}
+};
 
 // Verify-Email
 export async function verifyEmail(
@@ -726,7 +764,7 @@ export async function getTopCreators() {
   try {
     const creators = await databases.listDocuments(db.usersId, cl.creatorId, [
       Query.or([Query.notEqual('isBanned', true), Query.isNull('isBanned')]),
-      Query.notEqual('name', ['Xongroh']), 
+      Query.notEqual('name', ['Xongroh']),
       Query.orderDesc('creationsCount'),
       Query.limit(10),
     ]);
