@@ -7,7 +7,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/lib/tanstack-queries/queryKeys';
 import { appwriteConfig, client } from '@/lib/appwrite-apis/config';
 import { useGetUpcomingEventsCount } from '@/lib/tanstack-queries/eventsQueries';
-import { useScrollDirection } from '@/hooks/useScrollDirection';
 
 const BottomBar = () => {
   const { pathname } = useLocation();
@@ -15,7 +14,6 @@ const BottomBar = () => {
   const queryClient = useQueryClient();
   const { data: pingCount = 0 } = useGetUserPings(user?.id);
   const { data: upcomingEventsData } = useGetUpcomingEventsCount();
-  const scrollDirection = useScrollDirection();
 
   useEffect(() => {
     if (!user?.id) return;
@@ -58,11 +56,7 @@ const BottomBar = () => {
   if (!shouldShowBottomBar) return null;
 
   return (
-    <section
-      className={`bottom-bar transition-transform duration-300 ${
-        scrollDirection === 'down' ? 'translate-y-full' : 'translate-y-0'
-      }`}
-    >
+    <section className="bottom-bar">
       {bottombarLinks.map((link) => {
         const isActive = pathname === link.route;
         const hasEvents =

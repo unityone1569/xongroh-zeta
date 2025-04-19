@@ -289,12 +289,12 @@
 
   /* Topbar */
   .topbar {
-    @apply fixed top-0 z-50 lg:hidden bg-dark-3 w-full transform transition-transform duration-300;
+    @apply fixed top-0 z-50 lg:hidden bg-dark-3 w-full;
   }
 
   /* Bottom bar */
   .bottom-bar {
-    @apply z-50 flex-between w-full fixed bottom-0 bg-dark-3 px-5 sm:px-9 py-3 lg:hidden transform transition-transform duration-300;
+    @apply z-50 flex-between w-full fixed bottom-0 bg-dark-3 px-5 sm:px-9 py-3 lg:hidden;
   }
 
   /* Left sidebar */
@@ -507,10 +507,7 @@
   .infinite-scroll:hover {
     animation-play-state: paused;
   }
-
 }
-
-
 
 @layer components {
   /* SHADCN COMPONENTS */
