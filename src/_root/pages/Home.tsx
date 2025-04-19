@@ -165,50 +165,54 @@ const Home = () => {
 
   const renderTopCreators = () => (
     <div className="lg:hidden w-full overflow-hidden">
-      <h3 className="text-light-1 h3-bold px-1 pb-6">
-        Top Creators
-      </h3>
-      <div className="w-full overflow-x-auto no-scrollbar">
-        <div className="flex gap-4 px-1 min-w-max pb-4">
-          {creators?.documents.map((creator) => (
-            <Link
-              key={creator.$id}
-              to={`/profile/${creator.$id}`}
-              className="flex-shrink-0 w-[130px] bg-dark-3 rounded-xl p-4 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <h3 className="text-light-1 h3-bold px-5 pb-6">Top Creators</h3>
+      <div className="w-full overflow-hidden">
+        <div className="flex gap-4 px-5">
+          {/* Double the creator list for seamless scrolling */}
+          <div className="flex gap-4 infinite-scroll">
+            {[
+              ...(creators?.documents || []),
+              ...(creators?.documents || []),
+            ].map((creator, index) => (
+              <Link
+                key={`${creator.$id}-${index}`}
+                to={`/profile/${creator.$id}`}
+                className="flex-shrink-0 w-[110px] bg-dark-3 rounded-xl p-4 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-              <div className="flex flex-col items-center gap-3 relative z-10">
-                <div className="relative">
-                  <img
-                    src={
-                      creator.dpUrl || '/assets/icons/profile-placeholder.svg'
-                    }
-                    alt="creator"
-                    className="w-16 h-16 rounded-full object-cover shadow-lg ring-2 ring-dark-4 group-hover:ring-primary-500 transition-all duration-300"
-                  />
-                  {creator.verifiedUser && (
-                    <div className="absolute -bottom-1 -right-1 bg-dark-3 rounded-full p-1 ring-2 ring-dark-4">
-                      <img
-                        src="/assets/icons/verified.svg"
-                        alt="verified"
-                        className="w-4 h-4"
-                      />
-                    </div>
-                  )}
-                </div>
+                <div className="flex flex-col items-center gap-3 relative z-10">
+                  <div className="relative">
+                    <img
+                      src={
+                        creator.dpUrl || '/assets/icons/profile-placeholder.svg'
+                      }
+                      alt="creator"
+                      className="w-16 h-16 rounded-full object-cover shadow-lg ring-2 ring-dark-4 group-hover:ring-primary-500 transition-all duration-300"
+                    />
+                    {creator.verifiedUser && (
+                      <div className="absolute -bottom-1 -right-1 bg-dark-3 rounded-full p-1 ring-2 ring-dark-4">
+                        <img
+                          src="/assets/icons/verified.svg"
+                          alt="verified"
+                          className="w-4 h-4"
+                        />
+                      </div>
+                    )}
+                  </div>
 
-                <div className="w-full text-center space-y-1">
-                  <p className="small-semibold text-light-1 line-clamp-1 group-hover:text-primary-500 transition-colors duration-300">
-                    {creator.name}
-                  </p>
-                  <p className="subtle-comment text-light-3 text-sm line-clamp-1">
-                    {creator.profession || 'Creator'}
-                  </p>
+                  <div className="w-full text-center space-y-1">
+                    <p className="subtle-medium text-light-1 line-clamp-1 group-hover:text-primary-500 transition-colors duration-300">
+                      {creator.name.split(' ')[0]}
+                    </p>
+                    <p className="tiny-normal-mutate text-light-3 text-xs line-clamp-1">
+                      {creator.profession || 'Creator'}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>

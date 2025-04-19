@@ -490,6 +490,23 @@
   .animate-fade {
     animation: fadeIn 0.5s ease-out;
   }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .infinite-scroll {
+    animation: scroll 35s linear infinite;
+  }
+
+  .infinite-scroll:hover {
+    animation-play-state: paused;
+  }
 }
 
 @layer components {
