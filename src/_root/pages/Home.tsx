@@ -165,7 +165,7 @@ const Home = () => {
 
   const renderTopCreators = () => (
     <div className="lg:hidden w-full overflow-hidden">
-      <h3 className="text-light-1 base-bold md:body-bold px-1 pb-6">
+      <h3 className="text-light-1 h3-bold px-1 pb-6">
         Top Creators
       </h3>
       <div className="w-full overflow-x-auto no-scrollbar">
@@ -174,7 +174,7 @@ const Home = () => {
             <Link
               key={creator.$id}
               to={`/profile/${creator.$id}`}
-              className="flex-shrink-0 w-[130px] bg-dark-3 rounded-2xl p-4 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
+              className="flex-shrink-0 w-[130px] bg-dark-3 rounded-xl p-4 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
