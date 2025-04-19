@@ -164,11 +164,10 @@ const Home = () => {
   );
 
   const renderTopCreators = () => (
-    <div className="lg:hidden w-full overflow-hidden">
-      <h3 className="text-light-1 h3-bold px-5 pb-6">Top Creators</h3>
-      <div className="w-full overflow-hidden">
+    <div className="lg:hidden w-full">
+      <h3 className="text-light-1 h3-bold px-1 pb-6">Top Creators</h3>
+      <div className="w-full overflow-x-auto no-scrollbar">
         <div className="flex gap-4 px-5">
-          {/* Double the creator list for seamless scrolling */}
           <div className="flex gap-4 infinite-scroll">
             {[
               ...(creators?.documents || []),

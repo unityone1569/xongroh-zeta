@@ -507,7 +507,10 @@
   .infinite-scroll:hover {
     animation-play-state: paused;
   }
+
 }
+
+
 
 @layer components {
   /* SHADCN COMPONENTS */
