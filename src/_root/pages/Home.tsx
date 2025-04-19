@@ -10,7 +10,10 @@ import {
   useGetSavedCreations,
   useGetSupportingCreations,
 } from '@/lib/tanstack-queries/postsQueries';
-import { useUpdateWelcomeStatus } from '@/lib/tanstack-queries/usersQueries';
+import {
+  useUpdateWelcomeStatus,
+  useGetTopCreators,
+} from '@/lib/tanstack-queries/usersQueries';
 
 const TABS = [
   { name: 'creation', label: 'Creations' },
@@ -44,6 +47,8 @@ const Home = () => {
     isFetchingNextPage: isFetchingNextFollowingPage,
     isLoading: isFollowingLoading,
   } = useGetSupportingCreations(user.id);
+
+  const { data: creators, isLoading: isCreatorsLoading } = useGetTopCreators();
 
   // Memoized posts
   const savedPosts = useMemo(
@@ -158,6 +163,57 @@ const Home = () => {
     </ul>
   );
 
+  const renderTopCreators = () => (
+    <div className="lg:hidden w-full overflow-hidden">
+      <h3 className="text-light-1 base-bold md:body-bold px-1 pb-6">
+        Top Creators
+      </h3>
+      <div className="w-full overflow-x-auto no-scrollbar">
+        <div className="flex gap-4 px-1 min-w-max pb-4">
+          {creators?.documents.map((creator) => (
+            <Link
+              key={creator.$id}
+              to={`/profile/${creator.$id}`}
+              className="flex-shrink-0 w-[130px] bg-dark-3 rounded-2xl p-4 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+              <div className="flex flex-col items-center gap-3 relative z-10">
+                <div className="relative">
+                  <img
+                    src={
+                      creator.dpUrl || '/assets/icons/profile-placeholder.svg'
+                    }
+                    alt="creator"
+                    className="w-16 h-16 rounded-full object-cover shadow-lg ring-2 ring-dark-4 group-hover:ring-primary-500 transition-all duration-300"
+                  />
+                  {creator.verifiedUser && (
+                    <div className="absolute -bottom-1 -right-1 bg-dark-3 rounded-full p-1 ring-2 ring-dark-4">
+                      <img
+                        src="/assets/icons/verified.svg"
+                        alt="verified"
+                        className="w-4 h-4"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="w-full text-center space-y-1">
+                  <p className="small-semibold text-light-1 line-clamp-1 group-hover:text-primary-500 transition-colors duration-300">
+                    {creator.name}
+                  </p>
+                  <p className="subtle-comment text-light-3 text-sm line-clamp-1">
+                    {creator.profession || 'Creator'}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
     if (activeTab === 'creation') {
       if (isFollowingLoading) return renderLoader();
@@ -199,7 +255,14 @@ const Home = () => {
       <div className="home-posts">
         <div className="flex flex-col gap-9 w-full">
           <div className="flex flex-col gap-4 mt-16 lg:mt-0">
-            <h2 className="h3-bold md:h2-bold text-left">Creation Feed</h2>
+            {isCreatorsLoading ? (
+              <div className="lg:hidden p-5">
+                <Loader />
+              </div>
+            ) : (
+              renderTopCreators()
+            )}
+
             <Link
               to="/creations/67e3e111003cf0d33591"
               className="w-full my-5 block"
@@ -216,12 +279,11 @@ const Home = () => {
                   </Button>
                 </Link>
                 <Link to="/creations/67e3e111003cf0d33591">
-                  <Button className="px-6 shad-button_dark_4">
-                    Know More
-                  </Button>
+                  <Button className="px-6 shad-button_dark_4">Know More</Button>
                 </Link>
               </div>
             </Link>
+
             <div className="flex-start mt-5">
               {TABS.map((tab) => (
                 <button
