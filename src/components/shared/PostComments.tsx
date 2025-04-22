@@ -356,7 +356,7 @@ const CommentItem = React.memo(
 
             <button
               onClick={toggleReplyForm}
-              className="text-gray-500 hover:text-gray-700 small-medium"
+              className="text-primary-500 hover:text-gray-500 small-medium"
             >
               Reply
             </button>
@@ -466,7 +466,7 @@ const FeedbackItem = React.memo(
 
             <button
               onClick={toggleReplyForm} // Toggle visibility of reply form
-              className="small-medium text-gray-500 hover:text-gray-700"
+              className="small-medium text-primary-500 hover:text-gray-500"
             >
               Reply
             </button>

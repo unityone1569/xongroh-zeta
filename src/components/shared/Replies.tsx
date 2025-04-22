@@ -235,7 +235,7 @@ const ReplyItem = React.memo(
                 e.preventDefault();
                 toggleReplyForm();
               }}
-              className="small-medium text-gray-500 hover:text-gray-700"
+              className="small-medium text-primary-500 hover:text-gray-500"
             >
               Reply
             </button>
