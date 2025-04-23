@@ -175,7 +175,7 @@ const VerifyEmail = () => {
               Didn't receive any email?
             </p>
             <a
-              href="https://api.whatsapp.com/send/?phone=919127510087&text=I+need+help"
+              href="https://api.whatsapp.com/send/?phone=919127510087&text=Hi+team+Xongroh,+I+need+help."
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary-500 subtle-semibold hover:underline"
