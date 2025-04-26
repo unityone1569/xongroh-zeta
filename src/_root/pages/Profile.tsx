@@ -90,7 +90,7 @@ const ProfileCardItem = ({
 
               <div className="flex gap-6 2xl:gap-10 pt-3 lg:pt-4">
                 <div className="text-center">
-                  <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
+                  <div className="subtle-medium md:small-medium lg:base-medium text-primary-500">
                     {creationsCount}
                   </div>
                   <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-2">
@@ -98,7 +98,7 @@ const ProfileCardItem = ({
                   </div>
                 </div>
                 <Link to={`/portfolio/${userId}`} className="text-center">
-                  <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
+                  <div className="subtle-medium md:small-medium lg:base-medium text-primary-500">
                     {projectsCount}
                   </div>
                   <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-2">
@@ -106,7 +106,7 @@ const ProfileCardItem = ({
                   </div>
                 </Link>
                 <div className="text-center">
-                  <div className="subtle-medium md:small-medium lg:base-medium text-light-2">
+                  <div className="subtle-medium md:small-medium lg:base-medium text-primary-500">
                     {supportingCount}
                   </div>
                   <div className="text-[11px] font-medium sm:subtle-semibold xl:small-semibold pt-1 text-light-2">
