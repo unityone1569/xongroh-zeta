@@ -5,6 +5,8 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { databases, appwriteConfig } from '@/lib/appwrite-apis/config';
 import { Query } from 'appwrite';
+import { useGetTopCreators } from '@/lib/tanstack-queries/usersQueries';
+import Loader from '@/components/shared/Loader';
 
 const creatorTypes = [
   'an artist',
@@ -98,6 +100,9 @@ const LandingPage = () => {
     discussions: 0, // Add discussions property
   });
   const [isLoading, setIsLoading] = useState(true);
+
+  // Add states for top creators
+  const { data: creators, isLoading: isCreatorsLoading } = useGetTopCreators();
 
   // Function to fetch stats - optimized version with corrected paths
   const fetchStats = async () => {
@@ -204,6 +209,126 @@ const LandingPage = () => {
         behavior: 'smooth',
       });
     }
+  };
+
+  const renderTopCreators = () => {
+    const creatorsList = creators?.documents || [];
+    
+    return (
+      <div className="w-full">
+        <div className="infinite-scroll-container">
+          <div className="infinite-scroll-track animated">
+            {/* First set of cards */}
+            {creatorsList.map((creator) => (
+              <Link
+                key={`first-${creator.$id}`}
+                to={`/profile/${creator.$id}`}
+                className="flex-shrink-0 w-[300px] bg-dark-3 rounded-xl p-6 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="flex flex-col gap-6 relative z-10">
+                  <div className="flex items-center gap-4">
+                    <div className="relative flex-shrink-0">
+                      <img
+                        src={creator.dpUrl || '/assets/icons/profile-placeholder.svg'}
+                        alt={creator.name}
+                        className="w-20 h-20 lg:w-24 lg:h-24 rounded-full object-cover shadow-lg ring-2 ring-dark-4 group-hover:ring-primary-500 transition-all duration-300 flex"
+                      />
+                      {creator.verifiedUser && (
+                        <div className="absolute -bottom-1 -right-1 bg-dark-3 rounded-full p-1 ring-2 ring-dark-4">
+                          <img
+                            src="/assets/icons/verified.svg"
+                            alt="verified"
+                            className="w-4 h-4"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="base-semibold text-light-1 line-clamp-1 group-hover:text-primary-500 transition-colors duration-300">
+                        {creator.name}
+                      </h3>
+                      <p className="subtle-comment-semibold text-light-3 pt-1.5 truncate">
+                        {creator.profession || 'Creator'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center pt-4 border-t border-light-4/10">
+                    <div className="text-center">
+                      <p className="base-semibold text-primary-500 pb-1">
+                        {creator.creationsCount || 0}
+                      </p>
+                      <p className="tiny-medium text-light-2 uppercase">Creations</p>
+                    </div>
+                    <div className="w-px h-8 bg-light-4/10" />
+                    <div className="text-center">
+                      <p className="base-semibold text-primary-500 pb-1">
+                        {creator.projectsCount || 0}
+                      </p>
+                      <p className="tiny-medium text-light-2 uppercase">Projects</p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+            {/* Duplicate set of cards for seamless loop */}
+            {creatorsList.map((creator) => (
+              <Link
+                key={`second-${creator.$id}`}
+                to={`/profile/${creator.$id}`}
+                className="flex-shrink-0 w-[300px] bg-dark-3 rounded-xl p-6 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
+              >
+                {/* Same content as above */}
+                <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="flex flex-col gap-6 relative z-10">
+                  <div className="flex items-center gap-4">
+                    <div className="relative flex-shrink-0">
+                      <img
+                        src={creator.dpUrl || '/assets/icons/profile-placeholder.svg'}
+                        alt={creator.name}
+                        className="w-20 h-20 lg:w-24 lg:h-24 rounded-full object-cover shadow-lg ring-2 ring-dark-4 group-hover:ring-primary-500 transition-all duration-300 flex"
+                      />
+                      {creator.verifiedUser && (
+                        <div className="absolute -bottom-1 -right-1 bg-dark-3 rounded-full p-1 ring-2 ring-dark-4">
+                          <img
+                            src="/assets/icons/verified.svg"
+                            alt="verified"
+                            className="w-4 h-4"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="base-semibold text-light-1 line-clamp-1 group-hover:text-primary-500 transition-colors duration-300">
+                        {creator.name}
+                      </h3>
+                      <p className="subtle-comment-semibold text-light-3 pt-1.5 truncate">
+                        {creator.profession || 'Creator'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center pt-4 border-t border-light-4/10">
+                    <div className="text-center">
+                      <p className="base-semibold text-primary-500 pb-1">
+                        {creator.creationsCount || 0}
+                      </p>
+                      <p className="tiny-medium text-light-2 uppercase">Creations</p>
+                    </div>
+                    <div className="w-px h-8 bg-light-4/10" />
+                    <div className="text-center">
+                      <p className="base-semibold text-primary-500 pb-1">
+                        {creator.projectsCount || 0}
+                      </p>
+                      <p className="tiny-medium text-light-2 uppercase">Projects</p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -418,6 +543,41 @@ const LandingPage = () => {
           </div>
         </section>
 
+        {/* Top Creators Section */}
+        <section className="w-full py-12 sm:py-16 md:py-24 px-4 sm:px-5">
+          <div className="text-center mb-12 sm:mb-20 md:mb-24">
+            <h2 className="h3-bold sm:h2-bold text-light-1">
+              Meet Our Top Creators
+            </h2>
+            <p className="base-regular text-light-3 mt-4 sm:mt-6 md:mt-9">
+              Get inspired by exceptional creators shaping our vibrant creator
+              community.
+            </p>
+          </div>
+          <div className="max-w-4xl mx-auto">
+            {isCreatorsLoading ? (
+              <div className="flex-center w-full h-40">
+                <Loader />
+              </div>
+            ) : (
+              renderTopCreators()
+            )}
+
+            {!isAuthenticated && (
+              <div className="flex-center flex-col mt-12 sm:mt-16 md:mt-24">
+                <p className="text-light-2 text-center mb-6">
+                  Want to be featured among our top creators?
+                </p>
+                <Link to="/sign-up">
+                  <Button className="shad-button_primary">
+                    Start Creating Today
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
+
         {/* Community Stats Section - Replace fixed height with min-height */}
         <section className="min-h-[600px] md:min-h-[720px] flex flex-col text-center items-center justify-center w-full py-12 sm:py-16 md:py-24 px-4 sm:px-5">
           <h3 className="h3-bold sm:h2-bold text-light-1 ">
@@ -457,7 +617,7 @@ const LandingPage = () => {
           </div>
           {!isAuthenticated ? (
             <div className="mt-12 sm:mt-16 md:mt-24 flex flex-col items-center justify-center">
-              <p className="text-light-2 font-semibold text-center text-sm sm:text-base pb-6 sm:pb-9 max-w-md">
+              <p className="text-light-2 text-center pb-6 sm:pb-9 max-w-md">
                 It's not every day you get to join something this epic!
               </p>
               <Link to="/sign-up">

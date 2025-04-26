@@ -10,10 +10,7 @@ import {
   useGetSavedCreations,
   useGetSupportingCreations,
 } from '@/lib/tanstack-queries/postsQueries';
-import {
-  useUpdateWelcomeStatus,
-  useGetTopCreators,
-} from '@/lib/tanstack-queries/usersQueries';
+import { useUpdateWelcomeStatus } from '@/lib/tanstack-queries/usersQueries';
 
 const TABS = [
   { name: 'creation', label: 'Creations' },
@@ -47,8 +44,6 @@ const Home = () => {
     isFetchingNextPage: isFetchingNextFollowingPage,
     isLoading: isFollowingLoading,
   } = useGetSupportingCreations(user.id);
-
-  const { data: creators, isLoading: isCreatorsLoading } = useGetTopCreators();
 
   // Memoized posts
   const savedPosts = useMemo(
@@ -163,56 +158,42 @@ const Home = () => {
     </ul>
   );
 
-  const renderTopCreators = () => (
-    <div className="lg:hidden w-full">
-      <h3 className="text-light-1 h3-bold px-1 pb-6">Top Creators</h3>
-      <div className="w-full overflow-x-auto no-scrollbar">
-        <div className="flex gap-4 px-5">
-          <div className="flex gap-4 infinite-scroll">
-            {[
-              ...(creators?.documents || []),
-              ...(creators?.documents || []),
-            ].map((creator, index) => (
-              <Link
-                key={`${creator.$id}-${index}`}
-                to={`/profile/${creator.$id}`}
-                className="flex-shrink-0 w-[110px] bg-dark-3 rounded-xl p-4 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+  const renderWhatsAppGroup = () => (
+    <div className=" w-full bg-dark-3 rounded-xl p-6 border border-dark-4">
+      <div className="flex flex-col gap-4">
+        <h3 className="text-light-1 h4-bold lg:h3-bold">
+          Join the WhatsApp Fam
+        </h3>
 
-                <div className="flex flex-col items-center gap-3 relative z-10">
-                  <div className="relative">
-                    <img
-                      src={
-                        creator.dpUrl || '/assets/icons/profile-placeholder.svg'
-                      }
-                      alt="creator"
-                      className="w-16 h-16 rounded-full object-cover shadow-lg ring-2 ring-dark-4 group-hover:ring-primary-500 transition-all duration-300"
-                    />
-                    {creator.verifiedUser && (
-                      <div className="absolute -bottom-1 -right-1 bg-dark-3 rounded-full p-1 ring-2 ring-dark-4">
-                        <img
-                          src="/assets/icons/verified.svg"
-                          alt="verified"
-                          className="w-4 h-4"
-                        />
-                      </div>
-                    )}
-                  </div>
+        <p className="text-light-3 small-regular lg:base-regular text-pretty">
+          Stay connected with us! Get instant updates, share your valuable
+          feedback, and play a key role in shaping the future of our
+          creator-focused platform.
+        </p>
+        <p className="text-primary-500 base-semibold">
+          Limited Spots Available - Exclusive to Founding Creators Only!
+        </p>
 
-                  <div className="w-full text-center space-y-1">
-                    <p className="subtle-medium text-light-1 line-clamp-1 group-hover:text-primary-500 transition-colors duration-300">
-                      {creator.name.split(' ')[0]}
-                    </p>
-                    <p className="tiny-normal-mutate text-light-3 text-xs line-clamp-1">
-                      {creator.profession || 'Creator'}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+        <a
+          href="https://chat.whatsapp.com/BbkvBnvxf83Ht7u4tgai7H"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-dark-1 text-sm sm:text-md font-semibold py-2.5 px-6 rounded-lg transition-colors duration-200 2xl:w-1/2 mt-3"
+        >
+          <svg
+            stroke="currentColor"
+            fill="currentColor"
+            strokeWidth="0"
+            viewBox="0 0 448 512"
+            className="w-5 h-5"
+            height="1em"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
+          </svg>
+          Join WhatsApp Group
+        </a>
       </div>
     </div>
   );
@@ -258,13 +239,7 @@ const Home = () => {
       <div className="home-posts">
         <div className="flex flex-col gap-9 w-full">
           <div className="flex flex-col gap-4 mt-16 lg:mt-0">
-            {isCreatorsLoading ? (
-              <div className="lg:hidden p-5">
-                <Loader />
-              </div>
-            ) : (
-              renderTopCreators()
-            )}
+            {renderWhatsAppGroup()}
 
             <Link
               to="/creations/67e3e111003cf0d33591"
@@ -276,13 +251,15 @@ const Home = () => {
                 className="w-full rounded-lg object-cover aspect-video hover:opacity-90 transition-opacity"
               />
               <div className="flex gap-3.5 sm:gap-6 mt-6 w-full justify-start">
-                <Link to="/add-creation">
-                  <Button className="shad-button_primary px-5">
+                <Link to="/add-creation" className="w-1/2">
+                  <Button className="shad-button_primary px-5 w-full">
                     Submit Creation
                   </Button>
                 </Link>
-                <Link to="/creations/67e3e111003cf0d33591">
-                  <Button className="px-6 shad-button_dark_4">Know More</Button>
+                <Link to="/creations/67e3e111003cf0d33591" className="w-1/2">
+                  <Button className="px-6 shad-button_dark_4 w-full ">
+                    Know More
+                  </Button>
                 </Link>
               </div>
             </Link>

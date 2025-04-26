@@ -496,15 +496,42 @@
       transform: translateX(0);
     }
     100% {
-      transform: translateX(-50%);
+      transform: translateX(calc(-300px * var(--creator-count)));
     }
   }
 
   .infinite-scroll {
     animation: scroll 35s linear infinite;
   }
+  
+  .infinite-scroll-container {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
 
-  .infinite-scroll:hover {
+  .infinite-scroll-track {
+    display: flex;
+    gap: 1rem;
+    width: fit-content;
+  }
+
+  .infinite-scroll-track.animated {
+    animation: scroll 50s linear infinite;
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .infinite-scroll-track:hover {
     animation-play-state: paused;
   }
 }
