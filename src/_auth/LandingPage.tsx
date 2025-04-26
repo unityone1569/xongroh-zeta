@@ -213,7 +213,7 @@ const LandingPage = () => {
 
   const renderTopCreators = () => {
     const creatorsList = creators?.documents || [];
-    
+
     return (
       <div className="w-full">
         <div className="infinite-scroll-container">
@@ -223,16 +223,19 @@ const LandingPage = () => {
               <Link
                 key={`first-${creator.$id}`}
                 to={`/profile/${creator.$id}`}
-                className="flex-shrink-0 w-[300px] bg-dark-3 rounded-xl p-6 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
+                className="flex-shrink-0 w-[230px] bg-dark-3 rounded-xl p-5 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="flex flex-col gap-6 relative z-10">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-between">
                     <div className="relative flex-shrink-0">
                       <img
-                        src={creator.dpUrl || '/assets/icons/profile-placeholder.svg'}
+                        src={
+                          creator.dpUrl ||
+                          '/assets/icons/profile-placeholder.svg'
+                        }
                         alt={creator.name}
-                        className="w-20 h-20 lg:w-24 lg:h-24 rounded-full object-cover shadow-lg ring-2 ring-dark-4 group-hover:ring-primary-500 transition-all duration-300 flex"
+                        className="w-20 h-20 rounded-full object-cover shadow-lg ring-2 ring-dark-4 group-hover:ring-primary-500 transition-all duration-300 flex"
                       />
                       {creator.verifiedUser && (
                         <div className="absolute -bottom-1 -right-1 bg-dark-3 rounded-full p-1 ring-2 ring-dark-4">
@@ -244,6 +247,16 @@ const LandingPage = () => {
                         </div>
                       )}
                     </div>
+                    <div className="text-center">
+                      <p className="base-semibold text-primary-500 pb-1">
+                        {creator.creationsCount || 0}
+                      </p>
+                      <p className="tiny-medium text-light-2 uppercase">
+                        Creations
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center pt-4 border-t border-light-4/10">
                     <div className="flex-1">
                       <h3 className="base-semibold text-light-1 line-clamp-1 group-hover:text-primary-500 transition-colors duration-300">
                         {creator.name}
@@ -251,21 +264,6 @@ const LandingPage = () => {
                       <p className="subtle-comment-semibold text-light-3 pt-1.5 truncate">
                         {creator.profession || 'Creator'}
                       </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center pt-4 border-t border-light-4/10">
-                    <div className="text-center">
-                      <p className="base-semibold text-primary-500 pb-1">
-                        {creator.creationsCount || 0}
-                      </p>
-                      <p className="tiny-medium text-light-2 uppercase">Creations</p>
-                    </div>
-                    <div className="w-px h-8 bg-light-4/10" />
-                    <div className="text-center">
-                      <p className="base-semibold text-primary-500 pb-1">
-                        {creator.projectsCount || 0}
-                      </p>
-                      <p className="tiny-medium text-light-2 uppercase">Projects</p>
                     </div>
                   </div>
                 </div>
@@ -276,17 +274,20 @@ const LandingPage = () => {
               <Link
                 key={`second-${creator.$id}`}
                 to={`/profile/${creator.$id}`}
-                className="flex-shrink-0 w-[300px] bg-dark-3 rounded-xl p-6 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
+                className="flex-shrink-0 w-[230px] bg-dark-3 rounded-xl p-5 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
               >
                 {/* Same content as above */}
                 <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="flex flex-col gap-6 relative z-10">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-between">
                     <div className="relative flex-shrink-0">
                       <img
-                        src={creator.dpUrl || '/assets/icons/profile-placeholder.svg'}
+                        src={
+                          creator.dpUrl ||
+                          '/assets/icons/profile-placeholder.svg'
+                        }
                         alt={creator.name}
-                        className="w-20 h-20 lg:w-24 lg:h-24 rounded-full object-cover shadow-lg ring-2 ring-dark-4 group-hover:ring-primary-500 transition-all duration-300 flex"
+                        className="w-20 h-20 rounded-full object-cover shadow-lg ring-2 ring-dark-4 group-hover:ring-primary-500 transition-all duration-300 flex"
                       />
                       {creator.verifiedUser && (
                         <div className="absolute -bottom-1 -right-1 bg-dark-3 rounded-full p-1 ring-2 ring-dark-4">
@@ -298,6 +299,16 @@ const LandingPage = () => {
                         </div>
                       )}
                     </div>
+                    <div className="text-center">
+                      <p className="base-semibold text-primary-500 pb-1">
+                        {creator.creationsCount || 0}
+                      </p>
+                      <p className="tiny-medium text-light-2 uppercase">
+                        Creation
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center pt-4 border-t border-light-4/10">
                     <div className="flex-1">
                       <h3 className="base-semibold text-light-1 line-clamp-1 group-hover:text-primary-500 transition-colors duration-300">
                         {creator.name}
@@ -305,21 +316,6 @@ const LandingPage = () => {
                       <p className="subtle-comment-semibold text-light-3 pt-1.5 truncate">
                         {creator.profession || 'Creator'}
                       </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center pt-4 border-t border-light-4/10">
-                    <div className="text-center">
-                      <p className="base-semibold text-primary-500 pb-1">
-                        {creator.creationsCount || 0}
-                      </p>
-                      <p className="tiny-medium text-light-2 uppercase">Creations</p>
-                    </div>
-                    <div className="w-px h-8 bg-light-4/10" />
-                    <div className="text-center">
-                      <p className="base-semibold text-primary-500 pb-1">
-                        {creator.projectsCount || 0}
-                      </p>
-                      <p className="tiny-medium text-light-2 uppercase">Projects</p>
                     </div>
                   </div>
                 </div>

@@ -159,7 +159,7 @@ const Home = () => {
   );
 
   const renderWhatsAppGroup = () => (
-    <div className=" w-full bg-dark-3 rounded-xl p-6 border border-dark-4">
+    <div className=" w-full bg-dark-4 rounded-xl p-6 border border-dark-4">
       <div className="flex flex-col gap-4">
         <h3 className="text-light-1 h4-bold lg:h3-bold">
           Join the WhatsApp Fam
@@ -178,7 +178,7 @@ const Home = () => {
           href="https://chat.whatsapp.com/BbkvBnvxf83Ht7u4tgai7H"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-dark-1 text-sm sm:text-md font-semibold py-2.5 px-6 rounded-lg transition-colors duration-200 2xl:w-1/2 mt-3"
+          className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] text-dark-1 text-sm sm:text-md font-semibold py-2.5 px-6 rounded-lg transition-all duration-300 2xl:w-1/2 mt-3"
         >
           <svg
             stroke="currentColor"
