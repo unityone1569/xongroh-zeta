@@ -208,7 +208,7 @@ const Home = () => {
             href="https://t.me/+dyY1LMM3NRUzOTg1"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#0088cc] to-[#0055aa] hover:from-[#0055aa] hover:to-[#0088cc] text-dark-1 text-sm sm:text-md font-semibold py-2.5 px-6 rounded-lg transition-all duration-300"
+            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#2AABEE] to-[#229ED9] hover:from-[#229ED9] hover:to-[#2AABEE] text-light-1 text-sm sm:text-md font-semibold py-2.5 px-6 rounded-lg transition-all duration-300"
           >
             <svg
               stroke="currentColor"
