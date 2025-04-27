@@ -161,7 +161,7 @@ const Home = () => {
   const renderWhatsAppGroup = () => (
     <div className="w-full bg-dark-4 rounded-xl p-6 border border-dark-4 relative">
       {/* New Badge with gradient and animation */}
-      <div className="absolute -top-2 -right-2 bg-gradient-to-r from-primary-600 to-primary-500 text-light-1 text-xs font-bold px-3.5 py-1 lg:py-1.5 rounded-full">
+      <div className="absolute -top-2 -right-2 bg-gradient-to-r from-primary-600 to-primary-500 text-light-1 text-xs font-bold px-3.5 py-1.5 rounded-full">
         <span className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 bg-light-1 rounded-full animate-ping mb-0.5"></span>
           <span className="subtle-semibold">NEW!</span>
