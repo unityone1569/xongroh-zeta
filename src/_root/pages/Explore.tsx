@@ -24,6 +24,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
 import EventCard from '@/components/shared/EventCard';
 import { IEvent } from '@/types';
+import { Link } from 'react-router-dom';
 
 const Explore = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -186,26 +187,42 @@ const Explore = () => {
         communities?.pages.every((page) => page.documents.length === 0);
 
       return (
-        <div className="flex flex-wrap w-full mt-4">
-          {isSearchActive ? (
-            <SearchResult
-              isSearchFetching={isSearchFetchingCommunities}
-              searchedItems={searchedCommunities}
-              type="circle"
-            />
-          ) : noCommunities ? (
-            <p className="text-light-4 text-center pl-1 w-full">
-              End of the results...
-            </p>
-          ) : (
-            communities?.pages.map((page, index) => (
-              <GridSearchList
-                key={`page-${index}`}
-                items={page.documents}
+        <div className="flex flex-col items-center w-full mt-4">
+          <div className="flex flex-wrap w-full">
+            {isSearchActive ? (
+              <SearchResult
+                isSearchFetching={isSearchFetchingCommunities}
+                searchedItems={searchedCommunities}
                 type="circle"
               />
-            ))
-          )}
+            ) : noCommunities ? (
+              <p className="text-light-4 text-center pl-1 w-full">
+                End of the results...
+              </p>
+            ) : (
+              communities?.pages.map((page, index) => (
+                <GridSearchList
+                  key={`page-${index}`}
+                  items={page.documents}
+                  type="circle"
+                />
+              ))
+            )}
+          </div>
+
+          {/* Call-to-action button */}
+          <div className="flex justify-center mt-10 mb-6">
+            <p className="text-light-3">
+              Have an idea for a new Circle?{' '}
+              <Link
+                to="/topics/6798cd28001fb6990e2c"
+                className="text-primary-500 hover:text-primary-600 transition-colors"
+              >
+                Request here!
+              </Link>
+            </p>
+          </div>
+
           {hasMoreCommunities && !searchValue && (
             <div ref={loadMoreRef} className="mt-10 w-full">
               <Loader />

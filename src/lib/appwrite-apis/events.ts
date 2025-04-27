@@ -78,7 +78,7 @@ export async function getEvents(params: {
 }) {
   try {
     const now = new Date().toISOString();
-    let queries = [Query.orderAsc('dateTime')];
+    let queries = [Query.orderDesc('dateTime')];
     const filter = params.filter || 'live';
 
     switch (filter) {
@@ -248,7 +248,7 @@ export async function addInterestedEvent(eventId: string, userId: string) {
 }
 
 // Delete Interested Event
-export async function deleteInterestedEvent(interestedEventId: string,) {
+export async function deleteInterestedEvent(interestedEventId: string) {
   try {
     await databases.deleteDocument(
       db.eventsId,
@@ -570,15 +570,11 @@ export async function getUpcomingEvents({ pageParam }: { pageParam?: string }) {
   }
 }
 
-
-
 // getUpcomingEventsCount
 export async function getUpcomingEventsCount() {
   try {
     const now = new Date().toISOString();
-    const queries = [
-      Query.greaterThan('dateTime', now),
-    ];
+    const queries = [Query.greaterThan('dateTime', now)];
 
     // Only need the count, not the actual documents
     const { total } = await databases.listDocuments(
@@ -587,21 +583,18 @@ export async function getUpcomingEventsCount() {
       queries
     );
 
-    return { 
+    return {
       hasUpcomingEvents: total > 0,
-      count: total 
+      count: total,
     };
   } catch (error) {
     console.error('Error fetching upcoming events count:', error);
-    return { 
+    return {
       hasUpcomingEvents: false,
-      count: 0 
+      count: 0,
     };
   }
 }
-
-
-
 
 // *** HELPER-FUNCTION ***
 
