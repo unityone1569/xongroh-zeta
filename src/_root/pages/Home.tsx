@@ -159,7 +159,12 @@ const Home = () => {
   );
 
   const renderWhatsAppGroup = () => (
-    <div className="w-full bg-dark-4 rounded-xl p-6 border border-dark-4">
+    <div className="w-full bg-dark-4 rounded-xl p-6 border border-dark-4 relative">
+      {/* New Badge */}
+      <div className="absolute -top-2 -right-2 bg-primary-600 text-light-1 text-xs font-bold px-3.5 py-1 lg:py-1.5 rounded-full">
+        New!
+      </div>
+
       <div className="flex flex-col gap-4">
         <h3 className="text-light-1 h4-bold lg:h3-bold">
           Join the Xongroh - Founding Creators Groups
