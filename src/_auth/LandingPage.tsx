@@ -495,7 +495,7 @@ const LandingPage = () => {
           {/* Live Now! badge at the top-right of the entire section */}
           <div className="absolute top-4 left-4 md:top-6 md:left-8 bg-gradient-to-r from-primary-600 to-primary-500/80 text-light-1 text-xs  font-medium px-3.5 py-1 rounded-full shadow-lg shadow-primary-600/20 z-10">
             <span className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-light-1 rounded-full animate-ping mb-o.5"></span>
+              <span className="w-1.5 h-1.5 bg-light-1 rounded-full animate-ping mb-0.5"></span>
               <span className="subtle-semibold">LIVE</span>
             </span>
           </div>

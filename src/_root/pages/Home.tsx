@@ -160,9 +160,12 @@ const Home = () => {
 
   const renderWhatsAppGroup = () => (
     <div className="w-full bg-dark-4 rounded-xl p-6 border border-dark-4 relative">
-      {/* New Badge */}
-      <div className="absolute -top-2 -right-2 bg-primary-600 text-light-1 text-xs font-bold px-3.5 py-1 lg:py-1.5 rounded-full">
-        New!
+      {/* New Badge with gradient and animation */}
+      <div className="absolute -top-2 -right-2 bg-gradient-to-r from-primary-600 to-primary-500 text-light-1 text-xs font-bold px-3.5 py-1 lg:py-1.5 rounded-full">
+        <span className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-light-1 rounded-full animate-ping mb-0.5"></span>
+          <span className="subtle-semibold">NEW!</span>
+        </span>
       </div>
 
       <div className="flex flex-col gap-4">
@@ -217,7 +220,7 @@ const Home = () => {
               width="1em"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9l-40.7 191.8c-3 13.6-11.1 16.9-22.4 10.5l-62-45.7-29.9 28.8c-3.3 3.3-6.1 6.1-12.5 6.1l4.4-63.1 114.9-103.8c5-4.4-1.1-6.9-7.7-2.5l-142 89.4-61.2-19.1c-13.3-4.2-13.6-13.3 2.8-19.7l239.1-92.2c11.1-4 20.8 2.7 17.2 19.5z"/>
+              <path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9l-40.7 191.8c-3 13.6-11.1 16.9-22.4 10.5l-62-45.7-29.9 28.8c-3.3 3.3-6.1 6.1-12.5 6.1l4.4-63.1 114.9-103.8c5-4.4-1.1-6.9-7.7-2.5l-142 89.4-61.2-19.1c-13.3-4.2-13.6-13.3 2.8-19.7l239.1-92.2c11.1-4 20.8 2.7 17.2 19.5z" />
             </svg>
             Join Telegram Gang
           </a>
