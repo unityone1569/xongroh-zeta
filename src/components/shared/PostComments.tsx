@@ -332,8 +332,15 @@ const CommentItem = React.memo(
             />
 
             <div>
-              <p className="small-medium md:base-medium text-light-1 pb-0.5">
+              <p className="small-medium md:base-medium text-light-1 pb-0.5 flex items-center gap-1.5">
                 {userInfo.name}
+                {userData?.verifiedUser && (
+                  <img
+                    src="/assets/icons/verified.svg"
+                    alt="verified"
+                    className="w-3.5 h-3.5 md:w-4 md:h-4"
+                  />
+                )}
               </p>
               <p className="subtle-semibold lg:small-regular text-light-3">
                 {multiFormatDateStringNoTime(createdAt)}
@@ -442,8 +449,15 @@ const FeedbackItem = React.memo(
             />
 
             <div>
-              <p className="small-medium md:base-medium text-light-1 pb-0.5">
+              <p className="small-medium md:base-medium text-light-1 pb-0.5 flex items-center gap-1.5">
                 {userInfo.name}
+                {userData?.verifiedUser && (
+                  <img
+                    src="/assets/icons/verified.svg"
+                    alt="verified"
+                    className="w-3.5 h-3.5 md:w-4 md:h-4"
+                  />
+                )}
               </p>
               <p className="subtle-semibold lg:small-regular text-light-3">
                 {multiFormatDateStringNoTime(createdAt)}
