@@ -534,6 +534,52 @@
   .infinite-scroll-track:hover {
     animation-play-state: paused;
   }
+
+  .countdown-value {
+    @apply transition-all duration-200;
+  }
+
+  /* COTM Carousel */
+  .cotm-carousel {
+    @apply w-full max-w-full overflow-hidden relative;
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+  }
+
+  .cotm-scroll-container {
+    @apply flex gap-6;
+    width: fit-content;
+  }
+
+  @keyframes cotmScroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-50%));
+    }
+  }
+
+  .cotm-scroll-animation {
+    animation: cotmScroll 40s linear infinite;
+    will-change: transform;
+  }
+
+  .cotm-scroll-animation:hover {
+    animation-play-state: paused;
+  }
 }
 
 @layer components {

@@ -11,6 +11,7 @@ import {
   useGetSupportingCreations,
 } from '@/lib/tanstack-queries/postsQueries';
 import { useUpdateWelcomeStatus } from '@/lib/tanstack-queries/usersQueries';
+import COTMCarousel from '@/components/shared/COTMPostCard';
 
 const TABS = [
   { name: 'creation', label: 'Creations' },
@@ -18,6 +19,35 @@ const TABS = [
 ] as const;
 
 type TabType = (typeof TABS)[number]['name'];
+
+const useCountdown = (targetDate: Date) => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetDate.getTime() - now;
+
+      setTimeLeft({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        ),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000),
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [targetDate]);
+
+  return timeLeft;
+};
 
 const Home = () => {
   const { user, setUser } = useUserContext();
@@ -272,28 +302,37 @@ const Home = () => {
           <div className="flex flex-col gap-4 mt-16 lg:mt-0">
             {renderWhatsAppGroup()}
 
-            <Link
-              to="/creations/67e3e111003cf0d33591"
-              className="w-full my-5 block"
-            >
-              <img
-                src="https://api.xongroh.com/v1/storage/buckets/678c8e03002d41317909/files/67e7995a0009831f99db/view?project=66e2a98a00192795ca51"
-                alt="Promotional Banner"
-                className="w-full rounded-lg object-cover aspect-video hover:opacity-90 transition-opacity"
-              />
-              <div className="flex gap-3.5 sm:gap-6 mt-6 w-full justify-start">
-                <Link to="/add-creation" className="w-1/2">
-                  <Button className="shad-button_primary px-5 w-full">
-                    Submit Creation
-                  </Button>
-                </Link>
-                <Link to="/creations/67e3e111003cf0d33591" className="w-1/2">
-                  <Button className="px-6 shad-button_dark_4 w-full ">
-                    Know More
-                  </Button>
-                </Link>
+            <div className="flex flex-col gap-4 mt-9">
+              <div className="flex items-center">
+                <h2 className="text-light-1 h3-bold sm:h2-bold pb-3">
+                  C.O.T.M. Competition
+                </h2>
               </div>
-            </Link>
+              <COTMCarousel />
+
+              {/* Winner info and countdown section */}
+              <div className="flex flex-col sm:flex-row lg:flex-col lg:gap-3 2xl:flex-row justify-between items-center text-center bg-dark-4 rounded-xl p-4 mt-2">
+                <div className="flex items-center gap-2 mb-4 sm:mb-0">
+                  <p className="text-light-2 base-medium">
+                    The Most Liked Creation Wins!{' '}
+                    <span className="text-xl">🏆</span>
+                  </p>
+                </div>
+
+                <div className="flex gap-4">
+                  {Object.entries(
+                    useCountdown(new Date('2025-05-07T18:30:00Z'))
+                  ).map(([unit, value]) => (
+                    <div key={unit} className="flex flex-col items-center">
+                      <span className="text-primary-500 h4-bold">
+                        {value.toString().padStart(2, '0')}
+                      </span>
+                      <span className="text-light-3 tiny-medium">{unit}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             <div className="flex-start mt-5">
               {TABS.map((tab) => (
