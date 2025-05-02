@@ -311,13 +311,21 @@ const Home = () => {
               <COTMCarousel />
 
               {/* Winner info and countdown section */}
-              <div className="flex flex-col sm:flex-row lg:flex-col lg:gap-3 2xl:flex-row justify-between items-center text-center bg-dark-4 rounded-xl p-4 mt-2">
-                <div className="flex flex-col sm:flex-row lg:flex-col text-center 2xl:flex-row items-center gap-1.5 mb-4 sm:mb-0">
+              <div className="flex flex-col sm:flex-row lg:flex-col lg:gap-5 2xl:flex-row justify-between items-center text-center bg-dark-4 rounded-xl p-4 mt-2">
+                <div className="flex flex-col sm:flex-row lg:flex-col text-center 2xl:flex-row items-center gap-1.5 mb-5 sm:mb-0">
                   <p className="text-light-2 base-medium">
                     The Most Voted Creation Wins!{' '}
                     <span className="text-xl">🏆</span>
                   </p>
-                  <p className="text-sm text-light-3 font-semibold"> "1 Like = 1 Vote"</p>
+                  <p className=" text-light-3 small-bold flex items-center gap-1">
+                    "
+                    <img
+                      src="/assets/icons/liked.svg"
+                      alt="likes"
+                      className="w-6 h-6"
+                    />
+                    <span>= 1 Vote "</span>
+                  </p>
                 </div>
 
                 <div className="flex gap-4">

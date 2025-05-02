@@ -9,6 +9,7 @@ import {
   useGetCreationById,
   useGetAuthorById,
 } from '@/lib/tanstack-queries/postsQueries';
+import { useGetPostLikesCount } from '@/lib/tanstack-queries/interactionsQueries';
 
 // Array of featured COTM post IDs and the banner image
 const COTM_POSTS = {
@@ -51,6 +52,7 @@ const COTMPostCard = ({
   const [mediaType, setMediaType] = useState<string>('unknown');
   const [isMediaLoading, setIsMediaLoading] = useState(true);
   const { data: author } = useGetAuthorById(post?.authorId);
+  const { data: likesCount } = useGetPostLikesCount(post?.$id);
 
   const monthBadgeClasses = `
     absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full text-xs font-medium
@@ -128,22 +130,35 @@ const COTMPostCard = ({
         </div>
 
         <div className="p-3.5 mt-auto z-10">
-          <div className="inline-flex items-center gap-2 shadow-md p-2 pl-3.5 pr-4 rounded-full bg-dark-4 bg-opacity-60">
-            <LazyImage
-              src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
-              alt={author?.name || 'Creator'}
-              className="w-6 h-6 rounded-full object-cover"
-            />
-            <p className="line-clamp-1 small-medium flex items-center gap-1.5">
-              {author?.name || 'Creator'}
-              {author?.verifiedUser && (
-                <img
-                  src="/assets/icons/verified.svg"
-                  alt="verified"
-                  className="w-4 h-4"
-                />
-              )}
-            </p>
+          <div className="flex items-center justify-between gap-2">
+            <div className="inline-flex items-center gap-2 shadow-md p-2 pl-3.5 pr-4 rounded-full bg-dark-4 bg-opacity-60">
+              <LazyImage
+                src={author?.dpUrl || '/assets/icons/profile-placeholder.svg'}
+                alt={author?.name || 'Creator'}
+                className="w-6 h-6 rounded-full object-cover"
+              />
+              <p className="line-clamp-1 small-medium flex items-center gap-1.5">
+                {author?.name?.split(' ').slice(0, 1).join(' ') || 'Creator'}
+                {author?.verifiedUser && (
+                  <img
+                    src="/assets/icons/verified.svg"
+                    alt="verified"
+                    className="w-4 h-4"
+                  />
+                )}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-dark-4 bg-opacity-60 shadow-md">
+              <img
+                src="/assets/icons/liked.svg"
+                alt="likes"
+                className="w-6 h-6"
+              />
+              <span className="text-light-2 subtle-comment-semibold">
+                {likesCount?.toLocaleString() || '0'}
+              </span>
+            </div>
           </div>
         </div>
       </Link>
