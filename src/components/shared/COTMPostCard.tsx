@@ -41,7 +41,13 @@ const COTM_POSTS = {
   ],
 };
 
-const COTMPostCard = ({ post, isWinner = false }: { post: Models.Document, isWinner?: boolean }) => {
+const COTMPostCard = ({
+  post,
+  isWinner = false,
+}: {
+  post: Models.Document;
+  isWinner?: boolean;
+}) => {
   const [mediaType, setMediaType] = useState<string>('unknown');
   const [isMediaLoading, setIsMediaLoading] = useState(true);
   const { data: author } = useGetAuthorById(post?.authorId);
@@ -55,9 +61,10 @@ const COTMPostCard = ({ post, isWinner = false }: { post: Models.Document, isWin
 
   const statusBadgeClasses = `
     absolute top-3 right-3 z-10 px-2.5 py-1 rounded-full text-xs font-medium
-    ${isWinner 
-      ? 'bg-gradient-to-r from-yellow-600/90 to-yellow-500/90 border-yellow-400/30 text-yellow-100'
-      : 'bg-gradient-to-r from-blue-700/90 to-blue-500/90 border-blue-400/30 text-light-2'
+    ${
+      isWinner
+        ? 'bg-gradient-to-r from-yellow-600/90 to-yellow-500/90 border-yellow-400/30 text-yellow-100'
+        : 'bg-gradient-to-r from-blue-700/90 to-blue-500/90 border-blue-400/30 text-light-2'
     }
     border shadow-sm backdrop-blur-sm
   `;
@@ -74,11 +81,9 @@ const COTMPostCard = ({ post, isWinner = false }: { post: Models.Document, isWin
   return (
     <div className="rounded-xl border border-light-4 border-opacity-50 bg-dark-3 overflow-hidden flex flex-col h-[320px] snap-center shrink-0 w-[260px] md:w-[320px] relative">
       {/* Top Badges */}
-      <div className={monthBadgeClasses}>
-        COTM - APR, 25
-      </div>
+      <div className={monthBadgeClasses}>COTM - APR, 25</div>
       <div className={statusBadgeClasses}>
-        {isWinner ? "🏆 Winner" : "Top 5"}
+        {isWinner ? '🏆 Winner' : 'Top 5'}
       </div>
 
       <Link
@@ -149,7 +154,7 @@ const COTMPostCard = ({ post, isWinner = false }: { post: Models.Document, isWin
 const COTMCarousel = () => {
   const cotmPosts = COTM_POSTS.nominations.map((nomination) => ({
     query: useGetCreationById(nomination.id),
-    isWinner: nomination.isWinner
+    isWinner: nomination.isWinner,
   }));
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -183,8 +188,8 @@ const COTMCarousel = () => {
   const postSet = cotmPosts.map(
     ({ query, isWinner }, index) =>
       query.data && (
-        <COTMPostCard 
-          key={`post-${index}`} 
+        <COTMPostCard
+          key={`post-${index}`}
           post={query.data}
           isWinner={isWinner}
         />
@@ -193,7 +198,11 @@ const COTMCarousel = () => {
 
   return (
     <div className="cotm-carousel">
-      <div className={`cotm-scroll-container ${isLoaded ? 'cotm-scroll-animation' : ''}`}>
+      <div
+        className={`cotm-scroll-container ${
+          isLoaded ? 'cotm-scroll-animation' : ''
+        }`}
+      >
         {/* First set */}
         <div className="flex gap-6">
           {bannerCard}

@@ -312,11 +312,12 @@ const Home = () => {
 
               {/* Winner info and countdown section */}
               <div className="flex flex-col sm:flex-row lg:flex-col lg:gap-3 2xl:flex-row justify-between items-center text-center bg-dark-4 rounded-xl p-4 mt-2">
-                <div className="flex items-center gap-2 mb-4 sm:mb-0">
+                <div className="flex flex-col sm:flex-row lg:flex-col text-center 2xl:flex-row items-center gap-1.5 mb-4 sm:mb-0">
                   <p className="text-light-2 base-medium">
-                    The Most Liked Creation Wins!{' '}
+                    The Most Voted Creation Wins!{' '}
                     <span className="text-xl">🏆</span>
                   </p>
+                  <p className="text-sm text-light-3 font-semibold"> "1 Like = 1 Vote"</p>
                 </div>
 
                 <div className="flex gap-4">

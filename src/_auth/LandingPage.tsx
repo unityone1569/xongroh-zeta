@@ -7,6 +7,7 @@ import { databases, appwriteConfig } from '@/lib/appwrite-apis/config';
 import { Query } from 'appwrite';
 import { useGetTopCreators } from '@/lib/tanstack-queries/usersQueries';
 import Loader from '@/components/shared/Loader';
+import COTMCarousel from '@/components/shared/COTMPostCard';
 
 const creatorTypes = [
   'an artist',
@@ -223,7 +224,7 @@ const LandingPage = () => {
               <Link
                 key={`first-${creator.$id}`}
                 to={`/profile/${creator.$id}`}
-                className="flex-shrink-0 w-[230px] bg-dark-3 rounded-xl p-5 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
+                className="flex-shrink-0 w-[260px] bg-dark-3 rounded-xl p-5 border border-dark-4 hover:border-primary-500 transition-all duration-300 group relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="flex flex-col gap-6 relative z-10">
@@ -491,51 +492,48 @@ const LandingPage = () => {
         </section>
 
         {/* COTM Competition Section */}
-        <section className="min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center w-full py-12 sm:py-16 md:py-20 px-6 sm:px-5 bg-gradient-to-br from-primary-500/10 via-dark-1 to-dark-1 relative">
-          {/* Live Now! badge at the top-right of the entire section */}
-          <div className="absolute top-4 left-4 md:top-6 md:left-8 bg-gradient-to-r from-primary-600 to-primary-500/80 text-light-1 text-xs  font-medium px-3.5 py-1 rounded-full shadow-lg shadow-primary-600/20 z-10">
+        <section className="min-h-[600px] md:min-h-[720px] flex flex-col w-full py-12 sm:py-16 md:py-20 px-6 sm:px-5 bg-gradient-to-br from-primary-500/10 via-dark-1 to-dark-1 relative">
+          {/* Live Now! badge */}
+          <div className="absolute top-4 left-4 md:top-6 md:left-8 bg-gradient-to-r from-primary-600 to-primary-500/80 text-light-1 text-xs font-medium px-3.5 py-1 rounded-full shadow-lg shadow-primary-600/20 z-10">
             <span className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-light-1 rounded-full animate-ping mb-0.5"></span>
               <span className="subtle-semibold">LIVE</span>
             </span>
           </div>
 
-          <div className="w-full max-w-4xl flex flex-col md:flex-row gap-8 md:gap-12 items-center">
-            <div className="md:w-2/5 flex justify-center">
-              <div className="relative">
-                <div className="w-32 h-32 md:w-44 md:h-44 bg-gradient-to-br from-primary-500/30 via-primary-600/50 to-dark-3 rounded-full flex items-center justify-center animate-pulse-slow relative">
-                  <div className="relative flex items-center justify-center">
-                    <div className="text-5xl md:text-6xl z-10">🏆</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Section Header */}
+          <div className="text-center mb-12 sm:mb-20 md:mb-24 mt-3 md:mt-0">
+            <h2 className="h3-bold sm:h2-bold text-primary-500">
+              <span className="text-3xl">🏆</span> C.O.T.M. Competition
+            </h2>
+            <p className="text-light-2 base-regular mt-4 sm:mt-6 md:mt-9">
+              Submit your best creation on Xongroh for a chance to{' '}
+              <span className="font-bold text-primary-500">Win ₹3000</span> and
+              a{' '}
+              <span className="font-bold text-primary-500">
+                Xongroh T-Shirt
+              </span>{' '}
+              every month!
+            </p>
+          </div>
 
-            <div className="md:w-3/5 text-center md:text-left">
-              <h2 className="h3-bold text-primary-500 mb-3">
-                C.O.T.M. Competition
-              </h2>
-              <p className="text-light-2 subtle-comment md:small-regular mb-4">
-                Submit your best creation on Xongroh for a chance to{' '}
-                <span className="font-bold">Win ₹3000</span> and a{' '}
-                <span className="font-bold">Xongroh T-Shirt</span> every month!
-              </p>
-              <p className="text-light-3 subtle-normal md:subtle-comment mb-6">
-                Competition starts from{' '}
-                <span className="font-bold">1st April, 2025.</span>
-              </p>
+          {/* Carousel Section */}
+          <div className="w-full max-w-6xl mx-auto mb-8">
+            <COTMCarousel />
+          </div>
 
-              <Link
-                to={isAuthenticated ? '/add-creation' : '/sign-up'}
-                className="flex md:flex-none w-full justify-center items-center md:justify-start md:items-start"
-              >
-                <Button className="shad-button_primary px-6">
-                  {isAuthenticated
-                    ? 'Submit Your Creation'
-                    : 'Join to Participate'}
-                </Button>
-              </Link>
-            </div>
+          {/* CTA Button */}
+          <div className="flex justify-center mt-11">
+            <Link
+              to={isAuthenticated ? '/add-creation' : '/sign-up'}
+              className="flex items-center"
+            >
+              <Button className="shad-button_primary px-8">
+                {isAuthenticated
+                  ? 'Submit Your Creation'
+                  : 'Join to Participate'}
+              </Button>
+            </Link>
           </div>
         </section>
 
