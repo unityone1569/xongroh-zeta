@@ -603,7 +603,7 @@ export async function addProject(project: INewProject) {
     // Check if a file is provided
     if (project.file && project.file.length > 0) {
       // Upload file to storage
-      const uploadedFile = await uploadFile(project.file[0]);
+      const uploadedFile = await uploadProjectFile(project.file[0]);
       if (!uploadedFile) throw new Error('File upload failed');
 
       // Get file URL and cast it to string
@@ -675,7 +675,7 @@ export async function updateProject(project: IUpdateProject) {
 
     if (hasFileToUpdate) {
       // Upload new file to Appwrite storage
-      const uploadedFile = await uploadFile(project.file[0]);
+      const uploadedFile = await uploadProjectFile(project.file[0]);
       if (!uploadedFile) throw new Error('File upload failed');
 
       // Get new file URL
@@ -834,6 +834,19 @@ export async function uploadFile(file: File) {
   try {
     const uploadedFile = await storage.createFile(
       bk.creationBucketId,
+      ID.unique(),
+      file
+    );
+    return uploadedFile;
+  } catch (error) {
+    console.log(error);
+  }
+}
+// Project-File-Upload
+export async function uploadProjectFile(file: File) {
+  try {
+    const uploadedFile = await storage.createFile(
+      bk.projectBucketId,
       ID.unique(),
       file
     );

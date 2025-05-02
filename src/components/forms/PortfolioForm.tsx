@@ -18,7 +18,6 @@ import { Models } from 'appwrite';
 import { useUserContext } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-
 import Loader from '../shared/Loader';
 import { useAddProject, useUpdateProject } from '@/lib/tanstack-queries/postsQueries';
 
