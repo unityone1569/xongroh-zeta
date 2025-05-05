@@ -66,7 +66,7 @@ const COTMPostCard = ({
     ${
       isWinner
         ? 'bg-gradient-to-r from-yellow-600/90 to-yellow-500/90 border-yellow-400/30 text-yellow-100'
-        : 'bg-gradient-to-r from-blue-700/90 to-blue-500/90 border-blue-400/30 text-light-2'
+        : 'bg-gradient-to-r from-teal-700/90 to-teal-500/90 border-teal-400/30 text-light-2'
     }
     border shadow-sm backdrop-blur-sm
   `;
@@ -81,7 +81,7 @@ const COTMPostCard = ({
   }, [post?.mediaUrl]);
 
   return (
-    <div className="rounded-xl border border-light-4 border-opacity-50 bg-dark-3 overflow-hidden flex flex-col h-[320px] snap-center shrink-0 w-[260px] md:w-[320px] relative">
+    <div className="rounded-xl border border-light-4 border-opacity-50 bg-dark-3 bg- overflow-hidden flex flex-col h-[320px] snap-center shrink-0 w-[260px] md:w-[320px] relative">
       {/* Top Badges */}
       <div className={monthBadgeClasses}>COTM - APR, 25</div>
       <div className={statusBadgeClasses}>
