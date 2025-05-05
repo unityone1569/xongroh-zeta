@@ -96,7 +96,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
   }, [volume]);
 
   return (
-    <div ref={containerRef} className="w-full max-w-4xl mx-auto bg-dark-1 shadow-lg p-2 sm:p-4 overflow-x-auto custom-scrollbar">
+    <div ref={containerRef} className="w-full max-w-4xl mx-auto bg-dark-1 shadow-lg p-2 sm:p-4 overflow-x-auto custom-scrollbar border border-dark-3">
       <div className="flex flex-row items-center gap-2 xs:gap-4 min-w-[300px]">
         <Button 
           className="flex p-1 m-1.5 items-center justify-center sm:w-1/6 sm:h-auto"
