@@ -211,7 +211,7 @@ const Explore = () => {
           </div>
 
           {/* Call-to-action button */}
-          <div className="flex justify-center mt-10 mb-6">
+          <div className="flex justify-center text-center mt-10 mb-6">
             <p className="text-light-3">
               Have an idea for a new Circle or bring your Hometown into the mix?{' '}
               <Link
