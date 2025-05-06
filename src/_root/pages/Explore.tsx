@@ -213,7 +213,7 @@ const Explore = () => {
           {/* Call-to-action button */}
           <div className="flex justify-center mt-10 mb-6">
             <p className="text-light-3">
-              Have an idea for a new Circle?{' '}
+              Have an idea for a new Circle or bring your Hometown into the mix?{' '}
               <Link
                 to="/topics/6798cd28001fb6990e2c"
                 className="text-primary-500 hover:text-primary-600 transition-colors"
