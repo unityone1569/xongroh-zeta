@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from './queryKeys';
 import {
   checkItemLike,
@@ -16,9 +16,26 @@ import {
   discussionLike,
   discussionItemLike,
   discussionSave,
+  getPostLikes,
 } from '../appwrite-apis/interactions';
 
 // *** POST-LIKE-QUERIES ***
+
+
+
+// Use-Get-Post-Likes
+export const useGetPostLikes = (postId: string, isEnabled: boolean = true) => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_POST_LIKES, postId],
+    queryFn: ({ pageParam }: { pageParam: string | null }) => getPostLikes({ postId, pageParam }),
+    getNextPageParam: (lastPage) => {
+      if (!lastPage?.hasMore) return null;
+      return lastPage.documents[lastPage.documents.length - 1].$id;
+    },
+    enabled: isEnabled && Boolean(postId),
+    initialPageParam: null,
+  });
+};
 
 // Use-Get-Post-Likes-Count
 export const useGetPostLikesCount = (postId: string) => {

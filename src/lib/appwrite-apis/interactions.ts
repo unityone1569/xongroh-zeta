@@ -44,6 +44,76 @@ const fn = {
 
 // *** POST-LIKE ***
 
+
+// ...existing code...
+
+// Get-Post-Likes
+export async function getPostLikes({
+  postId,
+  pageParam,
+}: {
+  postId: string;
+  pageParam: string | null;
+}) {
+  if (!postId) return { documents: [] };
+
+  try {
+    const queries: any[] = [
+      Query.equal('postId', postId),
+      Query.limit(15),
+      Query.orderDesc('$createdAt'),
+    ];
+
+    if (pageParam) {
+      queries.push(Query.cursorAfter(pageParam));
+    }
+
+    const likes = await databases.listDocuments(
+      db.interactionsId,
+      cl.postLikeId,
+      queries
+    );
+
+    // Get unique userIds from likes
+    const userIds = [...new Set(likes.documents.map(like => like.userId))];
+
+    // Fetch all user documents in one query
+    const userDocs = await databases.listDocuments(
+      appwriteConfig.databases.users.databaseId,
+      appwriteConfig.databases.users.collections.creator,
+      [Query.equal('$id', userIds), Query.select(['$id', 'name', 'dpUrl', 'profession', 'verifiedUser'])]
+    );
+
+    // Create a map of userId to user data for quick lookup
+    const userMap = new Map(
+      userDocs.documents.map(user => [user.$id, user])
+    );
+
+    // Combine like documents with user details
+    const likesWithUsers = likes.documents.map(like => ({
+      ...like,
+      user: userMap.get(like.userId) || {
+        $id: like.userId,
+        name: 'Deleted User',
+        dpUrl: '/assets/icons/profile-placeholder.svg',
+        profession: null,
+        verifiedUser: false,
+      },
+    }));
+
+    return {
+      documents: likesWithUsers,
+      total: likes.total,
+      hasMore: likes.documents.length === 15,
+    };
+  } catch (error) {
+    console.error('Error fetching post likes:', error);
+    return { documents: [], total: 0, hasMore: false };
+  }
+}
+
+
+
 // Get-Post-Likes-Count
 export async function getPostLikeCount(postId: string): Promise<number> {
   if (!postId) return 0;

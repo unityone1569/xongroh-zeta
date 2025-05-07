@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Models } from 'appwrite';
 import { useLocation, Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -20,6 +20,7 @@ import {
   useGetPostRepliesCount,
 } from '@/lib/tanstack-queries/commentsQueries';
 import { formatShareDescription, updateMetaTags } from '@/lib/utils/utils';
+import LikesPopup from './LikesPopup';
 
 type PostStatsProps = {
   post: Models.Document;
@@ -34,6 +35,8 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
   const queryClient = useQueryClient();
   const isHomeRoute = location.pathname === '/home';
   const isProfileRoute = location.pathname.includes('/profile/');
+
+  const [showLikesPopup, setShowLikesPopup] = useState(false);
 
   // Queries
   const { data: feedbacksCount = 0 } = useGetPostFeedbacksCount(post?.$id);
@@ -191,9 +194,12 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
           />
 
           {likesCount > 0 && (
-            <p className="small-semibold lg:base-semibold text-light-4">
+            <button
+              onClick={() => setShowLikesPopup(true)}
+              className="small-semibold lg:base-semibold text-light-4 hover:text-light-2 transition-colors"
+            >
               {likesCount}
-            </p>
+            </button>
           )}
         </div>
 
@@ -274,6 +280,13 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
           className="cursor-pointer"
         />
       </div>
+
+      <LikesPopup
+        postId={postId}
+        isOpen={showLikesPopup}
+        onClose={() => setShowLikesPopup(false)}
+        likesCount={likesCount}
+      />
     </div>
   );
 };
