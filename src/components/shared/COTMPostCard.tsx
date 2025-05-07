@@ -20,6 +20,10 @@ const COTM_POSTS = {
   },
   nominations: [
     {
+      id: '680b738b0023f893fb05',
+      isWinner: true,
+    },
+    {
       id: '6808e05a002d835f188a',
       isWinner: false,
     },
@@ -27,10 +31,7 @@ const COTM_POSTS = {
       id: '67ed6b780021510250c7',
       isWinner: false,
     },
-    {
-      id: '680b738b0023f893fb05',
-      isWinner: false,
-    },
+    
     {
       id: '67f8b416001c8a14cbb5',
       isWinner: false,
