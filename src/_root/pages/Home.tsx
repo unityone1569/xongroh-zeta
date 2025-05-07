@@ -305,7 +305,7 @@ const Home = () => {
             <div className="flex flex-col gap-4 mt-9">
               <div className="flex items-center">
                 <h2 className="text-light-1 h3-bold sm:h2-bold pb-3">
-                  COTM Competition
+                  COTM - Competition
                 </h2>
               </div>
               <COTMCarousel />
