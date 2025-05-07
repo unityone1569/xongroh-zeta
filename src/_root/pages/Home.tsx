@@ -20,34 +20,34 @@ const TABS = [
 
 type TabType = (typeof TABS)[number]['name'];
 
-const useCountdown = (targetDate: Date) => {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+// const useCountdown = (targetDate: Date) => {
+//   const [timeLeft, setTimeLeft] = useState({
+//     days: 0,
+//     hours: 0,
+//     minutes: 0,
+//     seconds: 0,
+//   });
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = targetDate.getTime() - now;
+//   useEffect(() => {
+//     const interval = setInterval(() => {
+//       const now = new Date().getTime();
+//       const distance = targetDate.getTime() - now;
 
-      setTimeLeft({
-        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-        hours: Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        ),
-        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((distance % (1000 * 60)) / 1000),
-      });
-    }, 1000);
+//       setTimeLeft({
+//         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+//         hours: Math.floor(
+//           (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+//         ),
+//         minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+//         seconds: Math.floor((distance % (1000 * 60)) / 1000),
+//       });
+//     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [targetDate]);
+//     return () => clearInterval(interval);
+//   }, [targetDate]);
 
-  return timeLeft;
-};
+//   return timeLeft;
+// };
 
 const Home = () => {
   const { user, setUser } = useUserContext();
@@ -305,13 +305,13 @@ const Home = () => {
             <div className="flex flex-col gap-4 mt-9">
               <div className="flex items-center">
                 <h2 className="text-light-1 h3-bold sm:h2-bold pb-3">
-                  C.O.T.M. Competition
+                  COTM - APRIL, 2025
                 </h2>
               </div>
               <COTMCarousel />
 
               {/* Winner info and countdown section */}
-              <div className="flex flex-col sm:flex-row lg:flex-col lg:gap-5 2xl:flex-row justify-between items-center text-center bg-dark-4 rounded-xl p-4 mt-2">
+              {/* <div className="flex flex-col sm:flex-row lg:flex-col lg:gap-5 2xl:flex-row justify-between items-center text-center bg-dark-4 rounded-xl p-4 mt-2">
                 <div className="flex flex-col sm:flex-row lg:flex-col text-center 2xl:flex-row items-center gap-1.5 mb-5 sm:mb-0">
                   <p className="text-light-2 base-medium">
                     The Most Voted Creation Wins!{' '}
@@ -340,7 +340,7 @@ const Home = () => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div className="flex-start mt-5">
