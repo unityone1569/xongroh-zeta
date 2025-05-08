@@ -28,15 +28,15 @@ const COTM_POSTS = {
       isWinner: false,
     },
     {
+      id: '6811acc3001ebb360048',
+      isWinner: false,
+    },
+    {
       id: '67ed6b780021510250c7',
       isWinner: false,
     },
     {
       id: '67f8b416001c8a14cbb5',
-      isWinner: false,
-    },
-    {
-      id: '6811acc3001ebb360048',
       isWinner: false,
     },
   ],
@@ -85,7 +85,7 @@ const COTMPostCard = ({
       {/* Top Badges */}
       <div className={monthBadgeClasses}>COTM - APR, 25</div>
       <div className={statusBadgeClasses}>
-        {isWinner ? '🏆 Winner' : 'Top 5'}
+        {isWinner ? <span className="invert-white">🏆 Winner</span> : 'Top 5'}
       </div>
 
       <Link
