@@ -183,9 +183,9 @@ const DiscussionStats = ({
       <div className="flex items-center gap-5">
         <div className="flex gap-1 items-center">
           <img
-            src={isLiked ? '/assets/icons/liked.svg' : '/assets/icons/like.svg'}
+            src={isLiked ? '/assets/icons/d-liked.svg' : '/assets/icons/d-like.svg'}
             alt="like"
-            width={33}
+            width={26}
             onClick={handleLike}
             className={`cursor-pointer ${
               isLiking || isUnliking ? 'opacity-50 cursor-not-allowed' : ''
