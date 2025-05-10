@@ -277,9 +277,9 @@ const Home = () => {
       <div className="home-posts">
         <div className="flex flex-col gap-9 w-full">
           <div className="flex flex-col gap-4 mt-16 lg:mt-0">
-            <div className="flex flex-col gap-4 mt-5">
+            <div className="flex flex-col gap-4 mt-3">
               <div className="flex items-center">
-                <h2 className="text-light-1 h3-bold sm:h2-bold pb-3">
+                <h2 className="text-primary-500 h3-bold sm:h2-bold pb-6">
                   COTM - Competition
                 </h2>
               </div>
