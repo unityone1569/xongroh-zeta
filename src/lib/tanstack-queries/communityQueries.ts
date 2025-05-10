@@ -30,6 +30,7 @@ import {
   checkMembershipStatus,
   getUserPings,
   markAllPingsAsRead,
+  getAllDiscussions,
 } from '../appwrite-apis/community';
 
 // *** COMMUNITIES QUERIES ***
@@ -199,6 +200,20 @@ export const useGetTopicsById = (topicId: string) => {
 
 // *** DISCUSSIONS QUERIES ***
 
+// use-Get-All-Discussions
+export const useGetAllDiscussions = () => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_ALL_DISCUSSIONS],
+    queryFn: ({ pageParam }) => getAllDiscussions({ pageParam }),
+    initialPageParam: null,
+    getNextPageParam: (lastPage: any) => {
+      if (lastPage && lastPage.documents.length === 0) return null;
+      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
+      return lastId;
+    },
+  });
+};
+
 // use-Get-Discussions
 export const useGetDiscussions = (topicId: string) => {
   return useInfiniteQuery({
@@ -279,6 +294,9 @@ export const useCreateDiscussion = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_SEARCH_DISCUSSIONS],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_DISCUSSIONS],
+      });
     },
   });
 };
@@ -335,6 +353,9 @@ export const useDeleteDiscussion = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_SEARCH_DISCUSSIONS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_ALL_DISCUSSIONS],
       });
     },
   });

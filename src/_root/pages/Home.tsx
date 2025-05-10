@@ -12,9 +12,12 @@ import {
 } from '@/lib/tanstack-queries/postsQueries';
 import { useUpdateWelcomeStatus } from '@/lib/tanstack-queries/usersQueries';
 import COTMCarousel from '@/components/shared/COTMPostCard';
+import { useGetAllDiscussions } from '@/lib/tanstack-queries/communityQueries';
+import DiscussionCard from '@/components/shared/community/DiscussionCard';
 
 const TABS = [
   { name: 'creation', label: 'Creations' },
+  { name: 'discussion', label: 'Discussions' }, // Add new tab
   { name: 'saved', label: 'Saved' },
 ] as const;
 
@@ -57,6 +60,7 @@ const Home = () => {
 
   const savedPostsRef = useRef<HTMLDivElement>(null);
   const followingPostsRef = useRef<HTMLDivElement>(null);
+  const discussionsRef = useRef<HTMLDivElement>(null);
 
   // Query hooks
   const {
@@ -75,6 +79,14 @@ const Home = () => {
     isLoading: isFollowingLoading,
   } = useGetSupportingCreations(user.id);
 
+  const {
+    data: discussionsPages,
+    fetchNextPage: fetchNextDiscussionsPage,
+    hasNextPage: hasNextDiscussionsPage,
+    isFetchingNextPage: isFetchingNextDiscussionsPage,
+    isLoading: isDiscussionsLoading,
+  } = useGetAllDiscussions();
+
   // Memoized posts
   const savedPosts = useMemo(
     () => savedPostsPages?.pages.flatMap((page) => page.documents) || [],
@@ -84,6 +96,11 @@ const Home = () => {
   const followingPosts = useMemo(
     () => followingPostsPages?.pages.flatMap((page) => page.documents) || [],
     [followingPostsPages]
+  );
+
+  const discussions = useMemo(
+    () => discussionsPages?.pages.flatMap((page) => page.documents) || [],
+    [discussionsPages]
   );
 
   // Welcome dialog effect
@@ -106,6 +123,12 @@ const Home = () => {
       ) {
         fetchNextFollowingPage();
       } else if (
+        activeTab === 'discussion' &&
+        hasNextDiscussionsPage &&
+        !isFetchingNextDiscussionsPage
+      ) {
+        fetchNextDiscussionsPage();
+      } else if (
         activeTab === 'saved' &&
         hasNextSavedPage &&
         !isFetchingNextSavedPage
@@ -117,9 +140,12 @@ const Home = () => {
     const observer = new IntersectionObserver(observerCallback, {
       threshold: 0.1,
     });
+
     const currentRef =
       activeTab === 'creation'
         ? followingPostsRef.current
+        : activeTab === 'discussion'
+        ? discussionsRef.current
         : savedPostsRef.current;
 
     if (currentRef) {
@@ -131,10 +157,13 @@ const Home = () => {
     activeTab,
     hasNextSavedPage,
     hasNextFollowingPage,
+    hasNextDiscussionsPage,
     isFetchingNextSavedPage,
     isFetchingNextFollowingPage,
+    isFetchingNextDiscussionsPage,
     fetchNextSavedPage,
     fetchNextFollowingPage,
+    fetchNextDiscussionsPage,
   ]);
 
   const handleWelcomeChange = async (open: boolean) => {
@@ -274,6 +303,25 @@ const Home = () => {
       );
     }
 
+    if (activeTab === 'discussion') {
+      if (isDiscussionsLoading) return renderLoader();
+      if (!discussions?.length) {
+        return renderEmptyState('No discussions yet!');
+      }
+      return (
+        <div className="flex flex-col gap-9 w-full">
+          {discussions.map((discussion) => (
+            <DiscussionCard
+              key={discussion.$id}
+              discussion={{ ...discussion, type: 'Discussion' }}
+            />
+          ))}
+          <div ref={discussionsRef} className="h-10" />
+          {isFetchingNextDiscussionsPage && <Loader />}
+        </div>
+      );
+    }
+
     if (activeTab === 'saved') {
       if (isSavedLoading) return renderLoader();
       if (!savedPosts?.length) {
@@ -348,13 +396,16 @@ const Home = () => {
                 <button
                   key={tab.name}
                   onClick={() => setActiveTab(tab.name)}
-                  className={`py-2 px-3 font-semibold ${
+                  className={`py-2 px-3 font-semibold relative ${
                     activeTab === tab.name
                       ? 'underline text-primary-500 underline-offset-8'
                       : 'hover:text-primary-500'
                   }`}
                 >
                   {tab.label}
+                  {tab.name === 'discussion' && (
+                    <span className="absolute top-1 -right-0 w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
+                  )}
                 </button>
               ))}
             </div>

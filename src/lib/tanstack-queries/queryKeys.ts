@@ -27,7 +27,7 @@ export enum QUERY_KEYS {
   GET_PROJECT_BY_ID = 'getProjectById',
   GET_USER_PROJECTS = 'getUserProjects',
 
-  GET_POST_LIKES= 'getPostLikes',
+  GET_POST_LIKES = 'getPostLikes',
   GET_ITEMS_LIKE_COUNT = 'getItemsLikeCount',
   GET_POST_LIKES_COUNT = 'getPostLikesCount',
   GET_POST_SAVES_COUNT = 'getPostSavesCount',
@@ -60,6 +60,7 @@ export enum QUERY_KEYS {
   GET_SEARCH_COMMUNITIES = 'getSearchCommunities',
   CHECK_MEMBERSHIP_STATUS = 'checkMembershipStatus',
   GET_TOPIC_BY_ID = 'getTopicById',
+  GET_ALL_DISCUSSIONS = 'getAllDiscussions',
   GET_DISCUSSIONS = 'getDiscussions',
   GET_DISCUSSION_BY_ID = 'getDiscussionById',
   GET_USER_DISCUSSIONS = 'getUserDiscussions',
@@ -86,5 +87,5 @@ export enum QUERY_KEYS {
   GET_USER_EVENTS = 'getEvents',
   GET_SEARCH_EVENTS = 'getSearchEvents',
   GET_UPCOMING_EVENTS = 'getUpcomingEvents',
-  GET_UPCOMING_EVENTS_COUNT= 'getUpcomingEventsCount',
+  GET_UPCOMING_EVENTS_COUNT = 'getUpcomingEventsCount',
 }

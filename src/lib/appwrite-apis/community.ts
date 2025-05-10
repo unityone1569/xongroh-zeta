@@ -470,6 +470,69 @@ export async function getTopicById(topicId: string) {
 
 // *** DISCUSSIONS ***
 
+// Get-All-Discussions
+export async function getAllDiscussions({
+  pageParam,
+}: {
+  pageParam: number | null;
+}) {
+  const queries: any[] = [
+    Query.orderDesc('$createdAt'),
+    Query.limit(6),
+    Query.select([
+      '$id',
+      'authorId',
+      'topicId',
+      'content',
+      'mediaUrl',
+      'tags',
+      'type',
+      '$createdAt',
+    ]),
+  ];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
+  try {
+    const { documents: discussions } = await databases.listDocuments(
+      db.communitiesId,
+      cl.discussionId,
+      queries
+    );
+
+    if (!discussions || discussions.length === 0) {
+      return { documents: [] };
+    }
+
+    // Create user fetch promises
+    const userFetchPromises = discussions.map((discussion) =>
+      databases.getDocument(db.usersId, cl.creatorId, discussion.authorId, [
+        Query.select(['name', 'dpUrl', 'verifiedUser']),
+      ])
+    );
+
+    // Fetch all users in parallel
+    const users = await Promise.all(userFetchPromises);
+
+    // Combine discussions with user details
+    const discussionsWithUserDetails = discussions.map((discussion, index) => ({
+      ...discussion,
+      author: {
+        name: users[index]?.name || '',
+        dpUrl: users[index]?.dpUrl || null,
+        verifiedUser: users[index]?.verifiedUser || false,
+      },
+    }));
+
+    return { documents: discussionsWithUserDetails };
+  } catch (error) {
+    console.error('Error fetching all discussions:', error);
+    return { documents: [] };
+  }
+}
+
 // Get-Discussions
 export async function getDiscussions({
   topicId,
