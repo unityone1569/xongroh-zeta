@@ -633,25 +633,25 @@ const LandingPage = () => {
         </section>
 
         {/* Footer - Responsive padding adjustments */}
-        <footer className="px-4 py-8 mt-16 sm:mt-24 md:mt-32 sm:px-6 text-center text-light-3 subtle-normal sm:small-regular">
-          <div className="flex flex-wrap justify-center gap-3.5 sm:gap-6 mb-9">
-            <Link to="/privacy" className="hover:text-light-1">
-              Privacy Policy
+        <footer className="px-4 py-8 mt-16 sm:mt-24 md:mt-32 sm:px-6 text-center text-light-2 subtle-normal sm:small-regular lg:base-regular">
+          <div className="flex flex-wrap justify-center gap-3.5 sm:gap-9 mb-9">
+            <Link to="/privacy" className="hover:text-light-3">
+              Privacy policy
             </Link>
-            <Link to="/terms" className="hover:text-light-1">
-              Terms of Service
+            <Link to="/terms" className="hover:text-light-3">
+              Terms of service
             </Link>
-            <Link to="/guidelines" className="hover:text-light-1">
-              Community Guidelines
+            <Link to="/guidelines" className="hover:text-light-3">
+              Community guidelines
             </Link>
           </div>
 
           {/* Contact Us Section - Improved spacing */}
           <div className="mb-6 sm:mb-8 py-4 sm:py-6 border-y border-light-4/20">
-            <h4 className="text-light-1 font-medium mb-4 sm:mb-6 md:mb-8">
+            <h4 className="text-light-3 font-medium mb-4 sm:mb-6 md:mb-8">
               Contact Us
             </h4>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-light-3">
               <a
                 href="tel:+919127510087"
                 className="flex items-center gap-2 hover:text-light-1 transition-colors"
