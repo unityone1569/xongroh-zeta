@@ -90,7 +90,7 @@ const LeftSidebar = () => {
     <nav className="leftsidebar">
       <div className="flex flex-col gap-11">
         <Link to="/" className="flex items-center pl-1.5">
-          <img src="/assets/icons/logo.svg" alt="logo" className="h-14" />
+          <img src="/assets/icons/logo.svg" alt="logo" className="h-12" />
         </Link>
 
         <ul className="flex flex-col gap-6 mt-8">
