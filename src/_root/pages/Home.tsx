@@ -234,7 +234,7 @@ const Home = () => {
                     })`,
                   }}
                 />
-                <span className="text-light-3 subtle-comment-semibold md:small-semibold truncate w-20 text-center pb-3">
+                <span className="text-light-3 subtle-medium truncate w-20 text-center pt-1.5 pb-3">
                   {community.name}
                 </span>
               </Link>
