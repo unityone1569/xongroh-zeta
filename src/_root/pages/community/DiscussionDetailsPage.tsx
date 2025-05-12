@@ -160,7 +160,11 @@ const DiscussionDetailsPage = () => {
 
             <hr className="border w-full mt-2 mb-0.5 border-dark-4/80" />
 
-            <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
+            <p className="small-regular pl-1 pt-1 whitespace-pre-line text-pretty">
+              {discussion?.content}
+            </p>
+
+            <div className="flex flex-col flex-1 w-full small-medium lg:base-regular gap-3">
               {discussion?.mediaUrl && (
                 <>
                   {isMediaLoading ? (
@@ -198,15 +202,11 @@ const DiscussionDetailsPage = () => {
                 </>
               )}
 
-              <p className="small-regular pl-1 pt-3 whitespace-pre-line text-pretty">
-                {discussion?.content}
-              </p>
-
               {discussion?.tags &&
                 Array.isArray(discussion?.tags) &&
                 discussion?.tags.filter((tag: string) => tag.trim() !== '')
                   .length > 0 && (
-                  <ul className="flex py-1.5 flex-wrap gap-3.5 mt-5 overflow-x-hidden">
+                  <ul className="flex py-1.5 pt-6 flex-wrap gap-3.5 overflow-x-hidden">
                     {discussion?.tags
                       .filter((tag: string) => tag.trim() !== '')
                       .map((tag: string, index: number) => (
