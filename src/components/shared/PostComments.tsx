@@ -216,7 +216,6 @@ const PostComments = ({
       </div>
 
       <div className="comment-input">
-        <div className="comments-list">{RenderedItems}</div>
         {activeTab === 'comments' ? (
           <Form {...commentForm} key="comment-form">
             <form onSubmit={commentForm.handleSubmit(onSubmitComment)}>
@@ -278,6 +277,7 @@ const PostComments = ({
             </form>
           </Form>
         )}
+        <div className="comments-list">{RenderedItems}</div>
       </div>
     </div>
   );

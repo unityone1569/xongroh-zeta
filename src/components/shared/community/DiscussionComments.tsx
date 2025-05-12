@@ -124,7 +124,6 @@ const DiscussionComments = ({
       </div>
 
       <div className="comment-input">
-        <div className="comments-list">{renderedComments}</div>
         <Form {...commentForm}>
           <form onSubmit={commentForm.handleSubmit(onSubmitComment)}>
             <FormField
@@ -154,6 +153,7 @@ const DiscussionComments = ({
             </Button>
           </form>
         </Form>
+        <div className="comments-list">{renderedComments}</div>
       </div>
     </div>
   );
