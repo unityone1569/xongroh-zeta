@@ -125,7 +125,7 @@ const VerifyEmail = () => {
       <div className="max-w-md w-full bg-dark-2 p-8 pb-10 rounded-xl border-[1.5px] border-dark-4 shadow-lg">
         <div className="flex-col flex-center space-y-8 text-center">
           <img
-            className="h-16 w-16"
+            className="h-10"
             src="/assets/icons/logo.svg"
             alt="Email Verified"
           />

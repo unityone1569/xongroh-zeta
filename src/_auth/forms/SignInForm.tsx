@@ -94,7 +94,7 @@ const SignInForm = () => {
     <Form {...form}>
       <div className=" py-16 w-80 sm:w-420 flex-col overflow-y-auto p-4 no-scrollbar">
         <div className="flex-center flex-col">
-          <img className="h-16" src="/assets/icons/logo.svg" alt="logo" />
+          <img className="h-14" src="/assets/icons/logo.svg" alt="logo" />
           <h2 className="h3-bold md:h2-bold pt-6 sm:pt-8">Login</h2>
           <p className="text-light-3 small-medium md:base-regular my-2">
             Welcome back! Please enter your details.

@@ -43,19 +43,19 @@ const ResetPasswordForm = () => {
         values.email,
         `${window.location.origin}/new-password`
       );
-      
+
       toast({
-        title: "Success!",
-        description: "Check your email for the password reset link.",
+        title: 'Success!',
+        description: 'Check your email for the password reset link.',
       });
-      
+
       navigate('/sign-in');
     } catch (error) {
       console.error(error);
       toast({
-        title: "Error",
-        description: "Failed to send reset link. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to send reset link. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -66,17 +66,16 @@ const ResetPasswordForm = () => {
     <div className="flex-center w-full p-6">
       <Form {...form}>
         <div className="sm:w-420 w-full flex-col flex-center">
-          <img
-            className="h-16 w-16"
-            src="/assets/icons/logo.svg"
-            alt="Logo"
-          />
+          <img className="h-10 sm:h-14" src="/assets/icons/logo.svg" alt="Logo" />
           <h2 className="h3-bold md:h2-bold pt-6">Reset password</h2>
           <p className="text-light-3 small-medium md:base-regular mt-2 pb-11">
             Enter your email to receive a password reset link
           </p>
 
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 w-full mt-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-5 w-full mt-4"
+          >
             <FormField
               control={form.control}
               name="email"
@@ -91,8 +90,8 @@ const ResetPasswordForm = () => {
               )}
             />
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="shad-button_primary"
               disabled={isLoading}
             >

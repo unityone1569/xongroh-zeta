@@ -60,11 +60,7 @@ const NewPasswordForm = () => {
     <div className="flex-center w-full p-6">
       <Form {...form}>
         <div className="sm:w-420 w-full flex-col flex-center">
-        <img
-            className="h-16 w-16"
-            src="/assets/icons/logo.svg"
-            alt="Logo"
-          />
+          <img className="h-10 sm:h-14" src="/assets/icons/logo.svg" alt="Logo" />
           <h2 className="h3-bold md:h2-bold pt-6">Set new password</h2>
           <p className="text-light-3 small-medium md:base-regular mt-2 pb-11">
             Enter your new password

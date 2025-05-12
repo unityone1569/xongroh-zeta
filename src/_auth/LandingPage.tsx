@@ -333,15 +333,12 @@ const LandingPage = () => {
       <div className="w-full max-w-5xl mx-auto px-1 sm:px-6">
         {/* Header */}
         <header className="flex items-center justify-between p-3 pt-5 sm:p-6">
-          <Link to="/home" className="flex gap-1 items-center pl-1.5">
+          <Link to="/home" className="flex items-center pl-1.5">
             <img
               src="/assets/icons/logo.svg"
               alt="logo"
-              className="w-7 h-7 sm:h-9 sm:w-9 "
+              className="h-10 sm:h-12"
             />
-            <h3 className="text-[23px] sm:text-[26px] text-primary-500 font-bold leading-[140%] tracking-wider">
-              ongroh
-            </h3>
           </Link>
           <div className="flex items-center gap-1.5 sm:gap-5">
             {isAuthenticated ? (
