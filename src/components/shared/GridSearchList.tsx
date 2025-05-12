@@ -230,7 +230,7 @@ const GridSearchList = ({ items, type }: GridSearchListProps) => {
   if (type === 'circle') {
     // Sort communities by membersCount in ascending order
     const sortedCommunities = [...items].sort(
-      (a, b) => (a.membersCount || 0) - (b.membersCount || 0)
+      (b, a) => (a.membersCount || 0) - (b.membersCount || 0)
     );
 
     return (

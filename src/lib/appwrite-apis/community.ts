@@ -47,7 +47,7 @@ export async function getCommunities({
   pageParam: number | null;
 }) {
   const queries: any[] = [
-    Query.orderDesc('$createdAt'),
+    Query.orderDesc('$updatedAt'),
     Query.limit(10),
     Query.select(['$id', 'name', 'about', 'imageUrl']),
   ];

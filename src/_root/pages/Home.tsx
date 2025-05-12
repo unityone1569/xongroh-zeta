@@ -12,7 +12,10 @@ import {
 } from '@/lib/tanstack-queries/postsQueries';
 import { useUpdateWelcomeStatus } from '@/lib/tanstack-queries/usersQueries';
 import COTMCarousel from '@/components/shared/COTMPostCard';
-import { useGetAllDiscussions } from '@/lib/tanstack-queries/communityQueries';
+import {
+  useGetAllDiscussions,
+  useGetCommunities,
+} from '@/lib/tanstack-queries/communityQueries';
 import DiscussionCard from '@/components/shared/community/DiscussionCard';
 
 const TABS = [
@@ -23,40 +26,12 @@ const TABS = [
 
 type TabType = (typeof TABS)[number]['name'];
 
-// const useCountdown = (targetDate: Date) => {
-//   const [timeLeft, setTimeLeft] = useState({
-//     days: 0,
-//     hours: 0,
-//     minutes: 0,
-//     seconds: 0,
-//   });
-
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//       const now = new Date().getTime();
-//       const distance = targetDate.getTime() - now;
-
-//       setTimeLeft({
-//         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-//         hours: Math.floor(
-//           (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-//         ),
-//         minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-//         seconds: Math.floor((distance % (1000 * 60)) / 1000),
-//       });
-//     }, 1000);
-
-//     return () => clearInterval(interval);
-//   }, [targetDate]);
-
-//   return timeLeft;
-// };
-
 const Home = () => {
   const { user, setUser } = useUserContext();
   const [activeTab, setActiveTab] = useState<TabType>('creation');
   const [showWelcome, setShowWelcome] = useState(false);
   const updateWelcomeMutation = useUpdateWelcomeStatus();
+  const [activeCommunity] = useState<string>('');
 
   const savedPostsRef = useRef<HTMLDivElement>(null);
   const followingPostsRef = useRef<HTMLDivElement>(null);
@@ -87,6 +62,9 @@ const Home = () => {
     isLoading: isDiscussionsLoading,
   } = useGetAllDiscussions();
 
+  const { data: communitiesPages, isLoading: isCommunitiesLoading } =
+    useGetCommunities();
+
   // Memoized posts
   const savedPosts = useMemo(
     () => savedPostsPages?.pages.flatMap((page) => page.documents) || [],
@@ -101,6 +79,11 @@ const Home = () => {
   const discussions = useMemo(
     () => discussionsPages?.pages.flatMap((page) => page.documents) || [],
     [discussionsPages]
+  );
+
+  const communities = useMemo(
+    () => communitiesPages?.pages.flatMap((page) => page.documents) || [],
+    [communitiesPages]
   );
 
   // Welcome dialog effect
@@ -217,6 +200,53 @@ const Home = () => {
     </ul>
   );
 
+  const renderCommunityCircles = () => (
+    <div className="relative w-full">
+      <div className="w-full overflow-x-scroll lg:custom-scrollbar">
+        <div className="flex gap-3 py-2 px-4 min-w-max">
+          {isCommunitiesLoading ? (
+            <div className="flex items-center justify-center w-16">
+              <Loader />
+            </div>
+          ) : (
+            communities.map((community) => (
+              <Link
+                key={community.$id}
+                to={`/circles/${community.$id}`}
+                className="flex flex-col items-center justify-center min-w-[80px] gap-1 hover:opacity-75 transition-opacity"
+              >
+                <div
+                  className={`
+                  h-11 w-11 rounded-full 
+                  flex items-center justify-center
+                  bg-cover bg-center
+                  transition-all duration-300
+                  ${
+                    activeCommunity === community.$id
+                      ? 'ring-2 ring-primary-500'
+                      : 'hover:ring-2 hover:ring-primary-500/50'
+                  }
+                `}
+                  style={{
+                    backgroundImage: `url(${
+                      community.imageUrl ||
+                      '/assets/icons/profile-placeholder.svg'
+                    })`,
+                  }}
+                />
+                <span className="text-light-2 text-xs truncate w-20 text-center pb-3">
+                  {community.name}
+                </span>
+              </Link>
+            ))
+          )}
+        </div>
+      </div>
+      <div className="absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-dark-1 to-transparent pointer-events-none" />
+      <div className="absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-dark-1 to-transparent pointer-events-none" />
+    </div>
+  );
+
   const renderContent = () => {
     if (activeTab === 'creation') {
       if (isFollowingLoading) return renderLoader();
@@ -312,6 +342,8 @@ const Home = () => {
                 </div>
               </div> */}
             </div>
+            <h3 className="text-light-1 h3-bold mb-3 pl-1 mt-9">Circles</h3>
+            {renderCommunityCircles()}
 
             <div className="flex-start mt-6">
               {TABS.map((tab) => (
