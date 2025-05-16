@@ -149,11 +149,11 @@ const LandingPage = () => {
       console.error('Error fetching stats:', error);
       // Fallback to reasonable defaults if fetch fails
       setStats({
-        creators: 130,
-        creations: 105,
+        creators: 301,
+        creations: 190,
         projects: 50,
         events: 30,
-        discussions: 19,
+        discussions: 36,
       });
     } finally {
       setIsLoading(false);
