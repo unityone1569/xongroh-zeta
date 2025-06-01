@@ -20,23 +20,23 @@ const COTM_POSTS = {
   },
   nominations: [
     {
-      id: '680b738b0023f893fb05',
-      isWinner: true,
-    },
-    {
-      id: '6808e05a002d835f188a',
+      id: '681c5e43002283484721',
       isWinner: false,
     },
     {
-      id: '6811acc3001ebb360048',
+      id: '68270d7c003e65b225a6',
       isWinner: false,
     },
     {
-      id: '67ed6b780021510250c7',
+      id: '6828128900070f96cd31',
       isWinner: false,
     },
     {
-      id: '67f8b416001c8a14cbb5',
+      id: '682afa2200222b769b94',
+      isWinner: false,
+    },
+    {
+      id: '68396fba001b7a0377d9',
       isWinner: false,
     },
   ],
@@ -83,7 +83,7 @@ const COTMPostCard = ({
   return (
     <div className="rounded-xl border border-light-4 border-opacity-50 bg-dark-3 bg- overflow-hidden flex flex-col h-[320px] snap-center shrink-0 w-[260px] md:w-[320px] relative">
       {/* Top Badges */}
-      <div className={monthBadgeClasses}>COTM - APR, 25</div>
+      <div className={monthBadgeClasses}>COTM - MAY, 25</div>
       <div className={statusBadgeClasses}>
         {isWinner ? <span className="invert-white">🏆 Winner</span> : 'Top 5'}
       </div>
