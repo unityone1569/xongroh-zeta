@@ -17,7 +17,6 @@ import { QUERY_KEYS } from '@/lib/tanstack-queries/queryKeys';
 import {
   useGetPostCommentsCount,
   useGetPostFeedbacksCount,
-  useGetPostRepliesCount,
 } from '@/lib/tanstack-queries/commentsQueries';
 import { formatShareDescription, updateMetaTags } from '@/lib/utils/utils';
 import LikesPopup from './LikesPopup';
@@ -40,8 +39,8 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
 
   // Queries
   const { data: feedbacksCount = 0 } = useGetPostFeedbacksCount(post?.$id);
-  const { data: commentsCount = 0 } = useGetPostCommentsCount(postId);
-  const { data: repliesCount = 0 } = useGetPostRepliesCount(postId);
+  const { data: commentsData } = useGetPostCommentsCount(postId);
+  const totalCommentsCount = commentsData?.totalCount || 0;
   const { data: likesCount = 0 } = useGetPostLikesCount(postId);
   const { data: savesCount = 0 } = useGetPostSavesCount(postId);
   const { data: isLiked = false } = useCheckPostLike(postId, userId);
@@ -213,9 +212,9 @@ const PostStats = ({ post, userId, authorId }: PostStatsProps) => {
                 className="cursor-pointer"
               />
             </Link>
-            {commentsCount + repliesCount > 0 && (
+            {totalCommentsCount > 0 && (
               <p className="small-semibold lg:base-semibold text-light-4">
-                {commentsCount + repliesCount}
+                {totalCommentsCount}
               </p>
             )}
           </div>

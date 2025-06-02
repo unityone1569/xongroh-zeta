@@ -14,10 +14,7 @@ import {
 } from '@/lib/tanstack-queries/interactionsQueries';
 import { useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/lib/tanstack-queries/queryKeys';
-import {
-  useGetPostCommentsCount,
-  useGetPostRepliesCount,
-} from '@/lib/tanstack-queries/commentsQueries';
+import { useGetPostCommentsCount } from '@/lib/tanstack-queries/commentsQueries';
 import { formatShareDescription, updateMetaTags } from '@/lib/utils/utils';
 
 type DiscussionStatsProps = {
@@ -39,8 +36,8 @@ const DiscussionStats = ({
   const queryClient = useQueryClient();
 
   // Queries
-  const { data: commentsCount = 0 } = useGetPostCommentsCount(discussionId);
-  const { data: repliesCount = 0 } = useGetPostRepliesCount(discussionId);
+  const { data: commentsData } = useGetPostCommentsCount(discussionId);
+  const totalCommentsCount = commentsData?.totalCount || 0;
   const { data: likesCount = 0 } = useGetPostLikesCount(discussionId);
   const { data: savesCount = 0 } = useGetPostSavesCount(discussionId);
   const { data: isLiked = false } = useCheckPostLike(discussionId, userId);
@@ -183,7 +180,9 @@ const DiscussionStats = ({
       <div className="flex items-center gap-5">
         <div className="flex gap-1 items-center">
           <img
-            src={isLiked ? '/assets/icons/d-liked.svg' : '/assets/icons/d-like.svg'}
+            src={
+              isLiked ? '/assets/icons/d-liked.svg' : '/assets/icons/d-like.svg'
+            }
             alt="like"
             width={26}
             onClick={handleLike}
@@ -207,9 +206,9 @@ const DiscussionStats = ({
               className="cursor-pointer"
             />
           </Link>
-          {commentsCount + repliesCount > 0 && (
+          {totalCommentsCount > 0 && (
             <p className="small-semibold lg:base-semibold text-light-4">
-              {commentsCount + repliesCount}
+              {totalCommentsCount}
             </p>
           )}
         </div>

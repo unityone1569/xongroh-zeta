@@ -28,7 +28,6 @@ import {
   useGetFeedbackRepliesCount,
   useGetFeedbacks,
   useGetPostCommentsCount,
-  useGetPostRepliesCount,
 } from '@/lib/tanstack-queries/commentsQueries';
 import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
 import { useInView } from 'react-intersection-observer';
@@ -89,8 +88,6 @@ const PostComments = ({
     useGetFeedbacks(postId);
 
   const { data: commentsCount } = useGetPostCommentsCount(postId);
-  const { data: repliesCount = 0 } = useGetPostRepliesCount(postId);
-
   const { mutateAsync: addComment } = useAddComment();
   const { mutateAsync: addFeedback } = useAddFeedback();
 
@@ -216,7 +213,7 @@ const PostComments = ({
           {
             name: 'comments',
             label: 'Comments',
-            count: (commentsCount?.totalCount || 0) + repliesCount,
+            count: commentsCount?.totalCount || 0,
           },
           {
             name: 'feedbacks',
