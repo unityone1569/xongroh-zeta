@@ -44,24 +44,58 @@ const fn = {
 // Get-Post-Comments-Count
 export async function getPostCommentsCount(postId: string) {
   try {
-    const comments = await getComments(postId);
-    return comments.length;
-  } catch (error) {
-    console.error('Error getting comments count:', error);
-    throw error;
-  }
-}
-
-// Get-Comment
-export async function getComments(postId: string) {
-  try {
-    const response = await databases.listDocuments(
+    // Get comments count
+    const comments = await databases.listDocuments(
       db.commentsId,
       cl.commentId,
       [Query.equal('postId', postId)]
     );
 
-    return response.documents;
+    // Get all comment IDs
+    const commentIds = comments.documents.map((comment) => comment.$id);
+
+    // Get replies count for all comments
+    let totalReplies = 0;
+    if (commentIds.length > 0) {
+      const replies = await databases.listDocuments(
+        db.commentsId,
+        cl.commentReplyId,
+        [Query.equal('commentId', commentIds)]
+      );
+      totalReplies = replies.total;
+    }
+
+    return {
+      commentsCount: comments.total,
+      repliesCount: totalReplies,
+      totalCount: comments.total + totalReplies,
+    };
+  } catch (error) {
+    console.error('Error getting counts:', error);
+    throw error;
+  }
+}
+
+// Get-Comment
+export async function getComments(postId: string, pageParam?: string) {
+  try {
+    const queries = [
+      Query.equal('postId', postId),
+      Query.orderDesc('$createdAt'),
+      Query.limit(10),
+    ];
+
+    if (pageParam) {
+      queries.push(Query.cursorAfter(pageParam));
+    }
+
+    const response = await databases.listDocuments(
+      db.commentsId,
+      cl.commentId,
+      queries
+    );
+
+    return response;
   } catch (error) {
     console.error('Error fetching comments:', error);
     throw error;
@@ -296,8 +330,12 @@ export async function deleteAllFeedbacksForPost(postId: string) {
 export async function getPostRepliesCount(postId: string) {
   try {
     const comments = await getComments(postId);
-    const repliesPromises = comments.map((comment) =>
-      getCommentReplies(comment.$id)
+    interface Comment {
+      $id: string;
+    }
+
+    const repliesPromises: Promise<any[]>[] = comments.documents.map(
+      (comment: Comment) => getCommentReplies(comment.$id)
     );
     const replies = await Promise.all(repliesPromises);
     return replies.flat().length;

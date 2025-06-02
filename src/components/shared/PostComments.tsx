@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useUserContext } from '@/context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,9 +27,11 @@ import {
   useGetComments,
   useGetFeedbackRepliesCount,
   useGetFeedbacks,
+  useGetPostCommentsCount,
   useGetPostRepliesCount,
 } from '@/lib/tanstack-queries/commentsQueries';
 import { useGetUserInfo } from '@/lib/tanstack-queries/usersQueries';
+import { useInView } from 'react-intersection-observer';
 
 type PostCommentsProps = {
   postId: string;
@@ -74,11 +76,19 @@ const PostComments = ({
   );
 
   // Fetching data
-  const { data: comments, isLoading: isCommentsLoading } =
-    useGetComments(postId);
+  const { ref: loadMoreRef, inView } = useInView();
+
+  const {
+    data: commentsData,
+    isLoading: isCommentsLoading,
+    fetchNextPage: fetchNextComments,
+    hasNextPage: hasNextCommentsPage,
+    isFetchingNextPage: isFetchingNextComments,
+  } = useGetComments(postId);
   const { data: feedbacks, isLoading: isFeedbacksLoading } =
     useGetFeedbacks(postId);
 
+  const { data: commentsCount } = useGetPostCommentsCount(postId);
   const { data: repliesCount = 0 } = useGetPostRepliesCount(postId);
 
   const { mutateAsync: addComment } = useAddComment();
@@ -125,24 +135,46 @@ const PostComments = ({
     );
   }, [feedbacks, authorId, userId]);
 
+  // Load more comments when scrolled to bottom
+  useEffect(() => {
+    if (inView && hasNextCommentsPage && !isFetchingNextComments) {
+      fetchNextComments();
+    }
+  }, [inView, hasNextCommentsPage, isFetchingNextComments]);
+
   // Rendered Items
   const RenderedItems = useMemo(() => {
-    if (isCommentsLoading || isFeedbacksLoading) return <Loader />;
+    if (isCommentsLoading) return <Loader />;
     if (activeTab === 'comments') {
-      return comments?.map((comment) => (
-        <CommentItem
-          key={comment.$id}
-          creatorId={comment.userId}
-          content={comment.content}
-          createdAt={comment.$createdAt}
-          commentId={comment.$id}
-          postId={postId}
-          userId={userId}
-          authorId={authorId}
-          postAuthorId={postAuthorId}
-          item={comment}
-        />
-      ));
+      return (
+        <>
+          {commentsData?.pages.map((page) =>
+            page.documents.map((comment) => (
+              <CommentItem
+                key={comment.$id}
+                creatorId={comment.userId}
+                content={comment.content}
+                createdAt={comment.$createdAt}
+                commentId={comment.$id}
+                postId={postId}
+                userId={userId}
+                authorId={authorId}
+                postAuthorId={postAuthorId}
+                item={comment}
+              />
+            ))
+          )}
+          {hasNextCommentsPage && (
+            <div ref={loadMoreRef} className="w-full flex justify-center py-4">
+              {isFetchingNextComments ? (
+                <Loader />
+              ) : (
+                <p className="text-light-3 text-sm">Load more comments</p>
+              )}
+            </div>
+          )}
+        </>
+      );
     }
     return visibleFeedbacks?.map((feedback) => (
       <FeedbackItem
@@ -160,12 +192,14 @@ const PostComments = ({
     ));
   }, [
     activeTab,
-    comments,
+    commentsData?.pages,
     visibleFeedbacks,
     isCommentsLoading,
     isFeedbacksLoading,
     postId,
     userId,
+    hasNextCommentsPage,
+    isFetchingNextComments,
   ]);
 
   const {
@@ -182,7 +216,7 @@ const PostComments = ({
           {
             name: 'comments',
             label: 'Comments',
-            count: (comments?.length || 0) + repliesCount,
+            count: (commentsCount?.totalCount || 0) + repliesCount,
           },
           {
             name: 'feedbacks',

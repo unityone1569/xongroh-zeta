@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useInfiniteQuery,
+} from '@tanstack/react-query';
 import { QUERY_KEYS } from './queryKeys';
 import {
   addComment,
@@ -38,9 +43,16 @@ export const useGetPostCommentsCount = (postId?: string) => {
 
 // Use-Get-Comments
 export const useGetComments = (postId: string) => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_POST_COMMENTS, postId],
-    queryFn: () => getComments(postId),
+    queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
+      getComments(postId, pageParam),
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage?.documents.length) return null;
+      const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+      return lastId;
+    },
     enabled: !!postId,
   });
 };
