@@ -26,6 +26,35 @@ const TABS = [
 
 type TabType = (typeof TABS)[number]['name'];
 
+const useCountdown = (targetDate: Date) => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetDate.getTime() - now;
+
+      setTimeLeft({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        ),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000),
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [targetDate]);
+
+  return timeLeft;
+};
+
 const Home = () => {
   const { user, setUser } = useUserContext();
   const [activeTab, setActiveTab] = useState<TabType>('creation');
@@ -311,7 +340,7 @@ const Home = () => {
               <COTMCarousel />
 
               {/* Winner info and countdown section */}
-              {/* <div className="flex flex-col sm:flex-row lg:flex-col lg:gap-5 2xl:flex-row justify-between items-center text-center bg-dark-4 rounded-xl p-4 mt-2">
+              <div className="flex flex-col sm:flex-row lg:flex-col lg:gap-5 2xl:flex-row justify-between items-center text-center bg-dark-4 rounded-xl p-4 mt-3">
                 <div className="flex flex-col sm:flex-row lg:flex-col text-center 2xl:flex-row items-center gap-1.5 mb-5 sm:mb-0">
                   <p className="text-light-2 base-medium">
                     The Most Voted Creation Wins!{' '}
@@ -330,7 +359,7 @@ const Home = () => {
 
                 <div className="flex gap-4">
                   {Object.entries(
-                    useCountdown(new Date('2025-05-07T18:30:00Z'))
+                    useCountdown(new Date('2025-06-07T18:30:00Z'))
                   ).map(([unit, value]) => (
                     <div key={unit} className="flex flex-col items-center">
                       <span className="text-primary-500 h4-bold">
@@ -340,7 +369,7 @@ const Home = () => {
                     </div>
                   ))}
                 </div>
-              </div> */}
+              </div>
             </div>
             <h3 className="text-light-1 h3-bold mb-3 pl-1 mt-9">Circles</h3>
             {renderCommunityCircles()}
