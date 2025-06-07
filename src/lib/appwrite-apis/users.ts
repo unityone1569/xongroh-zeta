@@ -777,6 +777,26 @@ export async function getTopCreators() {
   }
 }
 
+// Get-User-With-Creator_Badge
+export async function getUsersWithCreatorBadge() {
+  try {
+    const creators = await databases.listDocuments(db.usersId, cl.creatorId, [
+      Query.or([Query.notEqual('isBanned', true), Query.isNull('isBanned')]),
+      Query.notEqual('name', ['Xongroh']),
+      Query.equal('badges', ['B9001']),
+      Query.orderDesc('creationsCount'),
+      Query.limit(10),
+    ]);
+
+    if (!creators) throw Error;
+
+    return creators;
+  } catch (error) {
+    console.error('Error fetching top creators:', error);
+    throw error;
+  }
+}
+
 // Get-Infinite-Users
 export async function getInfiniteUsers({ pageParam }: { pageParam: number }) {
   const queries: any[] = [

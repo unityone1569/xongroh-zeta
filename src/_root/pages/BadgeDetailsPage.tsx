@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
-import { useGetTopCreators } from '@/lib/tanstack-queries/usersQueries';
+import { useGetUsersWithCreatorBadge } from '@/lib/tanstack-queries/usersQueries';
 
 const BadgeDetailsPage = () => {
   const navigate = useNavigate();
-  const { data: creators } = useGetTopCreators();
+  const { data: creators } = useGetUsersWithCreatorBadge();
 
   // Calculate remaining spots
   const totalSpots = 500;

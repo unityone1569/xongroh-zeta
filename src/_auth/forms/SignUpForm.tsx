@@ -22,7 +22,7 @@ import { useUserContext } from '@/context/AuthContext';
 import {
   useCreateUserAccount,
   useLoginWithGoogle,
-  useGetTopCreators,
+  useGetUsersWithCreatorBadge,
 } from '@/lib/tanstack-queries/usersQueries';
 
 const SignUpForm = () => {
@@ -34,7 +34,7 @@ const SignUpForm = () => {
   const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateUserAccount();
   const { mutateAsync: loginWithGoogle } = useLoginWithGoogle();
-  const { data: creators } = useGetTopCreators();
+  const { data: creators } = useGetUsersWithCreatorBadge();
 
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     resolver: zodResolver(SignUpFormSchema),

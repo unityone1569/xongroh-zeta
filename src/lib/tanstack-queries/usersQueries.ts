@@ -14,6 +14,7 @@ import {
   getTopCreators,
   getUserById,
   getUserInfo,
+  getUsersWithCreatorBadge,
   loginWithGoogle,
   searchUsers,
   signInAccount,
@@ -198,6 +199,13 @@ export const useGetTopCreators = () => {
   });
 };
 
+export const useGetUsersWithCreatorBadge = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_TOP_CREATORS],
+    queryFn: () => getUsersWithCreatorBadge(),
+  });
+};
+
 // * USER SEARCH QUERIES *
 
 // Use-Get-Users
@@ -233,11 +241,10 @@ export const useSearchUsers = (searchTerm: string) => {
   });
 };
 
-
 // Use-Update-Welcome-Status
 export const useUpdateWelcomeStatus = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (userId: string) => updateWelcomeStatus(userId),
     onSuccess: () => {
