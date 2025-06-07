@@ -255,7 +255,6 @@ export async function createUserAccount(
       dpUrl: avatarUrl,
       username: username, // Add the generated username
       agreeUserAgreements: agreedUserAgreements,
-      badges: ['B9001'],
     });
 
     return newUser;
