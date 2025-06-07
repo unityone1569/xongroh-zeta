@@ -297,7 +297,6 @@ export async function createUserAccountWithGoogle(
       dpUrl: avatars.getInitials(session.name),
       username: username,
       agreeUserAgreements: agreedUserAgreements,
-      badges: ['B9001'],
     });
 
     return newUser;
