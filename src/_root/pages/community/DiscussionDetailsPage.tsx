@@ -160,8 +160,32 @@ const DiscussionDetailsPage = () => {
 
             <hr className="border w-full mt-2 mb-0.5 border-dark-4/80" />
 
-            <p className="small-regular pl-1 pt-1 whitespace-pre-line text-pretty">
-              {discussion?.content}
+            <p className="small-regular pl-1 pt-1 whitespace-pre-wrap text-pretty">
+              {discussion?.content
+                ?.split(/(\s+)/)
+                .map((segment: string, index: number) => {
+                  if (segment.startsWith('https://xongroh.com/')) {
+                    // Get internal path by removing the domain
+                    const internalPath = segment.replace(
+                      'https://xongroh.com',
+                      ''
+                    );
+                    const displayPath = segment
+                      .split('xongroh.com/')[1]
+                      .split('/')[0];
+                    return (
+                      <span key={index}>
+                        <Link
+                          to={internalPath}
+                          className="text-primary-500 hover:underline"
+                        >
+                          {`xongroh.com/${displayPath}`}
+                        </Link>
+                      </span>
+                    );
+                  }
+                  return segment;
+                })}
             </p>
 
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular gap-3">
