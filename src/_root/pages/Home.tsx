@@ -26,18 +26,42 @@ const TABS = [
 
 type TabType = (typeof TABS)[number]['name'];
 
-const useCountdown = (targetDate: Date) => {
+const useCountdown = (targetDate: Date, enabled: boolean = true) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
+    isExpired: false,
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (!enabled) {
+      setTimeLeft({
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        isExpired: false,
+      });
+      return;
+    }
+
+    const calculateTimeLeft = () => {
       const now = new Date().getTime();
       const distance = targetDate.getTime() - now;
+
+      if (distance <= 0) {
+        // Time has expired
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          isExpired: true,
+        });
+        return true;
+      }
 
       setTimeLeft({
         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
@@ -46,11 +70,24 @@ const useCountdown = (targetDate: Date) => {
         ),
         minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
         seconds: Math.floor((distance % (1000 * 60)) / 1000),
+        isExpired: false,
       });
+      return false;
+    };
+
+    // Check if already expired
+    if (calculateTimeLeft()) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      if (calculateTimeLeft()) {
+        clearInterval(interval);
+      }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [targetDate]);
+  }, [targetDate, enabled]);
 
   return timeLeft;
 };
@@ -61,6 +98,8 @@ const Home = () => {
   const [showWelcome, setShowWelcome] = useState(false);
   const updateWelcomeMutation = useUpdateWelcomeStatus();
   const [activeCommunity] = useState<string>('');
+  const [isCountdownEnabled, _setIsCountdownEnabled] = useState(true);
+  const cutoffDate = new Date('2025-06-07T18:30:00Z');
 
   const savedPostsRef = useRef<HTMLDivElement>(null);
   const followingPostsRef = useRef<HTMLDivElement>(null);
@@ -340,36 +379,60 @@ const Home = () => {
               <COTMCarousel />
 
               {/* Winner info and countdown section */}
-              <div className="flex flex-col sm:flex-row lg:flex-col lg:gap-5 2xl:flex-row justify-between items-center text-center bg-dark-4 rounded-xl p-4 mt-3">
-                <div className="flex flex-col sm:flex-row lg:flex-col text-center 2xl:flex-row items-center gap-1.5 mb-5 sm:mb-0">
-                  <p className="text-light-2 base-medium">
-                    The Most Voted Creation Wins!{' '}
-                    <span className="text-xl">🏆</span>
-                  </p>
-                  <p className=" text-light-3 small-bold flex items-center gap-1">
-                    "
-                    <img
-                      src="/assets/icons/liked.svg"
-                      alt="likes"
-                      className="w-6 h-6"
-                    />
-                    <span>= 1 Vote "</span>
-                  </p>
-                </div>
+              {(() => {
+                const now = new Date();
+                // Hide the entire section if we're past the cutoff date
+                if (now > cutoffDate) {
+                  return null;
+                }
 
-                <div className="flex gap-4">
-                  {Object.entries(
-                    useCountdown(new Date('2025-06-07T18:30:00Z'))
-                  ).map(([unit, value]) => (
-                    <div key={unit} className="flex flex-col items-center">
-                      <span className="text-primary-500 h4-bold">
-                        {value.toString().padStart(2, '0')}
-                      </span>
-                      <span className="text-light-3 tiny-medium">{unit}</span>
+                return (
+                  <div className="flex flex-col sm:flex-row lg:flex-col lg:gap-5 2xl:flex-row justify-between items-center text-center bg-dark-4 rounded-xl p-4 mt-3">
+                    <div className="flex flex-col sm:flex-row lg:flex-col text-center 2xl:flex-row items-center gap-1.5 mb-5 sm:mb-0">
+                      <p className="text-light-2 base-medium">
+                        The Most Voted Creation Wins!{' '}
+                        <span className="text-xl">🏆</span>
+                      </p>
+                      <p className="text-light-3 small-bold flex items-center gap-1">
+                        "
+                        <img
+                          src="/assets/icons/liked.svg"
+                          alt="likes"
+                          className="w-6 h-6"
+                        />
+                        <span>= 1 Vote "</span>
+                      </p>
                     </div>
-                  ))}
-                </div>
-              </div>
+
+                    <div className="flex gap-4">
+                      {(() => {
+                        const countdown = useCountdown(cutoffDate, isCountdownEnabled);
+
+                        if (countdown.isExpired) {
+                          return (
+                            <p className="text-primary-500 h4-bold">
+                              Voting Ended!
+                            </p>
+                          );
+                        }
+
+                        return Object.entries(countdown)
+                          .filter(([key]) => key !== 'isExpired')
+                          .map(([unit, value]) => (
+                            <div key={unit} className="flex flex-col items-center">
+                              <span className="text-primary-500 h4-bold">
+                                {value.toString().padStart(2, '0')}
+                              </span>
+                              <span className="text-light-3 tiny-medium">
+                                {unit}
+                              </span>
+                            </div>
+                          ));
+                      })()}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
             <h3 className="text-light-1 h3-bold mb-3 pl-1 mt-9">Circles</h3>
             {renderCommunityCircles()}
