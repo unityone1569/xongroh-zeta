@@ -147,8 +147,34 @@ const DiscussionCard = ({
               {discussion?.content}
             </p>
           ) : (
-            <p className="pl-0.5 whitespace-pre-line small-regular pt-5 line-clamp-[11] text-pretty">
-              {discussion?.content}
+            <p className="pl-0.5 whitespace-pre-wrap small-regular pt-5 line-clamp-[11] text-pretty">
+              {discussion?.content
+                ?.split(/(\s+)/)
+                .map((segment: string, index: number) => {
+                  if (segment.startsWith('https://xongroh.com/')) {
+                    // Get internal path by removing the domain
+                    const internalPath = segment.replace(
+                      'https://xongroh.com',
+                      ''
+                    );
+                    const path = segment.split('xongroh.com/')[1];
+                    // Take first 15 characters of the path after xongroh.com/
+                    const shortPath =
+                      path.length > 15 ? path.substring(0, 15) + '...' : path;
+
+                    return (
+                      <span key={index}>
+                        <Link
+                          to={internalPath}
+                          className="text-primary-500 hover:underline"
+                        >
+                          {`xongroh.com/${shortPath}`}
+                        </Link>
+                      </span>
+                    );
+                  }
+                  return segment;
+                })}
             </p>
           )}
         </div>
