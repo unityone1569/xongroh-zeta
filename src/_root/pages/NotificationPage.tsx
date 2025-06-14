@@ -265,7 +265,9 @@ const NotificationPage = () => {
       <h2 className="h3-bold md:h2-bold w-full max-w-3xl mt-0 md:mt-16 lg:mt-0">
         Notifications
       </h2>
-      {messageGroups()}
+
+      {user?.badges?.includes('B9001') && messageGroups()}
+      
       <div
         ref={containerRef}
         className="flex flex-col w-full max-w-3xl rounded-xl"
