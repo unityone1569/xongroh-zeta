@@ -83,7 +83,7 @@ const COTMPostCard = ({
   return (
     <div className="rounded-xl border border-light-4 border-opacity-50 bg-dark-3 bg- overflow-hidden flex flex-col h-[320px] snap-center shrink-0 w-[260px] md:w-[320px] relative">
       {/* Top Badges */}
-      <div className={monthBadgeClasses}>COTM - MAY, 25</div>
+      <div className={monthBadgeClasses}>COTM - JUNE, 25</div>
       <div className={statusBadgeClasses}>
         {isWinner ? <span className="invert-white">🏆 Winner</span> : 'Top 5'}
       </div>
