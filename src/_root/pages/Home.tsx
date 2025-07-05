@@ -99,7 +99,7 @@ const Home = () => {
   const updateWelcomeMutation = useUpdateWelcomeStatus();
   const [activeCommunity] = useState<string>('');
   const [isCountdownEnabled, _setIsCountdownEnabled] = useState(true);
-  const cutoffDate = new Date('2025-06-07T18:30:00Z');
+  const cutoffDate = new Date('2025-07-11T18:30:00Z');
 
   const savedPostsRef = useRef<HTMLDivElement>(null);
   const followingPostsRef = useRef<HTMLDivElement>(null);
@@ -406,7 +406,10 @@ const Home = () => {
 
                     <div className="flex gap-4">
                       {(() => {
-                        const countdown = useCountdown(cutoffDate, isCountdownEnabled);
+                        const countdown = useCountdown(
+                          cutoffDate,
+                          isCountdownEnabled
+                        );
 
                         if (countdown.isExpired) {
                           return (
@@ -419,7 +422,10 @@ const Home = () => {
                         return Object.entries(countdown)
                           .filter(([key]) => key !== 'isExpired')
                           .map(([unit, value]) => (
-                            <div key={unit} className="flex flex-col items-center">
+                            <div
+                              key={unit}
+                              className="flex flex-col items-center"
+                            >
                               <span className="text-primary-500 h4-bold">
                                 {value.toString().padStart(2, '0')}
                               </span>
