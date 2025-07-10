@@ -22,22 +22,27 @@ const COTM_POSTS = {
     {
       id: '684ffc860004d98db555',
       isWinner: false,
+      isDisqualified: false,
     },
     {
       id: '6856a267001f6fd6cae4',
       isWinner: false,
+      isDisqualified: false,
     },
     {
       id: '685f8d2b002811163e9e',
       isWinner: false,
+      isDisqualified: true,
     },
     {
       id: '685f9aba0018736568d1',
       isWinner: false,
+      isDisqualified: false,
     },
     {
       id: '68627e9900082ee9987f',
       isWinner: false,
+      isDisqualified: false, 
     },
   ],
 };
@@ -167,10 +172,13 @@ const COTMPostCard = ({
 };
 
 const COTMCarousel = () => {
-  const cotmPosts = COTM_POSTS.nominations.map((nomination) => ({
-    query: useGetCreationById(nomination.id),
-    isWinner: nomination.isWinner,
-  }));
+  // Filter out disqualified nominations
+  const cotmPosts = COTM_POSTS.nominations
+    .filter((nomination) => !nomination.isDisqualified)
+    .map((nomination) => ({
+      query: useGetCreationById(nomination.id),
+      isWinner: nomination.isWinner,
+    }));
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Use useEffect to handle loading state
