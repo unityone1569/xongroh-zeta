@@ -36,7 +36,7 @@ const COTM_POSTS = {
     },
     {
       id: '685f9aba0018736568d1',
-      isWinner: false,
+      isWinner: true,
       isDisqualified: false,
     },
     {
